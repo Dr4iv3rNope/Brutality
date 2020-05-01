@@ -1,0 +1,735 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui.cpp">
+      <Filter>User Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\createmove.cpp">
+      <Filter>Hooks\CreateMove</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\endscene.cpp">
+      <Filter>Hooks\EndScene</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\overrideview.cpp">
+      <Filter>Hooks\OverrideView</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\framestagenotify.cpp">
+      <Filter>Hooks\FrameStageNotify</Filter>
+    </ClCompile>
+    <ClCompile Include="config\config.cpp">
+      <Filter>Config System</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\clientmode.cpp">
+      <Filter>Source SDK\Interfaces\ClientModeShared</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\cvar.cpp">
+      <Filter>Source SDK\Interfaces\CVar</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\engineclient.cpp">
+      <Filter>Source SDK\Interfaces\CEngineClient</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\enginetraceclient.cpp">
+      <Filter>Source SDK\Interfaces\CEngineTraceClient</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\entitylist.cpp">
+      <Filter>Source SDK\Interfaces\CClientEntityList</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\hlclient.cpp">
+      <Filter>Source SDK\Interfaces\CHLClient</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\netvars.cpp">
+      <Filter>Source SDK\NetVar Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="util\memory.cpp">
+      <Filter>Utilities\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="util\pattern.cpp">
+      <Filter>Utilities\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="util\vmt.cpp">
+      <Filter>Utilities\VMT</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx9.cpp">
+      <Filter>ImGui\Implementations</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_win32.cpp">
+      <Filter>ImGui\Implementations</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\render.cpp">
+      <Filter>Source SDK\Interfaces\CRender</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\worldtoscreen.cpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="util\debug\logs.cpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="util\strings.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\clientclass.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\concommand.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\convar.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\vector.cpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\interfaces.cpp">
+      <Filter>Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="config\variable.cpp">
+      <Filter>Config System</Filter>
+    </ClCompile>
+    <ClCompile Include="shutdown.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="sourcesdk\clientclassdumper.cpp">
+      <Filter>Source SDK\ClientClass Dumper</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\entity.cpp">
+      <Filter>Source SDK\Entities\C_BaseEntity</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\player.cpp">
+      <Filter>Source SDK\Entities\C_BasePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\networkable.cpp">
+      <Filter>Source SDK\Entities\IClientNetworkable</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\renderable.cpp">
+      <Filter>Source SDK\Entities\IClientRenderable</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\reset.cpp">
+      <Filter>Hooks\Reset</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\modelcache.cpp">
+      <Filter>Source SDK\Interfaces\CMDLCache</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\surface.cpp">
+      <Filter>Source SDK\Interfaces\CMatSystemSurface</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\weapon.cpp">
+      <Filter>Source SDK\Entities\C_BaseCombatWeapon</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\localize.cpp">
+      <Filter>Source SDK\Interfaces\CLocalizedStringTable</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_stdlib.cpp">
+      <Filter>ImGui\std</Filter>
+    </ClCompile>
+    <ClCompile Include="util\asmhook.cpp">
+      <Filter>Utilities\AsmHook</Filter>
+    </ClCompile>
+    <ClCompile Include="features\gmod\antiscreengrab.cpp">
+      <Filter>Features\Garry%27s Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="features\gmod\luainterface.cpp">
+      <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="features\esp.cpp">
+      <Filter>Features\Shared\Esp</Filter>
+    </ClCompile>
+    <ClCompile Include="features\playerlist.cpp">
+      <Filter>Features\Shared\Player List</Filter>
+    </ClCompile>
+    <ClCompile Include="features\textradar.cpp">
+      <Filter>Features\Shared\Text Radar</Filter>
+    </ClCompile>
+    <ClCompile Include="features\crosshair.cpp">
+      <Filter>Features\Shared\Crosshair</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\hlinput.cpp">
+      <Filter>Source SDK\Interfaces\CInput</Filter>
+    </ClCompile>
+    <ClCompile Include="features\bhop.cpp">
+      <Filter>Features\Shared\Bunny Hop</Filter>
+    </ClCompile>
+    <ClCompile Include="features\namechanger.cpp">
+      <Filter>Features\Shared\Name Changer</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\netchannel.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="features\customdisconnect.cpp">
+      <Filter>Features\Shared\Custom Disconnect</Filter>
+    </ClCompile>
+    <ClCompile Include="features\gmod\lualoader.cpp">
+      <Filter>Features\Garry%27s Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="util\shellcodebuilder.cpp">
+      <Filter>Utilities\Shellcode Builder</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\inputsystem.cpp">
+      <Filter>Source SDK\Interfaces\CInputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\netsetconvar.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="util\debug\winapi.cpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\renderview.cpp">
+      <Filter>Hooks\RenderView</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{a8a542db-9e5a-4831-b9cf-d29b081d120a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Memory">
+      <UniqueIdentifier>{e694f224-39c0-486b-af89-e4b77e9b43dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Pattern">
+      <UniqueIdentifier>{5535ed65-d6e4-46ee-b134-94091e250fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\VMT">
+      <UniqueIdentifier>{81255850-1a28-4f5a-bea5-85987f268d1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK">
+      <UniqueIdentifier>{17dafc35-ac9b-461a-8eb3-cbbb91a61982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces">
+      <UniqueIdentifier>{8eb4939b-59bb-4ee1-a7be-f45eb8a04d83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\ClientModeShared">
+      <UniqueIdentifier>{1e269533-e83a-47d2-9d85-ff921535015b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CVar">
+      <UniqueIdentifier>{02aca215-1a88-4e16-afcc-d3fce60efb7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CEngineClient">
+      <UniqueIdentifier>{c4470bab-f37b-4bb0-8a39-f944c6bdf727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CEngineTraceClient">
+      <UniqueIdentifier>{f52b4d67-43e5-4ba2-aaff-d0ce1a9358b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CClientEntityList">
+      <UniqueIdentifier>{8ef98847-c37c-4a2a-b9a2-1ebeba8f7e83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CHLClient">
+      <UniqueIdentifier>{88a39423-4ed3-4a7d-bf0b-6a86cf883953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\IAppSystem">
+      <UniqueIdentifier>{1f2a0a7c-543d-41e4-b6df-bbddc91d8ce9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CClientState">
+      <UniqueIdentifier>{4859482b-58bf-417c-96d5-f8f6c8ac60ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CBaseGlobalVars">
+      <UniqueIdentifier>{0b27ee0f-0daa-46a7-8509-821a7dc7cf2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CInput">
+      <UniqueIdentifier>{3fb5e862-6dff-4f41-b64c-3585aa54e81c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CInputSystem">
+      <UniqueIdentifier>{45cd07de-f9a6-4a42-b60a-5076f759ea65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Structures">
+      <UniqueIdentifier>{89c196c8-9e61-477e-9778-f9332a185856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities">
+      <UniqueIdentifier>{11e46794-98d0-4bf0-80f2-fcaf541f6157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\C_BasePlayer">
+      <UniqueIdentifier>{4e50f806-12a7-4e42-8bea-cd8a1249c468}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\IClientNetworkable">
+      <UniqueIdentifier>{259cadb3-bb19-4fc2-9eeb-ce0e3fe725a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\IClientRenderable">
+      <UniqueIdentifier>{91d060d1-41af-4043-b0c6-8c0104538cc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\C_BaseEntity">
+      <UniqueIdentifier>{cedda8d6-3ce2-4e88-9d8a-908635952378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui">
+      <UniqueIdentifier>{c0a23e8a-e086-43cc-a2db-94730841d857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks">
+      <UniqueIdentifier>{d4f5de66-8139-44a6-92e2-d18f7dba277c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config System">
+      <UniqueIdentifier>{bb655324-2538-459c-94fe-d979aa2c58f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User Interface">
+      <UniqueIdentifier>{f2660f98-9bf1-48fa-890a-536a8811dbd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\CreateMove">
+      <UniqueIdentifier>{ee37cf75-eddc-4296-9b66-6d8d7a6df923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\EndScene">
+      <UniqueIdentifier>{ee3c7f48-aa5b-46db-bfa3-b5ebce1b1ecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\FrameStageNotify">
+      <UniqueIdentifier>{f2557386-44d3-4c10-a563-5c7b7569f28a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\OverrideView">
+      <UniqueIdentifier>{f30e64c8-0564-47cf-8e56-8a96e71480b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\ClientClass Dumper">
+      <UniqueIdentifier>{dc18bba2-0c26-4b34-a679-94b851dddffc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\NetVar Manager">
+      <UniqueIdentifier>{38284dbd-c0c9-4292-9c78-537a47e0663b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Implementations">
+      <UniqueIdentifier>{1eda8e35-7ae0-4121-899d-12b0f40463b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Math">
+      <UniqueIdentifier>{15353c6a-0d3c-4083-8569-8d787d7f4cf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="User Interface\Renders">
+      <UniqueIdentifier>{b99ca5b7-0e57-4ee4-bd21-cc427a254fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CRender">
+      <UniqueIdentifier>{0ed5a5ee-5c62-481f-8c74-d1e18af1dd37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Debugging">
+      <UniqueIdentifier>{e8fdccf8-cb5d-44c4-99ee-07adf8f9401c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Structures\Enums">
+      <UniqueIdentifier>{95e38da0-f8d1-44ae-97d8-8a48f7865f42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CHostState">
+      <UniqueIdentifier>{e828ae22-9db6-42e3-a67a-813d197c45a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CShaderAPIBase">
+      <UniqueIdentifier>{ef70931f-303e-4666-93c1-c2f13b2a8b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CGameEventManager">
+      <UniqueIdentifier>{6ecb8ab4-77ea-4127-9d02-5cebf78d241f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nlohmann">
+      <UniqueIdentifier>{42511d96-acb9-47c6-9ecc-a435854adb92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\Reset">
+      <UniqueIdentifier>{75b37391-bd77-4d92-82d8-772fa8be5324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features">
+      <UniqueIdentifier>{ffda5b5d-e06b-4154-91d0-c325500b1a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared">
+      <UniqueIdentifier>{9b6c6cd3-30f8-4a52-87a4-7fef117242c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Garry%27s Mod">
+      <UniqueIdentifier>{131fe58f-22c2-42f9-ad98-90e249e0056c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Counter-Strike: Source">
+      <UniqueIdentifier>{ea197131-0bef-4d99-9ea5-428bc07afd35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Counter-Strike: Global Offensive">
+      <UniqueIdentifier>{96316ec7-16ef-4da2-8187-72fedd666b8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CMDLCache">
+      <UniqueIdentifier>{17247e4c-f976-47da-a513-afc6b9c9619c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\Garry%27s Mod Entities">
+      <UniqueIdentifier>{77c103e4-e0fe-4d39-81ef-8729b43bf506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CMatSystemSurface">
+      <UniqueIdentifier>{f45e3351-a17e-4d61-a1c0-20dcd26e269f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Entities\C_BaseCombatWeapon">
+      <UniqueIdentifier>{2c4baa85-02a9-4767-9445-1e1cafbbe041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CLocalizedStringTable">
+      <UniqueIdentifier>{1675674c-83ae-4fe4-b33b-df98afa2a01c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\std">
+      <UniqueIdentifier>{d5284abc-1358-47cc-87c9-54fa79a09502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s">
+      <UniqueIdentifier>{02ff432d-02fd-4389-8aaa-7490d0f6b144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\AsmHook">
+      <UniqueIdentifier>{9066a831-344a-4223-9dbc-4e875ceebfa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Garry%27s Mod\Lua SDK">
+      <UniqueIdentifier>{35f7de26-ed80-44df-90d2-bdeca2b658bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Esp">
+      <UniqueIdentifier>{927f2974-e0f5-44ce-8a77-10d8ba88c0f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Player List">
+      <UniqueIdentifier>{1ab17551-4c69-4732-8bd6-9bfc6204488c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Text Radar">
+      <UniqueIdentifier>{853459bd-8c58-45e1-89ff-cdf50a26e84d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Crosshair">
+      <UniqueIdentifier>{6dae71a0-7e32-4a49-91e6-c95df28df323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Bunny Hop">
+      <UniqueIdentifier>{319f4d49-44b0-4cb5-a9cd-cac15f655447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Custom Disconnect">
+      <UniqueIdentifier>{232dd98b-7b54-40cf-8677-bcfd98a0a694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Shellcode Builder">
+      <UniqueIdentifier>{6c5f3a0b-33be-4b3f-87bd-9fc03a65a7d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Name Changer">
+      <UniqueIdentifier>{a2ad7914-6be9-43da-9307-882aeb0ac440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\RenderView">
+      <UniqueIdentifier>{58085261-ea2d-4a75-b8be-05eb4537012b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sourcesdk\sdk.hpp">
+      <Filter>Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="util\xorstr.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\networkstringtable.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\playerinfo.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\netchannel.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\utlmemory.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\recv.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\gametrace.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\usercmd.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\viewsetup.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="main.hpp" />
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui.hpp">
+      <Filter>User Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\onmenurender.hpp">
+      <Filter>User Interface\Renders</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\onoverlayrender.hpp">
+      <Filter>User Interface\Renders</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\createmove.hpp">
+      <Filter>Hooks\CreateMove</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\endscene.hpp">
+      <Filter>Hooks\EndScene</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\overrideview.hpp">
+      <Filter>Hooks\OverrideView</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\framestagenotify.hpp">
+      <Filter>Hooks\FrameStageNotify</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\playerstate.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\framestage.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\collisiongroup.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\rendermode.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\flags.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\lifestate.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\waterlevel.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\observermode.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="config\config.hpp">
+      <Filter>Config System</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\clientmode.hpp">
+      <Filter>Source SDK\Interfaces\ClientModeShared</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\cvar.hpp">
+      <Filter>Source SDK\Interfaces\CVar</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\engineclient.hpp">
+      <Filter>Source SDK\Interfaces\CEngineClient</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\enginetraceclient.hpp">
+      <Filter>Source SDK\Interfaces\CEngineTraceClient</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\entitylist.hpp">
+      <Filter>Source SDK\Interfaces\CClientEntityList</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\hlclient.hpp">
+      <Filter>Source SDK\Interfaces\CHLClient</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\appsystem.hpp">
+      <Filter>Source SDK\Interfaces\IAppSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\clientstate.hpp">
+      <Filter>Source SDK\Interfaces\CClientState</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\globals.hpp">
+      <Filter>Source SDK\Interfaces\CBaseGlobalVars</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\hlinput.hpp">
+      <Filter>Source SDK\Interfaces\CInput</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\inputsystem.hpp">
+      <Filter>Source SDK\Interfaces\CInputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\netvars.hpp">
+      <Filter>Source SDK\NetVar Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\interfaces.hpp">
+      <Filter>Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="util\memory.hpp">
+      <Filter>Utilities\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="util\pattern.hpp">
+      <Filter>Utilities\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="util\vmt.hpp">
+      <Filter>Utilities\VMT</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_win32.h">
+      <Filter>ImGui\Implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx9.h">
+      <Filter>ImGui\Implementations</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\render.hpp">
+      <Filter>Source SDK\Interfaces\CRender</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\const.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\worldtoscreen.hpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\color.hpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\matrix.hpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\vector.hpp">
+      <Filter>Source SDK\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\labels.hpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\assert.hpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\logs.hpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="util\strings.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\clientclass.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\concommand.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\convar.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\buttoncode.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\hoststate.hpp">
+      <Filter>Source SDK\Interfaces\CHostState</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\bonemasks.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\model.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\shaderapi.hpp">
+      <Filter>Source SDK\Interfaces\CShaderAPIBase</Filter>
+    </ClInclude>
+    <ClInclude Include="config\variable.hpp">
+      <Filter>Config System</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\gameevents.hpp">
+      <Filter>Source SDK\Interfaces\CGameEventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann\json.hpp">
+      <Filter>nlohmann</Filter>
+    </ClInclude>
+    <ClInclude Include="util\stringhash.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\clientclassdumper.hpp">
+      <Filter>Source SDK\ClientClass Dumper</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\entity.hpp">
+      <Filter>Source SDK\Entities\C_BaseEntity</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\player.hpp">
+      <Filter>Source SDK\Entities\C_BasePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\gmodentity.hpp">
+      <Filter>Source SDK\Entities\Garry%27s Mod Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\gmodplayer.hpp">
+      <Filter>Source SDK\Entities\Garry%27s Mod Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\networkable.hpp">
+      <Filter>Source SDK\Entities\IClientNetworkable</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\renderable.hpp">
+      <Filter>Source SDK\Entities\IClientRenderable</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\reset.hpp">
+      <Filter>Hooks\Reset</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\modelcache.hpp">
+      <Filter>Source SDK\Interfaces\CMDLCache</Filter>
+    </ClInclude>
+    <ClInclude Include="util\pad.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\studio.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\surface.hpp">
+      <Filter>Source SDK\Interfaces\CMatSystemSurface</Filter>
+    </ClInclude>
+    <ClInclude Include="shutdown.hpp" />
+    <ClInclude Include="sourcesdk\weapon.hpp">
+      <Filter>Source SDK\Entities\C_BaseCombatWeapon</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\weaponstate.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\fileweaponinfo.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\localize.hpp">
+      <Filter>Source SDK\Interfaces\CLocalizedStringTable</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_stdlib.h">
+      <Filter>ImGui\std</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="util\asmhook.hpp">
+      <Filter>Utilities\AsmHook</Filter>
+    </ClInclude>
+    <ClInclude Include="features\gmod\luainterface.hpp">
+      <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="features\gmod\antiscreengrab.hpp">
+      <Filter>Features\Garry%27s Mod</Filter>
+    </ClInclude>
+    <ClInclude Include="features\esp.hpp">
+      <Filter>Features\Shared\Esp</Filter>
+    </ClInclude>
+    <ClInclude Include="features\playerlist.hpp">
+      <Filter>Features\Shared\Player List</Filter>
+    </ClInclude>
+    <ClInclude Include="features\textradar.hpp">
+      <Filter>Features\Shared\Text Radar</Filter>
+    </ClInclude>
+    <ClInclude Include="features\crosshair.hpp">
+      <Filter>Features\Shared\Crosshair</Filter>
+    </ClInclude>
+    <ClInclude Include="util\compiletime.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\inputbuttons.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="features\bhop.hpp">
+      <Filter>Features\Shared\Bunny Hop</Filter>
+    </ClInclude>
+    <ClInclude Include="features\namechanger.hpp">
+      <Filter>Features\Shared\Name Changer</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\concmdflags.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="features\customdisconnect.hpp">
+      <Filter>Features\Shared\Custom Disconnect</Filter>
+    </ClInclude>
+    <ClInclude Include="features\gmod\lualoader.hpp">
+      <Filter>Features\Garry%27s Mod</Filter>
+    </ClInclude>
+    <ClInclude Include="util\shellcodebuilder.hpp">
+      <Filter>Utilities\Shellcode Builder</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\netsetconvar.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\utlvector.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\netmessage.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\errors.hpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="util\debug\winapi.hpp">
+      <Filter>Utilities\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\renderview.hpp">
+      <Filter>Hooks\RenderView</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sourcesdk\renderfx.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt" />
+  </ItemGroup>
+</Project>
