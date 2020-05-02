@@ -45,8 +45,8 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(CollisionGroup, GetCollisionGroup, "CBaseEntity", "m_CollisionGroup", 0);
 		SOURCE_SDK_NETVAR(float, GetElasticity, "CBaseEntity", "m_flElasticity", 0);
 		SOURCE_SDK_NETVAR(float, GetShadowCastDistance, "CBaseEntity", "m_flShadowCastDistance", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetOwnerHandle, "CBaseEntity", "m_hOwnerEntity", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetEffectEntityHandle, "CBaseEntity", "m_hEffectEntity", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetOwner, "CBaseEntity", "m_hOwnerEntity", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetEffectEntity, "CBaseEntity", "m_hEffectEntity", 0);
 		SOURCE_SDK_NETVAR(int, GetParentAttachment, "CBaseEntity", "m_iParentAttachment", 0);
 		SOURCE_SDK_NETVAR(int, GetTextureFrameIdx, "CBaseEntity", "m_iTextureFrameIndex", 0);
 		SOURCE_SDK_NETVAR(bool, IsSimulatedEveryTick, "CBaseEntity", "m_bSimulatedEveryTick", 0);
@@ -56,16 +56,6 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(int, GetMaxHealth, "CBaseEntity", "m_iMaxHealth", 0);
 		SOURCE_SDK_NETVAR(int, GetSpawnFlags, "CBaseEntity", "m_spawnflags", 0);
 		SOURCE_SDK_NETVAR(Vector, GetVelocity, "CBaseEntity", "m_vecVelocity[0]", 0);
-
-		inline BaseEntity* GetOwner() const noexcept
-		{
-			return GetByHandle(this->GetOwnerHandle());
-		}
-
-		inline BaseEntity* GetEffectEntity() const noexcept
-		{
-			return GetByHandle(this->GetEffectEntityHandle());
-		}
 
 		const char* GetClassname();
 	};

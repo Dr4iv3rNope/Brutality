@@ -18,12 +18,12 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(int, GetGmodInt, "CBaseEntity", "m_GMOD_int", 0);
 		SOURCE_SDK_NETVAR(Vector, GetGmodVector, "CBaseEntity", "m_GMOD_Vector", 0);
 		SOURCE_SDK_NETVAR(Angle, GetGmodAngle, "CBaseEntity", "m_GMOD_QAngle", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetEntityHandle, "CBaseEntity", "m_GMOD_EHANDLE", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetEntity, "CBaseEntity", "m_GMOD_EHANDLE", 0);
 		SOURCE_SDK_NETVAR(bool, CanUseWeaponInVehicle, "CBasePlayer", "m_bUseWeaponsInVehicle", 0);
 		SOURCE_SDK_NETVAR(int, GmodPlayerFlags, "CGMOD_Player", "m_iGModPlayerFlags", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetHoveredWidgetHandle, "CGMOD_Player", "m_HoveredWidget", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetPressedWidgetHandle, "CGMOD_Player", "m_PressedWidget", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetDrivingEntityHandle, "CGMOD_Player", "m_Driving", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetHoveredWidget, "CGMOD_Player", "m_HoveredWidget", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetPressedWidget, "CGMOD_Player", "m_PressedWidget", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetDrivingEntity, "CGMOD_Player", "m_Driving", 0);
 		SOURCE_SDK_NETVAR(int, GetDrivingMode, "CGMOD_Player", "m_DrivingMode", 0);
 		SOURCE_SDK_NETVAR(int, GetPlayerClass, "CGMOD_Player", "m_PlayerClass", 0);
 		SOURCE_SDK_NETVAR(bool, CanZoom, "CGMOD_Player", "m_bCanZoom", 0);
@@ -36,7 +36,7 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(float, GetGestureEndTime, "CGMOD_Player", "m_fGestureEndTime", 0);
 		SOURCE_SDK_NETVAR(VecColor, GetPlayerColor, "CGMOD_Player", "m_PlayerColor", 0);
 		SOURCE_SDK_NETVAR(VecColor, GetWeaponColor, "CGMOD_Player", "m_WeaponColor", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetHandsHandle, "CGMOD_Player", "m_Hands", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetHandse, "CGMOD_Player", "m_Hands", 0);
 		SOURCE_SDK_NETVAR(WaterLevel, GetWaterLevel, "CGMOD_Player", "m_nWaterLevel", 0);
 		SOURCE_SDK_NETVAR(bool, IsSprinting, "CHL2_Player", "m_fIsSprinting", 0);
 
@@ -46,26 +46,6 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(int, GetDeaths, "CPlayerResource", "m_iDeaths", 0);
 		SOURCE_SDK_NETVAR(int, GetScore, "CPlayerResource", "m_iScore", 0);
 		SOURCE_SDK_NETVAR(int, GetPing, "CPlayerResource", "m_iPing", 0);
-
-		inline GmodEntity* GetHoveredWidget() const noexcept
-		{
-			return (GmodEntity*)GetByHandle(this->GetHoveredWidgetHandle());
-		}
-
-		inline GmodEntity* GetPressedWidget() const noexcept
-		{
-			return (GmodEntity*)GetByHandle(this->GetPressedWidgetHandle());
-		}
-
-		inline GmodEntity* GetDrivingEntity() const noexcept
-		{
-			return (GmodEntity*)GetByHandle(this->GetDrivingEntityHandle());
-		}
-
-		inline GmodEntity* GetHands() const noexcept
-		{
-			return (GmodEntity*)GetByHandle(this->GetHandsHandle());
-		}
 	};
 }
 

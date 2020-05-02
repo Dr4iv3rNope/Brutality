@@ -338,9 +338,6 @@
     <Filter Include="Source SDK\Interfaces\CMDLCache">
       <UniqueIdentifier>{17247e4c-f976-47da-a513-afc6b9c9619c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source SDK\Entities\Garry%27s Mod Entities">
-      <UniqueIdentifier>{77c103e4-e0fe-4d39-81ef-8729b43bf506}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source SDK\Interfaces\CMatSystemSurface">
       <UniqueIdentifier>{f45e3351-a17e-4d61-a1c0-20dcd26e269f}</UniqueIdentifier>
     </Filter>
@@ -391,6 +388,9 @@
     </Filter>
     <Filter Include="Source SDK\Interfaces\CViewRender">
       <UniqueIdentifier>{87c49612-ee9f-4e8b-ac6f-fd7405688117}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Garry%27s Mod Entities">
+      <UniqueIdentifier>{77c103e4-e0fe-4d39-81ef-8729b43bf506}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -612,10 +612,10 @@
       <Filter>Source SDK\Entities\C_BasePlayer</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\gmodentity.hpp">
-      <Filter>Source SDK\Entities\Garry%27s Mod Entities</Filter>
+      <Filter>Source SDK\Garry%27s Mod Entities</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\gmodplayer.hpp">
-      <Filter>Source SDK\Entities\Garry%27s Mod Entities</Filter>
+      <Filter>Source SDK\Garry%27s Mod Entities</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\networkable.hpp">
       <Filter>Source SDK\Entities\IClientNetworkable</Filter>

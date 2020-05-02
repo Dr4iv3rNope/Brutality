@@ -11,12 +11,7 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(int, GetViewModelIndex, "CBaseCombatWeapon", "m_iViewModelIndex", 0);
 		SOURCE_SDK_NETVAR(int, GetWorldModelIndex, "CBaseCombatWeapon", "m_iWorldModelIndex", 0);
 		SOURCE_SDK_NETVAR(WeaponState, GetWeaponState, "CBaseCombatWeapon", "m_iState", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetOwnerHandle, "CBaseCombatWeapon", "m_hOwner", 0);
-
-		inline BaseEntity* GetOwner() const noexcept
-		{
-			return BaseEntity::GetByHandle(GetOwnerHandle());
-		}
+		SOURCE_SDK_NETVAR(EntityHandle, GetOwner, "CBaseCombatWeapon", "m_hOwner", 0);
 
 		const FileWeaponInfo& GetWeaponInfo();
 	};

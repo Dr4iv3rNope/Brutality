@@ -271,7 +271,7 @@ static void PushPlayer(
 			info.GetPlayerInfo()->nameText = std::string(engineInfo.name, MAX_PLAYER_NAME_LENGTH);
 
 	if (espActiveWeapon)
-		if (auto weapon = player->GetActiveWeapon(); weapon)
+		if (auto weapon = player->GetActiveWeapon())
 		{
 			if (auto text = localize->Find(weapon->GetWeaponInfo().printname); text)
 				info.GetPlayerInfo()->activeWeaponText = Util::ToString(text);

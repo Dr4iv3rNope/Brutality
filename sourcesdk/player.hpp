@@ -22,9 +22,9 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(float, GetFovStart, "CBasePlayer", "m_iFOVStart", 0);
 		SOURCE_SDK_NETVAR(float, GetFovTime, "CBasePlayer", "m_flFOVTime", 0);
 		SOURCE_SDK_NETVAR(float, GetDefaultFov, "CBasePlayer", "m_iDefaultFOV", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetZoomOwnerHandle, "CBasePlayer", "m_hZoomOwner", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetVehicleHandle, "CBasePlayer", "m_hVehicle", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetUseEntityHandle, "CBasePlayer", "m_hUseEntity", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetZoomOwner, "CBasePlayer", "m_hZoomOwner", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetVehicle, "CBasePlayer", "m_hVehicle", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetUse, "CBasePlayer", "m_hUseEntity", 0);
 		SOURCE_SDK_NETVAR(LifeState, GetLifeState, "CBasePlayer", "m_lifeState", 0);
 		SOURCE_SDK_NETVAR(EntityHandle, GetActiveWeaponHandle, "CBaseCombatCharacter", "m_hActiveWeapon", 0);
 
@@ -45,33 +45,8 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(float, GetMaxSpeed, "CBasePlayer", "m_flMaxspeed", 0);
 		SOURCE_SDK_NETVAR(int, GetFlags, "CBasePlayer", "m_fFlags", 0);
 		SOURCE_SDK_NETVAR(ObserverMode, GetObserverMode, "CBasePlayer", "m_iObserverMode", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetObserverTargetHandle, "CBasePlayer", "m_hObserverTarget", 0);
-		SOURCE_SDK_NETVAR(EntityHandle, GetViewModelHandle, "CBasePlayer", "m_hViewModel[0]", 0);
-
-		inline BaseEntity* GetZoomOwner() const noexcept
-		{
-			return BaseEntity::GetByHandle(this->GetZoomOwnerHandle());
-		}
-
-		inline BaseEntity* GetVehicle() const noexcept
-		{
-			return BaseEntity::GetByHandle(this->GetVehicleHandle());
-		}
-
-		inline BaseEntity* GetUseEntity() const noexcept
-		{
-			return BaseEntity::GetByHandle(this->GetUseEntityHandle());
-		}
-
-		inline BaseEntity* GetObserverTarget() const noexcept
-		{
-			return BaseEntity::GetByHandle(this->GetObserverTargetHandle());
-		}
-
-		inline BaseEntity* GetViewModel() const noexcept
-		{
-			return BaseEntity::GetByHandle(this->GetViewModelHandle());
-		}
+		SOURCE_SDK_NETVAR(EntityHandle, GetObserverTarget, "CBasePlayer", "m_hObserverTarget", 0);
+		SOURCE_SDK_NETVAR(EntityHandle, GetViewModel, "CBasePlayer", "m_hViewModel[0]", 0);
 
 		inline bool IsOnGround() const noexcept { return this->GetFlags() & int(Flags::OnGround); }
 		inline bool IsDucking() const noexcept { return this->GetFlags() & int(Flags::Ducking); }
