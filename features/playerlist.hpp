@@ -10,8 +10,7 @@ namespace Features
 			Normal,
 			Dangerous,	// used when we want leave this player alone
 			Friend,		// your friend, nothing more
-			Rage,		// other cheater or player you dont like
-			Named		// custom type of player
+			Rage		// other cheater or player you dont like
 		};
 
 		//
