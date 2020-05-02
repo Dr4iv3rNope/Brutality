@@ -12,21 +12,24 @@
 #include <deque>
 #include <functional>
 #include <utility>
+#include <filesystem>
 
-static std::deque dll_list =
+static const std::string& GetRandomFileName()
 {
-	UTIL_SXOR("brutality.dll"),
-	UTIL_SXOR("client.dll"),
-	UTIL_SXOR("engine.dll"),
-	UTIL_SXOR("datamodel.dll"),
-	UTIL_SXOR("datacache.dll"),
-	UTIL_SXOR("GameUI.dll"),
-	UTIL_SXOR("inputsystem.dll"),
-	UTIL_SXOR("vstdlib.dll"),
-	UTIL_SXOR("vgui2.dll"),
-	UTIL_SXOR("vguimatsurface.dll"),
-	UTIL_SXOR("materialsystem.dll")
-};
+	static std::deque<std::string> fileNames;
+	static bool isFilled { false };
+
+	if (!isFilled)
+		for (auto file : std::filesystem::directory_iterator(UTIL_SXOR("bin\\")))
+			if (file.is_regular_file())
+				fileNames.push_back(file.path().filename().string());
+
+	return fileNames[rand() % fileNames.size()];
+}
+
+//
+// reasons
+// 
 
 #define ADVANCED_REASON(name, func) \
 	std::make_pair(UTIL_SXOR(name), [] () -> std::string { return (func); })
@@ -51,7 +54,7 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 		UTIL_FORMAT(
 			UTIL_XOR("Client ") <<
 			(rand() % SourceSDK::globals->maxClients) <<
-			UTIL_XOR(" overflowed reliable channel.")
+			UTIL_XOR(" overflowed reliable channel")
 		)
 	),
 	ADVANCED_REASON(
@@ -80,29 +83,19 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 	),
 	ADVANCED_REASON(
 		"Dll is differs from the server's",
-		UTIL_FORMAT(
-			UTIL_XOR("Your .dll [") <<
-			dll_list[rand() % dll_list.size()] <<
-			UTIL_XOR("] differs from the server's.\n")
-		)
+		UTIL_FORMAT(UTIL_XOR("Your .dll [") << GetRandomFileName() << UTIL_XOR("] differs from the server's.\n"))
 	),
 	BASIC_REASON("[XBOX] BSP CRC failed", "Disconnect: BSP CRC failed!\n"),
 	ADVANCED_REASON(
 		"Bad CRC for file",
-		UTIL_FORMAT(
-			UTIL_XOR("Bad CRC for ") <<
-			dll_list[rand() % dll_list.size()] << '\n'
-		)
+		UTIL_FORMAT(UTIL_XOR("Bad CRC for ") << GetRandomFileName() << '\n')
 	),
 	BASIC_REASON("Couldn't CRC client dll", "Couldn't CRC client side dll client.dll.\n"),
 	BASIC_REASON("Lost connection to server", "Lost connection to server."),
 	BASIC_REASON("Cannot continue without model", "Cannot continue without model models/player.mdl, disconnecting\n"),
 	ADVANCED_REASON(
 		"File consistency error",
-		UTIL_FORMAT(
-			UTIL_XOR("Server is enforcing file consistency for ") <<
-			dll_list[rand() % dll_list.size()] << '\n'
-		)
+		UTIL_FORMAT(UTIL_XOR("Server is enforcing file consistency for ") << GetRandomFileName() << '\n')
 	),
 	BASIC_REASON("Different class tables", "Server uses different class tables"),
 	BASIC_REASON("Buffer overflow", "Server overflowed reliable buffer\n"),
@@ -141,9 +134,9 @@ void Features::CustomDisconnect::DrawMenu() noexcept
 
 bool Features::CustomDisconnect::Disconnect(const char* reason) noexcept
 {
-	if (auto chan = SourceSDK::clientState->netChannel; chan)
+	if (SourceSDK::IsConnected())
 	{
-		chan->Shutdown(reason);
+		SourceSDK::clientState->netChannel->Shutdown(reason);
 		return true;
 	}
 	else
