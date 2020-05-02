@@ -14,7 +14,7 @@ SourceSDK::NetSetConVar* SourceSDK::NetSetConVar::Create(const char* name, const
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Creating NET_SetConVar"));
 
-	NetSetConVar* msg = (NetSetConVar*)new char[28] {};
+	NetSetConVar* msg = (NetSetConVar*)new char[64] {};
 
 	using ConstructorFn = void(__thiscall*)
 		(NetSetConVar*, const char*, const char*);
