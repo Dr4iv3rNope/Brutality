@@ -4,7 +4,12 @@
 #include "../util/stringhash.hpp"
 #include "../util/debug/labels.hpp"
 
-Config::SortedVariables sortedVariabels;
+Config::SortedVariables& Config::GetSortedVariables()
+{
+	static Config::SortedVariables sortedVariabels;
+
+	return sortedVariabels;
+}
 
 bool Config::RegisterVariable(IVariable& variable)
 {
@@ -13,13 +18,13 @@ bool Config::RegisterVariable(IVariable& variable)
 		UTIL_DEBUG_ASSERT(false);
 		return false;
 	}
-	
+
 	// sort variable
 	{
-		auto group_iter = sortedVariabels.find(variable.GetGroup().data());
+		auto group_iter = GetSortedVariables().find(variable.GetGroup().data());
 
 		// if group found
-		if (group_iter != sortedVariabels.end())
+		if (group_iter != GetSortedVariables().end())
 			group_iter->second.push_back(&variable);
 		else
 		{
@@ -29,7 +34,7 @@ bool Config::RegisterVariable(IVariable& variable)
 			Variables vars;
 			vars.push_back(&variable);
 
-			sortedVariabels.insert(std::make_pair(variable.GetGroup(), vars));
+			GetSortedVariables().insert(std::make_pair(variable.GetGroup(), vars));
 		}
 	}
 
@@ -38,8 +43,8 @@ bool Config::RegisterVariable(IVariable& variable)
 
 bool Config::IsVariableRegistered(std::string_view group, std::string_view key)
 {
-	if (const auto& group_iter = sortedVariabels.find(group.data());
-		group_iter != sortedVariabels.end())
+	if (const auto& group_iter = GetSortedVariables().find(group.data());
+		group_iter != GetSortedVariables().end())
 		return std::find_if(group_iter->second.begin(), group_iter->second.end(), [key] (IVariable*& var)
 		{
 			return var->GetKey() == key;
@@ -50,7 +55,7 @@ bool Config::IsVariableRegistered(std::string_view group, std::string_view key)
 
 void Config::ImportVariables(const nlohmann::json& root)
 {
-	for (auto& [group, variables] : sortedVariabels)
+	for (auto& [group, variables] : GetSortedVariables())
 		if (auto group_hash = UTIL_RUNTIME_STR_HASH(group); root.contains(group_hash))
 			if (const auto& json_group = root[group_hash]; json_group.is_object())
 				for (auto& variable : variables)
@@ -66,7 +71,7 @@ void Config::ImportVariables(const nlohmann::json& root)
 
 void Config::ExportVariables(nlohmann::json& root)
 {
-	for (const auto& [group, variables] : sortedVariabels)
+	for (const auto& [group, variables] : GetSortedVariables())
 	{
 		auto& json_group = root[UTIL_RUNTIME_STR_HASH(group)];
 
@@ -84,9 +89,4 @@ void Config::ExportVariables(nlohmann::json& root)
 				));
 		}
 	}
-}
-
-Config::SortedVariables& Config::GetSortedVariables()
-{
-	return sortedVariabels;
 }

@@ -62,16 +62,18 @@ namespace Config
 	{
 	private:
 		std::string _group, _key;
+		bool _isVisible { true };
 
 	public:
-		inline IVariable(const std::string& group, const std::string& key)
-			: _group { group }, _key { key } {}
+		inline IVariable(bool visible, const std::string& group, const std::string& key)
+			: _group { group }, _key { key }, _isVisible { visible } {}
 
 		// disallow copying setting
 		IVariable(const IVariable&) = delete;
 
 		inline auto GetGroup() const noexcept { return _group; }
 		inline auto GetKey() const noexcept { return _key; }
+		inline auto IsVisible() const noexcept { return _isVisible; }
 
 		virtual bool Export(nlohmann::json& value) const = 0;
 		virtual bool Import(const nlohmann::json& value) = 0;
@@ -101,8 +103,8 @@ namespace Config
 		T _value;
 
 	public:
-		inline IBaseVariable(const std::string& group, const std::string& key, T default_value = T {})
-			: IVariable(group, key), _value { default_value } {}
+		inline IBaseVariable(bool visible, const std::string& group, const std::string& key, T default_value = T {})
+			: IVariable(visible, group, key), _value { default_value } {}
 				
 		virtual VariableType GetType() const override
 		{
@@ -149,8 +151,8 @@ namespace Config
 		static_assert(!std::is_pointer<T>(), "T cannot be pointer");
 		
 	public:
-		inline Variable(const std::string& group, const std::string& key, T default_value = T {})
-			: IBaseVariable<T>(group, key, default_value)
+		inline Variable(bool visible, const std::string& group, const std::string& key, T default_value = T {})
+			: IBaseVariable<T>(visible, group, key, default_value)
 		{
 			RegisterVariable(*this);
 		}
@@ -220,15 +222,17 @@ namespace Config
 		std::optional<Limits> _limits;
 
 	public:
-		inline LimitedVariable(const std::string& group, const std::string& key,
+		inline LimitedVariable(bool visible,
+							   const std::string& group, const std::string& key,
 							   T default_value, T min, T max)
-			: IBaseVariable<T>(group, key, default_value),
+			: IBaseVariable<T>(visible, group, key, default_value),
 			_limits { std::make_pair(min, max) }
 		{
 			RegisterVariable(*this);
 		}
 
-		inline LimitedVariable(const std::string& group, const std::string& key, T default_value = T {})
+		inline LimitedVariable(bool visible,
+							   const std::string& group, const std::string& key, T default_value = T {})
 			: IBaseVariable<T>(group, key, default_value),
 			_limits {}
 		{
@@ -345,17 +349,18 @@ namespace Config
 
 	using Bool = Variable<bool>;
 
-	template <typename T = char>
-	class String : public IBaseVariable<std::basic_string<T>>
+	template <typename T>
+	class LimitedString : public IBaseVariable<std::basic_string<T>>
 	{
 	private:
 		std::size_t _max_length;
 
 	public:
-		inline String(const std::string& group, const std::string& key,
-							std::basic_string<T> default_value,
-							std::size_t max_length)
-			: IBaseVariable<std::basic_string<T>>(group, key, default_value),
+		inline LimitedString(bool visible,
+							 const std::string& group, const std::string& key,
+							 std::basic_string<T> default_value,
+							 std::size_t max_length)
+			: IBaseVariable<std::basic_string<T>>(visible, group, key, default_value),
 			_max_length { max_length }
 		{
 			this->_value.resize(_max_length);
@@ -368,7 +373,7 @@ namespace Config
 
 		virtual bool Export(nlohmann::json& value) const override
 		{
-			value = this->_value.substr(0, this->_value.find('\0'));
+			value = this->_value;
 			return true;
 		}
 
@@ -387,9 +392,49 @@ namespace Config
 			this->_value.resize(this->_max_length);
 		}
 
+		virtual bool IsLimitedVariable() const override { return true; }
+
+		inline char* GetBuffer() noexcept { return (char*)this->GetValue().data(); }
+	};
+
+	template <typename T>
+	class String : public IBaseVariable<std::basic_string<T>>
+	{
+	public:
+		inline String(bool visible,
+					  const std::string& group, const std::string& key,
+					  std::basic_string<T> default_value)
+			: IBaseVariable<std::basic_string<T>>(visible, group, key, default_value)
+		{
+			RegisterVariable(*this);
+		}
+
+		virtual VariableType GetType() const override { return VariableType::String; }
+
+		virtual bool Export(nlohmann::json& value) const override
+		{
+			value = this->_value;
+			return true;
+		}
+
+		virtual bool Import(const nlohmann::json& value) override
+		{
+			if (!value.is_string())
+				return false;
+
+			this->_value = value;
+			return true;
+		}
+
+		virtual void SetValue(std::basic_string<T> value) noexcept override
+		{
+			this->_value = value;
+		}
+
 		virtual bool IsLimitedVariable() const override { return false; }
 
 		inline char* GetBuffer() noexcept { return (char*)this->GetValue().data(); }
+		inline void Resize(std::size_t size) noexcept { return (char*)this->GetValue().resize(size); }
 	};
 
 	class Enum : public IVariable
@@ -401,9 +446,10 @@ namespace Config
 		std::size_t _currentItem { 0 };
 
 	public:
-		inline Enum(const std::string& group, const std::string& key,
+		inline Enum(bool visible,
+					const std::string& group, const std::string& key,
 					const std::initializer_list<std::string_view> items)
-			: IVariable(group, key), _items(items)
+			: IVariable(visible, group, key), _items(items)
 		{
 			// empty item list disallow
 			UTIL_DEBUG_ASSERT(items.size() > 0);
@@ -447,18 +493,20 @@ namespace Config
 		std::array<std::uint8_t, 4> _defaultColor;
 
 	public:
-		inline Color(const std::string& group, const std::string& key,
+		inline Color(bool visible,
+					 const std::string& group, const std::string& key,
 					 std::array<std::uint8_t, 4> colors)
-			: IBaseVariable<std::array<std::uint8_t, 4>>(group, key, colors)
+			: IBaseVariable<std::array<std::uint8_t, 4>>(visible, group, key, colors)
 		{
 			_defaultColor = colors;
 
 			RegisterVariable(*this);
 		}
 
-		inline Color(const std::string& group, const std::string& key,
+		inline Color(bool visible,
+					 const std::string& group, const std::string& key,
 					 float r, float g, float b, float a = 1.f)
-			: Color(group, key,
+			: Color(visible, group, key,
 					{
 						std::uint8_t(r * 255.f),
 						std::uint8_t(g * 255.f),
@@ -467,9 +515,10 @@ namespace Config
 					})
 		{}
 
-		inline Color(const std::string& group, const std::string& key,
+		inline Color(bool visible,
+					 const std::string& group, const std::string& key,
 					 std::uint32_t hex)
-			: Color(group, key, *reinterpret_cast<std::array<std::uint8_t, 4>*>(&hex))
+			: Color(visible, group, key, *reinterpret_cast<std::array<std::uint8_t, 4>*>(&hex))
 		{}
 
 		virtual VariableType GetType() const override { return VariableType::Color; }
