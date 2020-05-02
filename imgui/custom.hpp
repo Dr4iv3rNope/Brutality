@@ -2,6 +2,8 @@
 #include "../util/xorstr.hpp"
 #include "../util/strings.hpp"
 
+#include "../util/debug/assert.hpp"
+
 #include "imgui.h"
 #include "imgui_stdlib.h"
 
@@ -204,6 +206,62 @@ namespace ImGuiCustom
 		return str;
 	}
 
+	namespace
+	{
+		inline void ShowSysTextHelp() noexcept
+		{
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::TextUnformatted(UTIL_CXOR(
+					"Text entry supports special symbols\n"
+					"Example: \\t\\t\\tMagic\\nString\n"
+					"\nSymbol List:\n"
+					"\\n - new line\n"
+					"\\r - carriage return\n"
+					"\\t - tabulation\n"
+					"\\b - backspace\n"
+					"\\e - escape\n"
+					"\\d - delete (0x7F)\n"
+					"\\a - bell\n"
+					"\\v - vertical tabulation\n"
+					"\\f - form feed\n"
+					"\nExperemental:\n"
+					"\\1 - start of heading\n"
+					"\\2 - start of text\n"
+					"\\3 - end of text\n"
+					"\\4 - end of transmission\n"
+					"\\5 - enquiry\n"
+					"\\6 - acknowledge"
+				));
+				ImGui::EndTooltip();
+			}
+		}
+	}
+
+	inline bool InputSysText(const char* label,
+							 char* buffer, std::size_t buffer_len,
+							 char* formated = nullptr, std::size_t formated_len = -1,
+							 ImGuiInputTextFlags flags = ImGuiInputTextFlags_EnterReturnsTrue) noexcept
+	{
+		UTIL_DEBUG_ASSERT(buffer);
+
+		bool is_changed = ImGui::InputText(label, buffer, buffer_len, flags);
+
+		if (is_changed && formated && formated_len > 0)
+		{
+			const auto _formated { FormatSysString(std::string(formated, formated_len)) };
+			const auto max_size { std::min(formated_len, _formated.size()) };
+
+			formated[max_size - 1] = '\0';
+			memcpy(formated, _formated.c_str(), max_size);
+		}
+
+		ShowSysTextHelp();
+
+		return is_changed;
+	}
+
 	inline bool InputSysText(const char* label,
 							 std::string& non_formated,
 							 std::string* formated = nullptr,
@@ -214,32 +272,7 @@ namespace ImGuiCustom
 		if (is_changed && formated)
 			*formated = FormatSysString(non_formated);
 
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::TextUnformatted(UTIL_CXOR(
-				"Text entry supports special symbols\n"
-				"Example: \\t\\t\\tMagic\\nString\n"
-				"\nSymbol List:\n"
-				"\\n - new line\n"
-				"\\r - carriage return\n"
-				"\\t - tabulation\n"
-				"\\b - backspace\n"
-				"\\e - escape\n"
-				"\\d - delete (0x7F)\n"
-				"\\a - bell\n"
-				"\\v - vertical tabulation\n"
-				"\\f - form feed\n"
-				"\nExperemental:\n"
-				"\\1 - start of heading\n"
-				"\\2 - start of text\n"
-				"\\3 - end of text\n"
-				"\\4 - end of transmission\n"
-				"\\5 - enquiry\n"
-				"\\6 - acknowledge"
-			));
-			ImGui::EndTooltip();
-		}
+		ShowSysTextHelp();
 
 		return is_changed;
 	}
