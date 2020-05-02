@@ -1,5 +1,6 @@
 #include "pattern.hpp"
 #include "strings.hpp"
+#include "stringhash.hpp"
 
 #include "debug/errors.hpp"
 #include "debug/assert.hpp"
@@ -48,6 +49,24 @@ Util::Pattern Util::Aob(const std::string& pattern)
 
 	UTIL_DEBUG_ASSERT(bytes.size() != 0);
 
+	#ifdef _DEBUG
+	UTIL_LOG(UTIL_WFORMAT(
+		UTIL_XOR(L"Created pattern \"") <<
+		Util::ToWString(pattern) <<
+		UTIL_XOR(L"\" (") <<
+		UTIL_RUNTIME_HASH(pattern) <<
+		UTIL_XOR(L") got UID ") <<
+		UTIL_RUNTIME_HASH(AobToWString(bytes))
+	));
+	#else
+	UTIL_LOG(UTIL_WFORMAT(
+		UTIL_XOR(L"Created pattern ") <<
+		UTIL_RUNTIME_HASH(pattern) <<
+		UTIL_XOR(L" got UID ") <<
+		UTIL_RUNTIME_HASH(AobToWString(bytes))
+	));
+	#endif
+
 	return bytes;
 }
 
@@ -73,7 +92,9 @@ std::wstring Util::AobToWString(const Pattern& pattern)
 std::uintptr_t Util::FindPattern(std::uintptr_t begin, std::uintptr_t end, const Pattern& bytes)
 {
 	UTIL_LOG(UTIL_WFORMAT(
-		UTIL_XOR(L"Trying to find pattern at ") << std::hex <<
+		UTIL_XOR(L"Trying to find pattern ") <<
+		UTIL_RUNTIME_HASH(Util::AobToWString(bytes)) <<
+		UTIL_XOR(L" at ") << std::hex <<
 		begin << '-' << end
 	));
 	
