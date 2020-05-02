@@ -20,9 +20,15 @@ static const std::string& GetRandomFileName()
 	static bool isFilled { false };
 
 	if (!isFilled)
+	{
+		UTIL_XLOG(L"Getting random files from [game dir]\\bin\\*");
+
 		for (auto file : std::filesystem::directory_iterator(UTIL_SXOR("bin\\")))
 			if (file.is_regular_file())
 				fileNames.push_back(file.path().filename().string());
+
+		UTIL_LOG(UTIL_WFORMAT(UTIL_XOR(L"Added files: ") << fileNames.size()));
+	}
 
 	return fileNames[rand() % fileNames.size()];
 }
