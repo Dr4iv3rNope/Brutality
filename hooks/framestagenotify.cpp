@@ -5,6 +5,7 @@
 #include "../features/playerlist.hpp"
 #include "../features/esp.hpp"
 #include "../features/textradar.hpp"
+#include "../features/namechanger.hpp"
 #include "../features/gmod/luainterface.hpp"
 
 #include "../shutdown.hpp"
@@ -23,6 +24,7 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 			#if SOURCE_SDK_IS_GMOD
 			Features::GarrysMod::LuaInterface::TryToInitialize();
 			#endif
+			Features::NameChanger::Update();
 			break;
 
 		case SourceSDK::ClientFrameStage::NetUpdateStart:
