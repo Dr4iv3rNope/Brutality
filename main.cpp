@@ -94,6 +94,7 @@ namespace
 #include "sourcesdk/surface.hpp"
 #include "sourcesdk/localize.hpp"
 
+#include "sourcesdk/viewrender.hpp"
 #include "sourcesdk/render.hpp"
 #include "sourcesdk/clientmode.hpp"
 #include "sourcesdk/hlinput.hpp"
@@ -115,6 +116,16 @@ SOURCE_SDK_INTERFACE(SourceSDK::MatSystemSurface, SourceSDK::surface, "vguimatsu
 SOURCE_SDK_INTERFACE(SourceSDK::LocalizedStringTable, SourceSDK::localize, "vgui2.dll", "VguiLocalize004");
 //SOURCE_SDK_INTERFACE(SourceSDK::Panel, SourceSDK::panel, "vgui2.dll", "VGUI_Panel009");
 
+// "freezecam_started"
+SOURCE_SDK_INTERFACE_PATTERN
+(
+	SourceSDK::ViewRender,
+	SourceSDK::view,
+	"client.dll",
+	"8B 0D ?? ?? ?? ?? F3 0F 10 45 ?? 51 F3 0F 11 04 ?? 8B 01 FF 90 ?? ?? ?? ?? 5F 5E",
+	2, 2
+);
+
 /* "Displacement_Rendering"
 
 mov		ecx, g_pRender
@@ -133,7 +144,7 @@ mov		edx, ds:g_VProfCurrentProfile
 */
 SOURCE_SDK_INTERFACE_PATTERN
 (
-	SourceSDK::CRender,
+	SourceSDK::Render,
 	SourceSDK::render,
 	"engine.dll",
 	"8B 0D ?? ?? ?? ?? FF 75 ?? FF 75 ?? 8B 01 FF 50 ?? 0F B6 40", // uid: 9360
@@ -181,7 +192,7 @@ jz      loc_101471EC
 */
 SOURCE_SDK_INTERFACE_PATTERN
 (
-	SourceSDK::ÑInput,
+	SourceSDK::Input,
 	SourceSDK::input,
 	"client.dll",
 	// uid: 11465127236496068054
@@ -313,7 +324,6 @@ SOURCE_SDK_INTERFACE_PATTERN
 #include "features/gmod/luainterface.hpp"
 #include "features/gmod/antiscreengrab.hpp"
 
-#if SOURCE_SDK_IS_GMOD
 /*
 mov     ecx, luaInterface
 lea     edx, [ebp+lua_code_str]
@@ -333,13 +343,12 @@ SOURCE_SDK_INTERFACE_PATTERN
 	"8B 0D ?? ?? ?? ?? 8D 95 ?? ?? ?? ?? 6A 01 6A 01",
 	2, 1
 );
-#endif
 
 //
 // anti-screengrab
 //
 
-Config::Bool antiScreenGrabEnable(UTIL_SXOR("Protection"), UTIL_SXOR("Anti-Screen Grab"), false);
+Config::Bool antiScreenGrabEnable(true, UTIL_SXOR("Protection"), UTIL_SXOR("Anti-Screen Grab"), false);
 
 namespace
 {
@@ -357,7 +366,7 @@ namespace
 // run string
 //
 
-Config::Bool preventRunString(UTIL_SXOR("Protection"), UTIL_SXOR("Prevent Run String"), false);
+Config::Bool preventRunString(true, UTIL_SXOR("Protection"), UTIL_SXOR("Prevent Run String"), false);
 
 #endif
 
@@ -421,7 +430,7 @@ Util::Vmt::HookedMethod* Hooks::oldReset
 
 Util::Vmt::HookedMethod* Hooks::oldRenderView
 {
-	new Util::Vmt::HookedMethod(SourceSDK::clientDLL, SourceSDK::clientDLL->GetRenderViewIndex())
+	new Util::Vmt::HookedMethod(SourceSDK::view, SourceSDK::view->GetRenderViewIndex())
 };
 
 namespace
@@ -447,89 +456,103 @@ namespace
 //
 
 #ifdef _DEBUG
-static Config::Bool			v_bool("Debug", "Boolean");
-static Config::Int32		v_int32("Debug", "Integer 32");
-static Config::UInt32		v_uint32("Debug", "Unsigned Integer 32");
-static Config::Float		v_float("Debug", "Float");
+static Config::Bool v_bool(true, "Debug", "Boolean");
+static Config::Int32 v_int32(true, "Debug", "Integer 32");
+static Config::UInt32 v_uint32(true, "Debug", "Unsigned Integer 32");
+static Config::Float v_float(true, "Debug", "Float");
 
-static Config::LInt32		lv_int32("Debug", "Limited Integer 32", 0, -228, 1337);
-static Config::LUInt32		lv_uint32("Debug", "Limited Unsigned Integer 32", 666, 666, 1234);
-static Config::LFloat		lv_float("Debug", "Limited Float", 0, -3.14f, 2.28f);
+static Config::LInt32 lv_int32(true, "Debug", "Limited Integer 32", 0, -228, 1337);
+static Config::LUInt32 lv_uint32(true, "Debug", "Limited Unsigned Integer 32", 666, 666, 1234);
+static Config::LFloat lv_float(true, "Debug", "Limited Float", 0, -3.14f, 2.28f);
+static Config::LimitedString<char> lv_string(true, "Debug", "Your Name", "AYE", 64);
 
-static Config::String<>		uv_string("Debug", "Your Name", "AYE", 64);
-static Config::Enum			uv_enum("Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" });
-static Config::Color		uv_color("Debug", "Pick some color", 0x13372280);
+static Config::String<char> uv_string(true, "Debug", "XYZ", "123");
+static Config::Enum uv_enum(true, "Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" });
+static Config::Color uv_color(true, "Debug", "Pick some color", 0x13372280);
 #endif
 
-Config::Color playerColorNormal(UTIL_SXOR("Player Colors"), UTIL_SXOR("Normals Color"), { 255, 255, 255, 255 });
-Config::Color playerColorDangerous(UTIL_SXOR("Player Colors"), UTIL_SXOR("Dangerouses Color"), { 255, 0, 0, 155 });
-Config::Color playerColorFriends(UTIL_SXOR("Player Colors"), UTIL_SXOR("Friends Color"), { 55, 255, 55, 255 });
-Config::Color playerColorRages(UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Color"), { 255, 100, 0, 255 });
+Config::Color playerColorNormal(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Normals Color"), { 255, 255, 255, 255 });
+Config::Color playerColorDangerous(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Dangerouses Color"), { 255, 0, 0, 155 });
+Config::Color playerColorFriends(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Friends Color"), { 55, 255, 55, 255 });
+Config::Color playerColorRages(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Color"), { 255, 100, 0, 255 });
 
 //
 // esp
 //
 
-Config::Bool espEnabled(UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
-Config::LFloat espMaxDistance(UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
+Config::Bool espEnabled(true, UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
+Config::LFloat espMaxDistance(true, UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), false);
+Config::Bool espUpdatePerFrame(true, UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), false);
 
-Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false);
-Config::Bool espDrawNormal(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"), false);
-Config::Bool espDrawDangerous(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"), false);
-Config::Bool espDrawFriends(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"), false);
-Config::Bool espDrawRages(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"), false);
-Config::Bool espDrawDeadPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"), false);
-Config::Bool espDrawDormantPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"), false);
+Config::Bool espDrawEntities(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false);
+Config::Bool espDrawNormal(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"), false);
+Config::Bool espDrawDangerous(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"), false);
+Config::Bool espDrawFriends(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"), false);
+Config::Bool espDrawRages(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"), false);
+Config::Bool espDrawDeadPlayers(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"), false);
+Config::Bool espDrawDormantPlayers(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"), false);
 
-Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false);
-Config::Color espHealthColor(UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
+Config::Bool espHealth(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false);
+Config::Color espHealthColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
 
-Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false);
-Config::Color espNameColor(UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
+Config::Bool espName(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false);
+Config::Color espNameColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
 
-Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false);
+Config::Bool espSkeleton(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false);
 #ifdef _DEBUG
-Config::Bool dbg_espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"), false);
+Config::Bool dbg_espSkeleton(true, UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"), false);
 #endif
-Config::LFloat espSkeletonThickness(UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
+Config::LFloat espSkeletonThickness(true, UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
 
-Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false);
-Config::Color espActiveWeaponColor(UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
+Config::Bool espActiveWeapon(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false);
+Config::Color espActiveWeaponColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
 
 //
 // text radar
 //
 
-Config::Bool textRadarEnable(UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"), false);
+Config::Bool textRadarEnable(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"), false);
 
-Config::UInt32 textRadarX(UTIL_SXOR("Text Radar"), UTIL_SXOR("X"), 0);
-Config::UInt32 textRadarY(UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
+Config::UInt32 textRadarX(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("X"), 0);
+Config::UInt32 textRadarY(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
 
-Config::LUInt32 textRadarMaxPlayers(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Players"), 10, 5, 32);
-Config::LFloat textRadarMaxDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
+Config::LUInt32 textRadarMaxPlayers(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Players"), 10, 5, 32);
+Config::LFloat textRadarMaxDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool textRadarDrawDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
+Config::Bool textRadarDrawDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
 
 //
 // crosshair
 //
 
-Config::Bool crosshairEnable(UTIL_SXOR("Crosshair"), UTIL_SXOR("Enable"), false);
+Config::Bool crosshairEnable(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Enable"), false);
 
-Config::LUInt32 crosshairGap(UTIL_SXOR("Crosshair"), UTIL_SXOR("Gap"), 0, 0, 50);
-Config::LUInt32 crosshairSize(UTIL_SXOR("Crosshair"), UTIL_SXOR("Size"), 1, 1, 50);
-Config::LUInt32 crosshairThickness(UTIL_SXOR("Crosshair"), UTIL_SXOR("Thickness"), 1, 1, 10);
+Config::LUInt32 crosshairGap(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Gap"), 0, 0, 50);
+Config::LUInt32 crosshairSize(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Size"), 1, 1, 50);
+Config::LUInt32 crosshairThickness(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Thickness"), 1, 1, 10);
 
-Config::Color crosshairColor(UTIL_SXOR("Crosshair"), UTIL_SXOR("Color"), { 255, 255, 255, 255 });
+Config::Color crosshairColor(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Color"), { 255, 255, 255, 255 });
 
 //
 // bhop
 //
 
-Config::Bool bhopEnable(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Enable"), false);
-Config::Bool bhopAutoStrafe(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Mouse Auto-Strafe"), false);
+Config::Bool bhopEnable(true, UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Enable"), false);
+Config::Bool bhopAutoStrafe(true, UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Mouse Auto-Strafe"), false);
 
 //Config::LFloat bhopMinDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Min Jump Delay"), 0.f, 0.f, 1000.f);
 //Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"), 0.f, 0.f, 1000.f);
+
+//
+// user interface settings
+//
+
+Config::Bool useTabs(true, UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), false);
+
+//
+// name changer
+//
+
+Config::String<char> nameChangerName(false, UTIL_SXOR("Name Changer"), UTIL_SXOR("Name"), std::string());
+Config::Bool nameChangerAutoSend(false, UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send"), false);
