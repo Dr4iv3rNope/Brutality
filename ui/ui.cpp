@@ -231,7 +231,7 @@ void UI::Shutdown() noexcept
 
 	if (initialized)
 	{
-		UTIL_LABEL_ENTRY(UTIL_XOR(L"[UI] Shutdown"));
+		UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown ui"));
 
 		delete oldLockCursor;
 
@@ -554,6 +554,8 @@ void UI::Draw()
 
 void UI::Reset()
 {
+	UTIL_XLOG(L"Reset UI devices");
+
 	ImGui_ImplDX9_InvalidateDeviceObjects();
 	UTIL_ASSERT(ImGui_ImplDX9_CreateDeviceObjects(), "Failed to create device objects after reset");
 }
