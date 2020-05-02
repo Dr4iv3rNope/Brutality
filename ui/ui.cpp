@@ -2,6 +2,8 @@
 #include "onmenurender.hpp"
 #include "onoverlayrender.hpp"
 
+#include "../main.hpp"
+
 #include <Windows.h>
 #include <ShlObj.h>
 
@@ -20,6 +22,7 @@
 #include "../util/debug/assert.hpp"
 
 #include "../imgui/imgui.h"
+#include "../imgui/imgui_internal.h"
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
 
@@ -205,6 +208,17 @@ void UI::Initialize()
 		style.ColorButtonPosition = ImGuiDir_Right;
 		//style.SelectableTextAlign		not changed
 		//style.DisplaySafeAreaPadding	not changed
+	}
+
+	//
+	// setup imgui.ini directory
+	//
+	{
+		static auto ini_path { Util::ToString(Main::GetLocalPath()) + UTIL_SXOR("imgui\\windows.ini") };
+		ImGui::GetIO().IniFilename = ini_path.c_str();
+
+		static auto logs_path { Util::ToString(Main::GetLocalPath()) + UTIL_SXOR("imgui\\logs.log") };
+		ImGui::GetIO().LogFilename = logs_path.c_str();
 	}
 
 	initialized = true;
@@ -520,10 +534,6 @@ void UI::Draw()
 	if (ImGui::IsKeyPressed(VK_INSERT, false))
 	{
 		isMenuOpen = !isMenuOpen;
-
-		// TODO: crasing in engine.dll
-		//if (!isMenuOpen)
-		//	SourceSDK::inputsystem->ResetInputState();
 	}
 
 	if (isMenuOpen)
