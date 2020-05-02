@@ -76,7 +76,7 @@ void Features::GarrysMod::LuaLoader::DrawMenu() noexcept
 				static std::string luaBuffer {};
 
 				ImGui::PushID(1);
-				ImGui::InputTextMultiline("", &luaBuffer, ImVec2(400, 200), ImGuiInputTextFlags_AllowTabInput);
+				ImGui::InputTextMultiline("", &luaBuffer, ImVec2(300, 200), ImGuiInputTextFlags_AllowTabInput);
 				ImGui::PopID();
 
 				if (*luaInterface)
@@ -113,7 +113,7 @@ void Features::GarrysMod::LuaLoader::DrawMenu() noexcept
 				{
 					*out = luaList[idx].c_str();
 					return true;
-				}, nullptr, luaList.size(), 10);
+				}, nullptr, luaList.size(), 6);
 
 				if (*luaInterface)
 				{
