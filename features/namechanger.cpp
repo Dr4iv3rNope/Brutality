@@ -23,7 +23,6 @@ static std::string oldName, formatedName;
 
 static struct
 {
-	std::string name;
 	bool nameSwitch { false };
 	float lastUpdate { 0.f };
 } spam;
@@ -31,16 +30,18 @@ static struct
 extern Config::String<char> nameChangerName;
 extern Config::Bool nameChangerAutoSend;
 
+static inline void SendName() noexcept
+{
+	SourceSDK::SendConVarValue(UTIL_CXOR("name"), formatedName.c_str());
+}
+
 void Features::NameChanger::SetName(const std::string& new_name) noexcept
 {
 	nameChangerName.SetValue(new_name);
 
-	spam.name = new_name;
-	spam.nameSwitch = false;
-
 	formatedName = ImGuiCustom::FormatSysString(new_name);
 
-	SourceSDK::SendConVarValue(UTIL_CXOR("name"), formatedName.c_str());
+	SendName();
 }
 
 void Features::NameChanger::DrawMenu() noexcept
@@ -51,8 +52,10 @@ void Features::NameChanger::DrawMenu() noexcept
 	if (ImGui::Begin(UTIL_CXOR("Name Changer"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		if (std::string temp = nameChangerName.GetValue();
-			ImGuiCustom::InputSysText("", temp))
+			ImGui::InputText("", &temp))
 			nameChangerName.SetValue(temp);
+
+		ImGuiCustom::ShowSysTextHelp();
 
 		if (ImGui::Button(UTIL_CXOR("Send Name")))
 			Features::NameChanger::SetName(*nameChangerName);
@@ -90,14 +93,10 @@ void Features::NameChanger::Update() noexcept
 
 				if (spam.nameSwitch)
 				{
-					spam.name.push_back('\n');
-					SetName(spam.name);
+					SetName(*nameChangerName + '\n');
 				}
 				else
-				{
-					spam.name.pop_back();
-					SetName(spam.name);
-				}
+					SetName(*nameChangerName);
 
 				spam.nameSwitch = !spam.nameSwitch;
 			}
@@ -115,12 +114,12 @@ void Features::NameChanger::Update() noexcept
 			isSent = false;
 		else
 		{
-			if (!isSent && SourceSDK::IsConnected())
+			if (!isSent && SourceSDK::IsInGame())
 			{
-				SetName(formatedName);
+				SendName();
 				isSent = true;
 			}
-			else if (isSent && !SourceSDK::IsConnected())
+			else if (isSent && !SourceSDK::IsInGame())
 				isSent = false;
 		}
 	}
