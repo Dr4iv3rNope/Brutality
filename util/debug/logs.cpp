@@ -44,7 +44,7 @@ void Util::Debug::LogSystem::Initialize(const std::wstring& path)
 	GetLogStreamMutex().lock();
 	UTIL_DEBUG_ASSERT(!logStream);
 
-	logStream = new std::wofstream(path, std::ios::app);
+	logStream = new std::wofstream(path);
 
 	UTIL_ASSERT_MSGBOX(logStream, L"Failed to allocate log stream");
 	UTIL_ASSERT_MSGBOX(logStream->good(), L"Failed to create log stream");
