@@ -25,11 +25,11 @@ namespace SourceSDK
 		int state;
 	};
 
-	class ÑInput
+	class Input
 	{
 	public:
 		UserCmd* GetUserCmd(int sequence_number);
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(ÑInput, input);
+	SOURCE_SDK_INTERFACE_DECL(Input, input);
 }

@@ -4,7 +4,7 @@
 #include "../util/vmt.hpp"
 #include "../util/pattern.hpp"
 
-SourceSDK::UserCmd* SourceSDK::ÑInput::GetUserCmd(int sequence_number)
+SourceSDK::UserCmd* SourceSDK::Input::GetUserCmd(int sequence_number)
 {
 	// "StorePredictionResults"
 	// in PerformPrediction

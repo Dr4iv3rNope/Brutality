@@ -9,11 +9,11 @@
 
 namespace SourceSDK
 {
-	class CRender
+	class Render
 	{
 	public:
 		const VMatrix& WorldToScreenMatrix();
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(CRender, render);
+	SOURCE_SDK_INTERFACE_DECL(Render, render);
 }

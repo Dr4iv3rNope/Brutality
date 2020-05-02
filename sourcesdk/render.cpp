@@ -3,7 +3,7 @@
 
 #include "../util/vmt.hpp"
 
-const SourceSDK::VMatrix& SourceSDK::CRender::WorldToScreenMatrix()
+const SourceSDK::VMatrix& SourceSDK::Render::WorldToScreenMatrix()
 {
 	// we need find yourself
 	#if SOURCE_SDK_IS_GMOD
