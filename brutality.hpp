@@ -1,0 +1,18 @@
+#pragma once
+
+// current cheat version
+#define BRUTALITY_VERSION "a0.0.1"
+
+#define BRUTALITY_PUBLIC	0	// public release
+#define BRUTALITY_DEBUG		1	// debug release
+#define BRUTALITY_PREVIEW	2	// pre-view release
+
+#define BRUTALITY_BUILD BRUTALITY_DEBUG
+
+#if BRUTALITY_BUILD == BRUTALITY_PUBLIC
+#define BRUTALITY_WATERMARK "Brutality " BRUTALITY_VERSION
+#elif BRUTALITY_BUILD == BRUTALITY_DEBUG
+#define BRUTALITY_WATERMARK "Brutality " BRUTALITY_VERSION "dbg"
+#elif BRUTALITY_BUILD == BRUTALITY_PREVIEW
+#define BRUTALITY_WATERMARK "Brutality " BRUTALITY_VERSION "pv"
+#endif

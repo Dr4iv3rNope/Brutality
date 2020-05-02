@@ -183,6 +183,9 @@
     <ClCompile Include="hooks\renderview.cpp">
       <Filter>Hooks\RenderView</Filter>
     </ClCompile>
+    <ClCompile Include="sourcesdk\viewrender.cpp">
+      <Filter>Source SDK\Interfaces\CViewRender</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -385,6 +388,9 @@
     </Filter>
     <Filter Include="Hooks\RenderView">
       <UniqueIdentifier>{58085261-ea2d-4a75-b8be-05eb4537012b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CViewRender">
+      <UniqueIdentifier>{87c49612-ee9f-4e8b-ac6f-fd7405688117}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -722,6 +728,10 @@
     </ClInclude>
     <ClInclude Include="hooks\renderview.hpp">
       <Filter>Hooks\RenderView</Filter>
+    </ClInclude>
+    <ClInclude Include="brutality.hpp" />
+    <ClInclude Include="sourcesdk\viewrender.hpp">
+      <Filter>Source SDK\Interfaces\CViewRender</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
