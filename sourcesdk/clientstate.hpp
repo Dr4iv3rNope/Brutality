@@ -74,7 +74,7 @@ namespace SourceSDK
 		char __pad5[756];
 
 	public:
-		INetworkStringTable* const networkStringTables[10];
+		INetworkStringTable* networkStringTables[10];
 	#endif
 	};
 
@@ -83,5 +83,10 @@ namespace SourceSDK
 	inline auto IsInGame() noexcept
 	{
 		return clientState->signonState == SignonState::Full;
+	}
+
+	inline auto IsConnected() noexcept
+	{
+		return clientState->signonState > SignonState::Connected;
 	}
 }
