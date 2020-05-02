@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "../brutality.hpp"
+
 #include "../imgui/imgui.h"
 
 #include "../util/xorstr.hpp"
@@ -28,7 +30,7 @@ void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 		);
 
 	// draw the watermark
-	ImGui::GetForegroundDrawList()->AddText(ImVec2(4.f, 4.f), IM_COL32(255, 140, 0, 155), UTIL_CXOR("Brutality"));
+	ImGui::GetForegroundDrawList()->AddText(ImVec2(4.f, 4.f), IM_COL32(255, 140, 0, 155), UTIL_CXOR(BRUTALITY_WATERMARK));
 
 	//
 	// in this condition we should draw previews
