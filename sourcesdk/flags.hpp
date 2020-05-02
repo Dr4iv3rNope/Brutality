@@ -17,5 +17,9 @@ namespace SourceSDK
 		InWater = 1 << 9,
 		Fly = 1 << 10,
 		Swim = 1 << 11,
+		Conveyor = 1 << 12,
+		NPC = 1 << 13,
+		Godmode = 1 << 14,
+		OnFire = 1 << 27
 	};
 }
