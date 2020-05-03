@@ -3,8 +3,12 @@
 
 #include "../util/vmt.hpp"
 
+#include "../util/debug/labels.hpp"
+
 void SourceSDK::NetChannel::Shutdown(const char* reason)
 {
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown net channel"));
+
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
 	{
@@ -13,10 +17,14 @@ void SourceSDK::NetChannel::Shutdown(const char* reason)
 	#endif
 
 	Util::Vmt::CallMethod<void, const char*>(this, offset, reason);
+
+	UTIL_LABEL_OK();
 }
 
 void SourceSDK::NetChannel::SendNetMsg(INetMessage* message, bool force_reliable, bool voice)
 {
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Sending net message"));
+
 	// "Custom user info value"
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
@@ -30,4 +38,6 @@ void SourceSDK::NetChannel::SendNetMsg(INetMessage* message, bool force_reliable
 	#endif
 
 	Util::Vmt::CallMethod<void, INetMessage*, bool, bool>(this, offset, message, force_reliable, voice);
+
+	UTIL_LABEL_OK();
 }

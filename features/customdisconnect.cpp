@@ -14,7 +14,7 @@
 #include <utility>
 #include <filesystem>
 
-static const std::string& GetRandomFileName()
+static const std::string& GetRandomDllName()
 {
 	static std::deque<std::string> fileNames;
 	static bool isFilled { false };
@@ -24,7 +24,7 @@ static const std::string& GetRandomFileName()
 		UTIL_XLOG(L"Getting random files from [game dir]\\bin\\*");
 
 		for (auto file : std::filesystem::directory_iterator(UTIL_SXOR("bin\\")))
-			if (file.is_regular_file())
+			if (file.is_regular_file() && file.path().extension() == UTIL_SXOR(".dll"))
 				fileNames.push_back(file.path().filename().string());
 
 		UTIL_LOG(UTIL_WFORMAT(UTIL_XOR(L"Added files: ") << fileNames.size()));
@@ -89,19 +89,19 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 	),
 	ADVANCED_REASON(
 		"Dll is differs from the server's",
-		UTIL_FORMAT(UTIL_XOR("Your .dll [") << GetRandomFileName() << UTIL_XOR("] differs from the server's.\n"))
+		UTIL_FORMAT(UTIL_XOR("Your .dll [") << GetRandomDllName() << UTIL_XOR("] differs from the server's.\n"))
 	),
 	BASIC_REASON("[XBOX] BSP CRC failed", "Disconnect: BSP CRC failed!\n"),
 	ADVANCED_REASON(
 		"Bad CRC for file",
-		UTIL_FORMAT(UTIL_XOR("Bad CRC for ") << GetRandomFileName() << '\n')
+		UTIL_FORMAT(UTIL_XOR("Bad CRC for ") << GetRandomDllName() << '\n')
 	),
 	BASIC_REASON("Couldn't CRC client dll", "Couldn't CRC client side dll client.dll.\n"),
 	BASIC_REASON("Lost connection to server", "Lost connection to server."),
 	BASIC_REASON("Cannot continue without model", "Cannot continue without model models/player.mdl, disconnecting\n"),
 	ADVANCED_REASON(
 		"File consistency error",
-		UTIL_FORMAT(UTIL_XOR("Server is enforcing file consistency for ") << GetRandomFileName() << '\n')
+		UTIL_FORMAT(UTIL_XOR("Server is enforcing file consistency for ") << GetRandomDllName() << '\n')
 	),
 	BASIC_REASON("Different class tables", "Server uses different class tables"),
 	BASIC_REASON("Buffer overflow", "Server overflowed reliable buffer\n"),
@@ -120,7 +120,7 @@ void Features::CustomDisconnect::DrawMenu() noexcept
 
 		if (ImGuiCustom::InputSysText("", reason_buf, &formated_buf) ||
 			ImGui::Button(UTIL_CXOR("Disconnect")))
-			Disconnect(formated_buf.c_str());
+			Disconnect(formated_buf);
 
 		ImGui::NewLine();
 
@@ -132,19 +132,30 @@ void Features::CustomDisconnect::DrawMenu() noexcept
 		{
 			auto reason = reason_list[selected_item].second();
 
-			Disconnect(reason.c_str());
+			Disconnect(reason);
 		}
 	}
 	ImGui::End();
 }
 
-bool Features::CustomDisconnect::Disconnect(const char* reason) noexcept
+static bool waitForDisconnect { false };
+static std::string disconnectReason;
+
+void Features::CustomDisconnect::Think() noexcept
 {
-	if (SourceSDK::IsConnected())
+	if (waitForDisconnect && SourceSDK::clientState->netChannel)
 	{
-		SourceSDK::clientState->netChannel->Shutdown(reason);
-		return true;
+		SourceSDK::clientState->netChannel->Shutdown(disconnectReason.c_str());
+
+		waitForDisconnect = false;
 	}
-	else
-		return false;
+}
+
+void Features::CustomDisconnect::Disconnect(const std::string& reason) noexcept
+{
+	if (SourceSDK::IsConnected() && !waitForDisconnect)
+	{
+		disconnectReason = reason;
+		waitForDisconnect = true;
+	}
 }

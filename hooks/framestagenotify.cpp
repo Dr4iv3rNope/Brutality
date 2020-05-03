@@ -4,6 +4,7 @@
 
 #include "../features/playerlist.hpp"
 #include "../features/esp.hpp"
+#include "../features/customdisconnect.hpp"
 #include "../features/textradar.hpp"
 #include "../features/namechanger.hpp"
 #include "../features/gmod/luainterface.hpp"
@@ -25,6 +26,7 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 			Features::GarrysMod::LuaInterface::TryToInitialize();
 			#endif
 			Features::NameChanger::Update();
+			Features::CustomDisconnect::Think();
 			break;
 
 		case SourceSDK::ClientFrameStage::NetUpdateStart:

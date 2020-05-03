@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace Features
 {
@@ -6,6 +7,9 @@ namespace Features
 	{
 		void DrawMenu() noexcept;
 
-		bool Disconnect(const char* reason) noexcept;
+		// call in FrameStageNotify -> Start
+		void Think() noexcept;
+
+		void Disconnect(const std::string& reason) noexcept;
 	}
 }
