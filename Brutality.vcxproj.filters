@@ -132,9 +132,6 @@
     <ClCompile Include="util\asmhook.cpp">
       <Filter>Utilities\AsmHook</Filter>
     </ClCompile>
-    <ClCompile Include="features\gmod\antiscreengrab.cpp">
-      <Filter>Features\Garry%27s Mod</Filter>
-    </ClCompile>
     <ClCompile Include="features\gmod\luainterface.cpp">
       <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
     </ClCompile>
@@ -165,9 +162,6 @@
     <ClCompile Include="features\customdisconnect.cpp">
       <Filter>Features\Shared\Custom Disconnect</Filter>
     </ClCompile>
-    <ClCompile Include="features\gmod\lualoader.cpp">
-      <Filter>Features\Garry%27s Mod</Filter>
-    </ClCompile>
     <ClCompile Include="util\shellcodebuilder.cpp">
       <Filter>Utilities\Shellcode Builder</Filter>
     </ClCompile>
@@ -185,6 +179,30 @@
     </ClCompile>
     <ClCompile Include="sourcesdk\viewrender.cpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
+    </ClCompile>
+    <ClCompile Include="features\gmod\antiscreengrab.cpp">
+      <Filter>Features\Garry%27s Mod\Anti Screengrab</Filter>
+    </ClCompile>
+    <ClCompile Include="features\gmod\lualoader.cpp">
+      <Filter>Features\Garry%27s Mod\Lua loader</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\specialchars.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\colors.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\text.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\keys.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="features\chatspam.cpp">
+      <Filter>Features\Shared\Chat Spammer</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\windowmanager.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -268,9 +286,6 @@
     </Filter>
     <Filter Include="User Interface">
       <UniqueIdentifier>{f2660f98-9bf1-48fa-890a-536a8811dbd7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Hooks\CreateMove">
-      <UniqueIdentifier>{ee37cf75-eddc-4296-9b66-6d8d7a6df923}</UniqueIdentifier>
     </Filter>
     <Filter Include="Hooks\EndScene">
       <UniqueIdentifier>{ee3c7f48-aa5b-46db-bfa3-b5ebce1b1ecc}</UniqueIdentifier>
@@ -391,6 +406,18 @@
     </Filter>
     <Filter Include="Source SDK\Garry%27s Mod Entities">
       <UniqueIdentifier>{77c103e4-e0fe-4d39-81ef-8729b43bf506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Garry%27s Mod\Anti Screengrab">
+      <UniqueIdentifier>{101ad4bf-8beb-412d-a873-04e8fda4674c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Garry%27s Mod\Lua loader">
+      <UniqueIdentifier>{953f7391-8a18-46c7-8c1a-3066e0903d01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\CreateMove">
+      <UniqueIdentifier>{ee37cf75-eddc-4296-9b66-6d8d7a6df923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Chat Spammer">
+      <UniqueIdentifier>{7550cfce-fff6-4b4e-b74f-14ade3218c3e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -663,17 +690,11 @@
     <ClInclude Include="imgui\imgui_stdlib.h">
       <Filter>ImGui\std</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\custom.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
     <ClInclude Include="util\asmhook.hpp">
       <Filter>Utilities\AsmHook</Filter>
     </ClInclude>
     <ClInclude Include="features\gmod\luainterface.hpp">
       <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="features\gmod\antiscreengrab.hpp">
-      <Filter>Features\Garry%27s Mod</Filter>
     </ClInclude>
     <ClInclude Include="features\esp.hpp">
       <Filter>Features\Shared\Esp</Filter>
@@ -705,9 +726,6 @@
     <ClInclude Include="features\customdisconnect.hpp">
       <Filter>Features\Shared\Custom Disconnect</Filter>
     </ClInclude>
-    <ClInclude Include="features\gmod\lualoader.hpp">
-      <Filter>Features\Garry%27s Mod</Filter>
-    </ClInclude>
     <ClInclude Include="util\shellcodebuilder.hpp">
       <Filter>Utilities\Shellcode Builder</Filter>
     </ClInclude>
@@ -732,6 +750,33 @@
     <ClInclude Include="brutality.hpp" />
     <ClInclude Include="sourcesdk\viewrender.hpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
+    </ClInclude>
+    <ClInclude Include="features\gmod\antiscreengrab.hpp">
+      <Filter>Features\Garry%27s Mod\Anti Screengrab</Filter>
+    </ClInclude>
+    <ClInclude Include="features\gmod\lualoader.hpp">
+      <Filter>Features\Garry%27s Mod\Lua loader</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\keys.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\specialchars.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\colors.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\text.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\numeric.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\windowmanager.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="features\chatspam.hpp">
+      <Filter>Features\Shared\Chat Spammer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

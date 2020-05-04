@@ -1,7 +1,7 @@
 #pragma once
 
 // current cheat version
-#define BRUTALITY_VERSION "a0.0.1"
+#define BRUTALITY_VERSION "a0.0.3"
 
 #define BRUTALITY_PUBLIC	0	// public release
 #define BRUTALITY_DEBUG		1	// debug release

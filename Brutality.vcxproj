@@ -165,6 +165,7 @@
     <ClCompile Include="config\config.cpp" />
     <ClCompile Include="config\variable.cpp" />
     <ClCompile Include="features\bhop.cpp" />
+    <ClCompile Include="features\chatspam.cpp" />
     <ClCompile Include="features\crosshair.cpp" />
     <ClCompile Include="features\customdisconnect.cpp" />
     <ClCompile Include="features\esp.cpp" />
@@ -180,6 +181,11 @@
     <ClCompile Include="hooks\overrideview.cpp" />
     <ClCompile Include="hooks\renderview.cpp" />
     <ClCompile Include="hooks\reset.cpp" />
+    <ClCompile Include="imgui\custom\colors.cpp" />
+    <ClCompile Include="imgui\custom\keys.cpp" />
+    <ClCompile Include="imgui\custom\specialchars.cpp" />
+    <ClCompile Include="imgui\custom\text.cpp" />
+    <ClCompile Include="imgui\custom\windowmanager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_impl_dx9.cpp" />
@@ -231,6 +237,7 @@
     <ClInclude Include="config\config.hpp" />
     <ClInclude Include="config\variable.hpp" />
     <ClInclude Include="features\bhop.hpp" />
+    <ClInclude Include="features\chatspam.hpp" />
     <ClInclude Include="features\crosshair.hpp" />
     <ClInclude Include="features\customdisconnect.hpp" />
     <ClInclude Include="features\esp.hpp" />
@@ -246,7 +253,12 @@
     <ClInclude Include="hooks\overrideview.hpp" />
     <ClInclude Include="hooks\renderview.hpp" />
     <ClInclude Include="hooks\reset.hpp" />
-    <ClInclude Include="imgui\custom.hpp" />
+    <ClInclude Include="imgui\custom\colors.hpp" />
+    <ClInclude Include="imgui\custom\keys.hpp" />
+    <ClInclude Include="imgui\custom\numeric.hpp" />
+    <ClInclude Include="imgui\custom\specialchars.hpp" />
+    <ClInclude Include="imgui\custom\text.hpp" />
+    <ClInclude Include="imgui\custom\windowmanager.hpp" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx9.h" />

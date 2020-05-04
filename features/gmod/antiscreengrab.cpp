@@ -20,7 +20,6 @@ extern Config::Bool antiScreenGrabEnable;
 static Util::AsmHook* oldRenderCapture;
 static Util::AsmHook* oldRenderCapturePixels;
 
-#if SOURCE_SDK_IS_GMOD
 static std::uintptr_t backRenderCaptureAddress { 0 };
 static std::uintptr_t backRenderCapturePixelsAddress { 0 };
 
@@ -67,7 +66,6 @@ static UTIL_NAKED_FUNC(renderCapturePixels)
 		};
 	}
 }
-#endif
 
 static Main::ShutdownElement* shutdownElement;
 
