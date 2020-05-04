@@ -10,8 +10,23 @@ std::size_t SourceSDK::HLClient::GetFrameStageNotifyIndex()
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
 	{
-		// uid: 8963575431541765024
 		VMT_XFIND_METHOD("A3 ?? ?? ?? ?? 83 F8 ?? 0F 87", 2)
+	};
+	#endif
+
+	return offset;
+}
+
+std::size_t SourceSDK::HLClient::GetCreateMoveIndex()
+{
+	#if SOURCE_SDK_IS_GMOD
+	static const auto offset
+	{
+		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
+			"engine.dll",
+			"51 8B 0D ?? ?? ?? ?? F3 ?? ?? ?? ?? 57 FF 56",
+			15
+		)) / 4
 	};
 	#endif
 

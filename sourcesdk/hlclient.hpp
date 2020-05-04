@@ -8,6 +8,7 @@ namespace SourceSDK
 	{
 	public:
 		std::size_t GetFrameStageNotifyIndex();
+		std::size_t GetCreateMoveIndex();
 
 		const ClientClass* GetHeadClientClass();
 	};
