@@ -9,10 +9,15 @@ void SourceSDK::NetChannel::Shutdown(const char* reason)
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown net channel"));
 
+	// "Disconnect by server.\n"
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
 	{
-		VMT_XFIND_METHOD("8B 01 8B CB C1 FF ?? 8D 14 B8")
+		(*(int*)UTIL_XFIND_PATTERN(
+			"engine.dll",
+			"56 8B F1 8B 8E ?? ?? ?? ?? 85 C9 74 ?? 8B 01 68 ?? ?? ?? ?? FF 90",
+			22
+		)) / 4
 	};
 	#endif
 
