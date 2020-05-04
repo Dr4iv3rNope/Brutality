@@ -5,7 +5,7 @@ namespace Features
 {
 	namespace CustomDisconnect
 	{
-		void DrawMenu() noexcept;
+		void RegisterWindow() noexcept;
 
 		// call in FrameStageNotify -> Start
 		void Think() noexcept;

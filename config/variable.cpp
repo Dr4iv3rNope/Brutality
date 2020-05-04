@@ -1,17 +1,202 @@
 #include "variable.hpp"
 
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_stdlib.h"
+#include "../imgui/custom/windowmanager.hpp"
+#include "../imgui/custom/numeric.hpp"
+#include "../imgui/custom/colors.hpp"
+
 #include "../util/strings.hpp"
 #include "../util/stringhash.hpp"
 #include "../util/debug/labels.hpp"
 
-Config::SortedVariables& Config::GetSortedVariables()
+Config::SortedVariables& Config::GetSortedVariables() noexcept
 {
 	static Config::SortedVariables sortedVariabels;
 
 	return sortedVariabels;
 }
 
-bool Config::RegisterVariable(IVariable& variable)
+static void DrawWindow(ImGui::Custom::Window& window) noexcept
+{
+	UTIL_DEBUG_ASSERT(window.GetUserData());
+
+	auto& variables = *(Config::Variables*)window.GetUserData();
+
+	for (auto& variable : variables)
+	{
+		if (!variable->IsVisible())
+			continue;
+
+		switch (variable->GetType())
+		{
+			case Config::VariableType::Invalid:
+				UTIL_DEBUG_ASSERT(false);
+				break;
+
+			case Config::VariableType::Unsigned:
+			{
+				auto var = (Config::LimitedVariable<std::uint32_t>*)variable;
+
+				if (auto temp = var->GetValue();
+					ImGui::Custom::InputAny<std::uint32_t, ImGuiDataType_U32>(
+						var->GetKey().c_str(),
+						temp,
+						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<std::uint32_t>(),
+						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<std::uint32_t>()
+						))
+					var->SetValue(temp);
+
+				break;
+			}
+
+			case Config::VariableType::Signed:
+			{
+				auto var = (Config::LimitedVariable<int>*)variable;
+
+				if (auto temp = var->GetValue();
+					ImGui::Custom::InputAny<int, ImGuiDataType_S32>(
+						var->GetKey().c_str(),
+						temp,
+						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<int>(),
+						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<int>()
+						))
+					var->SetValue(temp);
+
+				break;
+			}
+
+			case Config::VariableType::Float:
+			{
+				auto var = (Config::LimitedVariable<float>*)variable;
+
+				if (auto temp = var->GetValue();
+					ImGui::Custom::InputAny<float, ImGuiDataType_Float>(
+						var->GetKey().c_str(),
+						temp,
+						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<float>(),
+						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<float>()
+						))
+					var->SetValue(temp);
+
+				break;
+			}
+
+			case Config::VariableType::String:
+			{
+				if (variable->IsLimitedVariable())
+				{
+					auto var = (Config::LimitedString<char>*)variable;
+
+					ImGui::InputText(
+						var->GetKey().data(),
+						var->GetBuffer(),
+						var->GetMaxLength()
+					);
+				}
+				else
+				{
+					auto var = (Config::String<char>*)variable;
+
+					if (std::string temp = var->GetValue();
+						ImGui::InputText(var->GetKey().data(), &temp))
+						var->SetValue(temp);
+				}
+
+				break;
+			}
+
+			case Config::VariableType::Boolean:
+			{
+				auto var = (Config::Variable<bool>*)variable;
+
+				if (bool temp = var->GetValue();
+					ImGui::Checkbox(
+						var->GetKey().data(),
+						&temp
+					))
+					var->SetValue(temp);
+
+				break;
+			}
+
+			case Config::VariableType::Enum:
+			{
+				auto var = (Config::Enum*)variable;
+
+				static auto callback = [] (void* data, int idx, const char** out) -> bool
+				{
+					auto items = (std::deque<std::string_view>*)data;
+
+					*out = items->at(idx).data();
+					return true;
+				};
+
+				if (int temp = var->GetCurrentItem();
+					ImGui::Combo(
+						var->GetKey().data(),
+						&temp,
+						callback,
+						(void*)&var->GetItems(),
+						var->GetItems().size()
+					))
+					var->SetCurrentItem(temp);
+				
+				break;
+			}
+
+			case Config::VariableType::Color:
+			{
+				auto var = (Config::Color*)variable;
+
+				if (ImVec4 temp = ImGui::ColorConvertU32ToFloat4(var->Hex());
+					ImGui::Custom::ColorPicker(
+						var->GetKey().c_str(),
+						temp,
+						ImGui::ColorConvertU32ToFloat4(*(std::uint32_t*) & var->GetDefaultColor())
+					))
+					var->SetValue(ImGui::ColorConvertFloat4ToU32(temp));
+
+				break;
+			}
+
+			case Config::VariableType::Key:
+			{
+				auto var = (Config::Key*)variable;
+
+				if (auto temp = var->GetKeyValue();
+					ImGui::Custom::InputKey(var->GetKey().c_str(), temp))
+					var->SetKeyValue(temp);
+
+				break;
+			}
+
+			default:
+				UTIL_DEBUG_ASSERT(false);
+				break;
+		}
+	}
+}
+
+void Config::RegisterVariablesInWindowManager() noexcept
+{
+	for (auto& [group, variables] : Config::GetSortedVariables())
+	{
+		// dont register window if all variables in this group is not visible
+		if (std::find_if(variables.begin(), variables.end(), [] (const IVariable* var) -> bool
+		{
+			return var->IsVisible();
+		}) == variables.end())
+			continue;
+
+		ImGui::Custom::Window window(group, ImGuiWindowFlags_AlwaysAutoResize, DrawWindow);
+		window.SetUserData(&variables);
+
+		ImGui::Custom::windowManager.RegisterWindow(window);
+	}
+}
+
+bool Config::RegisterVariable(IVariable& variable) noexcept
 {
 	if (IsVariableRegistered(variable))
 	{
@@ -41,7 +226,7 @@ bool Config::RegisterVariable(IVariable& variable)
 	return true;
 }
 
-bool Config::IsVariableRegistered(std::string_view group, std::string_view key)
+bool Config::IsVariableRegistered(std::string_view group, std::string_view key) noexcept
 {
 	if (const auto& group_iter = GetSortedVariables().find(group.data());
 		group_iter != GetSortedVariables().end())

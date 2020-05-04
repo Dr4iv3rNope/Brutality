@@ -4,6 +4,7 @@
 #if SOURCE_SDK_IS_GMOD
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_stdlib.h"
+#include "../../imgui/custom/windowmanager.hpp"
 
 #include "../../main.hpp"
 
@@ -19,7 +20,7 @@
 
 static std::deque<std::string> luaList;
 
-static const std::wstring& GetLuaPath() noexcept
+static inline const std::wstring& GetLuaPath() noexcept
 {
 	static std::wstring luaPath { Main::GetLocalPath() + UTIL_SXOR(L"lua_scripts\\") };
 
@@ -28,13 +29,13 @@ static const std::wstring& GetLuaPath() noexcept
 
 static void UpdateLuaList() noexcept
 {
-	UTIL_LABEL_ENTRY(UTIL_XOR(L"Updating lua scipt list"));
+	UTIL_XLOG(L"Updating lua scipt list");
+
+	luaList.clear();
 
 	for (auto& file : std::filesystem::directory_iterator(GetLuaPath()))
 		if (file.is_regular_file() && file.path().has_filename())
 			luaList.push_back(file.path().filename().string());
-
-	UTIL_LABEL_OK();
 }
 
 static bool GetLuaScript(const std::string& filename, std::string& out) noexcept
@@ -60,75 +61,83 @@ static bool GetLuaScript(const std::string& filename, std::string& out) noexcept
 	}
 }
 
-void Features::GarrysMod::LuaLoader::DrawMenu() noexcept
+static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
 	static std::string luaId {};
 
-	if (ImGui::Begin(UTIL_CXOR("Lua Loader"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	ImGui::TextUnformatted(UTIL_CXOR("Identificator"));
+	ImGui::InputText("", &luaId);
+
+	if (ImGui::BeginTabBar(UTIL_CXOR("#TAB_BAR")))
 	{
-		ImGui::TextUnformatted(UTIL_CXOR("Identificator"));
-		ImGui::InputText("", &luaId);
-
-		if (ImGui::BeginTabBar(UTIL_CXOR("#TAB_BAR")))
+		if (ImGui::BeginTabItem(UTIL_CXOR("Lua Editor")))
 		{
-			if (ImGui::BeginTabItem(UTIL_CXOR("Lua Editor")))
+			static std::string luaBuffer {};
+
+			ImGui::PushID(1);
+			ImGui::InputTextMultiline("", &luaBuffer, ImVec2(300, 200), ImGuiInputTextFlags_AllowTabInput);
+			ImGui::PopID();
+
+			if (*Features::GarrysMod::luaInterface)
 			{
-				static std::string luaBuffer {};
-
-				ImGui::PushID(1);
-				ImGui::InputTextMultiline("", &luaBuffer, ImVec2(300, 200), ImGuiInputTextFlags_AllowTabInput);
-				ImGui::PopID();
-
-				if (*luaInterface)
-				{
-					if (ImGui::Button(UTIL_CXOR("Run code")))
-						(*luaInterface)->RunString(luaId.c_str(), luaBuffer.c_str());
-				}
-				else
-					ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
-
-				ImGui::EndTabItem();
+				if (ImGui::Button(UTIL_CXOR("Run code")))
+					(*Features::GarrysMod::luaInterface)->RunString(luaId.c_str(), luaBuffer.c_str());
 			}
+			else
+				ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
 
-			if (ImGui::BeginTabItem(UTIL_CXOR("Lua List")))
-			{
-				static auto currentLuaScript { -1 };
-
-				if (ImGui::Button(UTIL_CXOR("Refresh")))
-				{
-					currentLuaScript = -1;
-					UpdateLuaList();
-				}
-
-				if (ImGui::IsItemHovered())
-				{
-					static auto path { Util::ToString(GetLuaPath()) };
-
-					ImGui::BeginTooltip();
-					ImGui::Text(UTIL_CXOR("Lua script path: %s"), path.c_str());
-					ImGui::EndTooltip();
-				}
-
-				ImGui::ListBox("", &currentLuaScript, [] (void*, int idx, const char** out) -> bool
-				{
-					*out = luaList[idx].c_str();
-					return true;
-				}, nullptr, luaList.size(), 6);
-
-				if (*luaInterface)
-				{
-					if (ImGui::Button(UTIL_CXOR("Run file")))
-						if (std::string content; GetLuaScript(luaList[currentLuaScript], content))
-							(*luaInterface)->RunString(luaId.c_str(), content.c_str());
-				}
-				else
-					ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
-
-				ImGui::EndTabItem();
-			}
+			ImGui::EndTabItem();
 		}
-		ImGui::EndTabBar();
+
+		if (ImGui::BeginTabItem(UTIL_CXOR("Lua List")))
+		{
+			static auto currentLuaScript { -1 };
+
+			if (ImGui::Button(UTIL_CXOR("Refresh")))
+			{
+				currentLuaScript = -1;
+				UpdateLuaList();
+			}
+
+			if (ImGui::IsItemHovered())
+			{
+				static auto path { Util::ToString(GetLuaPath()) };
+
+				ImGui::BeginTooltip();
+				ImGui::Text(UTIL_CXOR("Lua script path: %s"), path.c_str());
+				ImGui::EndTooltip();
+			}
+
+			ImGui::ListBox("", &currentLuaScript, [] (void*, int idx, const char** out) -> bool
+			{
+				*out = luaList[idx].c_str();
+				return true;
+			}, nullptr, luaList.size(), 6);
+
+			if (*Features::GarrysMod::luaInterface)
+			{
+				if (ImGui::Button(UTIL_CXOR("Run file")))
+					if (std::string content; GetLuaScript(luaList[currentLuaScript], content))
+						(*Features::GarrysMod::luaInterface)->RunString(luaId.c_str(), content.c_str());
+			}
+			else
+				ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
+
+			ImGui::EndTabItem();
+		}
 	}
-	ImGui::End();
+
+	ImGui::EndTabBar();
+}
+
+void Features::GarrysMod::LuaLoader::RegisterWindow() noexcept
+{
+	ImGui::Custom::windowManager.RegisterWindow(
+		ImGui::Custom::Window(
+			UTIL_SXOR("Lua Loader"),
+			ImGuiWindowFlags_AlwaysAutoResize,
+			DrawMenu
+		)
+	);
 }
 #endif

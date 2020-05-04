@@ -91,16 +91,6 @@ void Main::Shutdown() noexcept
 
 bool Main::IsInShutdown() noexcept { return isInShutdown; }
 
-void Main::DrawMenu() noexcept
-{
-	if (ImGui::Begin(UTIL_CXOR("Main"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		if (ImGui::Button(UTIL_CXOR("Shutdown / Unload hack")))
-			Shutdown();
-	}
-	ImGui::End();
-}
-
 Main::ShutdownGuard::ShutdownGuard(ShutdownElement*& element) noexcept
 {
 	UTIL_DEBUG_ASSERT(element);

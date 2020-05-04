@@ -19,8 +19,9 @@
 #include "../nlohmann/json.hpp"
 
 #include "../imgui/imgui.h"
-#include "../imgui/custom.hpp"
 #include "../imgui/imgui_stdlib.h"
+#include "../imgui/custom/text.hpp"
+#include "../imgui/custom/windowmanager.hpp"
 
 #include <deque>
 #include <fstream>
@@ -271,9 +272,10 @@ void Features::PlayerList::LoadCache()
 	{
 		try
 		{
-			auto root = nlohmann::json::parse({
-				std::string(std::istream_iterator<char>(file), std::istream_iterator<char>())
-			});
+			auto root = nlohmann::json::parse(std::string(
+				std::istream_iterator<char>(file),
+				std::istream_iterator<char>()
+			));
 
 			if (root.contains(UTIL_SXOR("version")))
 			{
@@ -424,318 +426,342 @@ void Features::PlayerList::Update()
 	}
 }
 
-void Features::PlayerList::DrawMenu()
+static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
-	if (ImGui::Begin(UTIL_CXOR("Player List")))
+	if (ImGui::BeginTabBar(UTIL_CXOR("TABS##PLAYER_LIST")))
 	{
-		if (ImGui::BeginTabBar(UTIL_CXOR("TABS##PLAYER_LIST")))
+		if (IsInGame())
 		{
 			ImGui::PushID(0);
 			if (ImGui::BeginTabItem(UTIL_CXOR("Server")))
 			{
 				ImGui::Columns(2);
 
-				if (IsInGame())
+				ImGui::Text(UTIL_CXOR("Clients: %i"), globals->maxClients);
+
+				ImGui::ListBox("", &selectedPlayer, [] (void*, int idx, const char** out) -> bool
 				{
-					ImGui::Text(UTIL_CXOR("Clients: %i"), globals->maxClients);
+					static auto no_player { UTIL_SXOR("*No Player*") };
 
-					ImGui::ListBox("", &selectedPlayer, [] (void*, int idx, const char** out) -> bool
+					*out = playerList[idx].has_value()
+						? playerList[idx].value().stringify.c_str()
+						: no_player.c_str();
+
+					return true;
+				}, nullptr, globals->maxClients, 8);
+
+				if (selectedPlayer != -1)
+				{
+					auto playerListInfoIter = playerList.begin() + selectedPlayer;
+
+					if (playerListInfoIter->has_value())
 					{
-						static auto no_player { UTIL_SXOR("*No Player*") };
+						auto& playerListInfo = playerListInfoIter->value();
 
-						*out = playerList[idx].has_value()
-							? playerList[idx].value().stringify.c_str()
-							: no_player.c_str();
-
-						return true;
-					}, nullptr, globals->maxClients, 8);
-
-					if (selectedPlayer != -1)
-					{
-						auto playerListInfoIter = playerList.begin() + selectedPlayer;
-
-						if (playerListInfoIter->has_value())
+						if (!playerListInfo.isLocalPlayer && !playerListInfo.engineInfo.fakePlayer)
 						{
-							auto& playerListInfo = playerListInfoIter->value();
-
-							if (!playerListInfo.isLocalPlayer)
+							if (ImGui::Combo
+							(
+								UTIL_CXOR("Type"),
+								(int*)&playerListInfo.type,
+								UTIL_CXOR("Normal\0Dangerous\0Friend\0Rage\0")
+							))
 							{
-								if (ImGui::Combo
-								(
-									UTIL_CXOR("Type"),
-									(int*)&playerListInfo.type,
-									UTIL_CXOR("Normal\0Dangerous\0Friend\0Rage\0")
-								))
-								{
-									bool is_updated { false };
-									auto cached_info { GetCachedPlayerBySteamID(playerListInfo.steamid) };
+								bool is_updated { false };
+								auto cached_info { GetCachedPlayerBySteamID(playerListInfo.steamid) };
 
-									if (!IsCachedPlayerValid(cached_info))
+								if (!IsCachedPlayerValid(cached_info))
+								{
+									//
+									// adding new player to cache
+									//
+
+									if (playerListInfo.type != PlayerType::Normal)
+									{
+										UTIL_DEBUG_XLOG(L"Adding new player to cache");
+
+										PlayerListCachedInfo cached_info;
+										cached_info.steamid = playerListInfo.steamid;
+										cached_info.lastName = std::string(playerListInfo.engineInfo.name, MAX_PLAYER_NAME_LENGTH);
+										cached_info.lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
+										cached_info.type = playerListInfo.type;
+										playerListInfo.isCached = true;
+
+										cachedPlayerList.push_back(cached_info);
+										is_updated = true;
+									}
+								}
+								else
+								{
+									if (playerListInfo.type == PlayerType::Normal)
 									{
 										//
-										// adding new player to cache
+										// remove player from cache
 										//
 
-										if (playerListInfo.type != PlayerType::Normal)
-										{
-											UTIL_DEBUG_XLOG(L"Adding new player to cache");
+										UTIL_DEBUG_XLOG(L"Removing player from cache");
 
-											PlayerListCachedInfo cached_info;
-											cached_info.steamid = playerListInfo.steamid;
-											cached_info.lastName = std::string(playerListInfo.engineInfo.name, MAX_PLAYER_NAME_LENGTH);
-											cached_info.lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
-											cached_info.type = playerListInfo.type;
-											playerListInfo.isCached = true;
+										cachedPlayerList.erase(cached_info);
+										playerListInfo.isCached = false;
 
-											cachedPlayerList.push_back(cached_info);
-											is_updated = true;
-										}
+										is_updated = true;
 									}
 									else
 									{
-										if (playerListInfo.type == PlayerType::Normal)
-										{
-											//
-											// remove player from cache
-											//
+										//
+										// updating cache
+										//
 
-											UTIL_DEBUG_XLOG(L"Removing player from cache");
+										UTIL_DEBUG_LOG(L"Updating cache");
 
-											cachedPlayerList.erase(cached_info);
-											playerListInfo.isCached = false;
+										cached_info->type = playerListInfo.type;
 
-											is_updated = true;
-										}
-										else
-										{
-											//
-											// updating cache
-											//
-
-											UTIL_DEBUG_LOG(L"Updating cache");
-
-											cached_info->type = playerListInfo.type;
-
-											is_updated = true;
-										}
+										is_updated = true;
 									}
-
-									if (is_updated)
-										cacheStatus = CacheStatus::FileOutdated;
 								}
+
+								if (is_updated)
+									cacheStatus = CacheStatus::FileOutdated;
 							}
+						}
 
-							ImGui::NextColumn();
+						//
+						// actions
+						//
 
-							//
-							// playerlist info
-							//
+						if (ImGui::Button(UTIL_CXOR("Stole name")))
+							Features::NameChanger::SetName(
+								std::string(playerListInfoIter->value().engineInfo.name, MAX_PLAYER_NAME_LENGTH) + UTIL_SXOR("\\t")
+							);
+
+						ImGui::NextColumn();
+
+						//
+						// playerlist info
+						//
+						{
+							ImGui::Custom::CopiableText(UTIL_CXOR("Entity Index: %i"), selectedPlayer);
+							ImGui::Custom::CopiableText(
+								UTIL_CXOR("Is Cached: %s"),
+								ImGui::Custom::ToTextBoolean(playerListInfoIter->value().isCached).c_str()
+							);
+
+							ImGui::NewLine();
+
+							if (auto player = BaseEntity::GetByIndex(selectedPlayer + 1))
 							{
-								ImGuiCustom::CopiableText(UTIL_CXOR("Entity Index: %i"), selectedPlayer);
-								ImGuiCustom::CopiableText(
-									UTIL_CXOR("Is Cached: %s"),
-									ImGuiCustom::ToTextBoolean(playerListInfoIter->value().isCached).c_str()
+								ImGui::Custom::CopiableText(UTIL_CXOR("Steam ID: %s"), playerListInfoIter->value().steamid.c_str());
+								ImGui::Custom::CopiableText(UTIL_CXOR("Name: %s"), playerListInfoIter->value().engineInfo.name);
+								ImGui::Custom::CopiableText(UTIL_CXOR("User ID: %i"), playerListInfoIter->value().engineInfo.userid);
+								ImGui::Custom::CopiableText(
+									UTIL_CXOR("Bot?: %s"),
+									ImGui::Custom::ToTextBoolean(playerListInfoIter->value().engineInfo.fakePlayer).c_str()
+								);
+								ImGui::Custom::CopiableText(
+									UTIL_CXOR("HLTV: %s"),
+									ImGui::Custom::ToTextBoolean(playerListInfoIter->value().engineInfo.isHLTV).c_str()
 								);
 
-								ImGui::NewLine();
+								ImGui::Custom::CopiableText(
+									UTIL_CXOR("Health: %i (Max: %i)"),
+									player->GetHealth(),
+									player->GetMaxHealth()
+								);
 
-								if (auto player = BaseEntity::GetByIndex(selectedPlayer + 1))
-								{
-									ImGuiCustom::CopiableText(UTIL_CXOR("Steam ID: %s"), playerListInfoIter->value().steamid.c_str());
-									ImGuiCustom::CopiableText(UTIL_CXOR("Name: %s"), playerListInfoIter->value().engineInfo.name);
-									ImGuiCustom::CopiableText(UTIL_CXOR("User ID: %i"), playerListInfoIter->value().engineInfo.userid);
-									ImGuiCustom::CopiableText(
-										UTIL_CXOR("Bot?: %s"),
-										ImGuiCustom::ToTextBoolean(playerListInfoIter->value().engineInfo.fakePlayer).c_str()
-									);
-									ImGuiCustom::CopiableText(
-										UTIL_CXOR("HLTV: %s"),
-										ImGuiCustom::ToTextBoolean(playerListInfoIter->value().engineInfo.isHLTV).c_str()
-									);
-
-									ImGuiCustom::CopiableText(
-										UTIL_CXOR("Health: %i (Max: %i)"),
-										player->GetTeam(),
-										player->GetMaxHealth()
-									);
-
-									ImGui::NewLine();
-
-									if (ImGui::Button(UTIL_CXOR("Stole name")))
-										NameChanger::SetName(
-											std::string(playerListInfoIter->value().engineInfo.name, MAX_PLAYER_NAME_LENGTH) + '\t'
-										);
-								}
-								else
-									ImGui::TextUnformatted(UTIL_CXOR("Failed to get player entity!"));
+								#if SOURCE_SDK_IS_GMOD
+								ImGui::Custom::CopiableText(
+									UTIL_CXOR("Team: %i"),
+									reinterpret_cast<GmodPlayer*>(player)->GetTeam()
+								);
+								#endif
 							}
+							else
+								ImGui::TextUnformatted(UTIL_CXOR("Failed to get player entity!"));
 						}
-						else
-							ImGui::TextUnformatted(UTIL_CXOR("Player not valid"));
 					}
 					else
-						ImGui::TextUnformatted(UTIL_CXOR("Select player from list above"));
+						ImGui::TextUnformatted(UTIL_CXOR("Player not valid"));
 				}
 				else
-					ImGui::TextUnformatted(UTIL_CXOR("Not in game"));
-
-				ImGui::Columns(1);
-				ImGui::EndTabItem();
-			}
-			ImGui::PopID();
-
-			ImGui::PushID(1);
-			if (ImGui::BeginTabItem(UTIL_CXOR("Cache")))
-			{
-				ImGui::Columns(2);
-
-				if (ImGui::Button(UTIL_CXOR("Save cache")))
-					PlayerList::SaveCache();
-
-				ImGui::SameLine();
-
-				if (ImGui::Button(UTIL_CXOR("Load cache")))
-					PlayerList::LoadCache();
-
-				ImGui::SameLine();
-
-				//
-				// draw cache's status
-				//
-				switch (cacheStatus)
-				{
-					case CacheStatus::UpToDate:
-						ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), UTIL_CXOR("This cache is up to date"));
-						break;
-
-					case CacheStatus::FileOutdated:
-						ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated"));
-
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::TextUnformatted(UTIL_CXOR("You should save cache file"));
-							ImGui::EndTooltip();
-						}
-						break;
-
-					case CacheStatus::ThisOutdated:
-						ImGui::TextColored(ImVec4(1.f, 0.5f, 0.6f, 1.f), UTIL_CXOR("Cache is outdated"));
-
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::TextUnformatted(UTIL_CXOR("You should load cache file"));
-							ImGui::EndTooltip();
-						}
-						break;
-
-					case CacheStatus::FileLoadError:
-						ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("This cache is outdated. Error occurred"));
-
-						if (!ImGui::IsItemClicked())
-						{
-							if (ImGui::IsItemHovered())
-							{
-								ImGui::BeginTooltip();
-								ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
-								ImGui::EndTooltip();
-							}
-						}
-						else
-						{
-							cacheError.clear();
-							cacheStatus = CacheStatus::ThisOutdated;
-						}
-						break;
-
-					case CacheStatus::FileSaveError:
-						ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated. Error occurred"));
-
-						if (!ImGui::IsItemClicked())
-						{
-							if (ImGui::IsItemHovered())
-							{
-								ImGui::BeginTooltip();
-								ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
-								ImGui::EndTooltip();
-							}
-						}
-						else
-						{
-							cacheError.clear();
-							cacheStatus = CacheStatus::ThisOutdated;
-						}
-						break;
-				}
-
-				ImGui::PushID(0);
-				ImGui::ListBox("", &cachedSelectedPlayer, [] (void* data, int idx, const char** out) -> bool
-				{
-					*out = cachedPlayerList[idx].lastName.c_str();
-					return true;
-				}, nullptr, cachedPlayerList.size(), 8);
-				ImGui::PopID();
-
-				// if selected cache player is not valid then set
-				// index to -1 to prevent exception
-				if (std::size_t(cachedSelectedPlayer) >= cachedPlayerList.size())
-					cachedSelectedPlayer = -1;
-
-				SKIP_THIS_PLAYER:
-				if (cachedSelectedPlayer != -1)
-				{
-					auto& ply = cachedPlayerList[cachedSelectedPlayer];
-
-					if (ImGui::Combo
-					(
-						UTIL_CXOR("Type"),
-						(int*)&ply.type,
-						UTIL_CXOR("Delete this record\0Dangerous\0Friend\0Rage\0")
-					))
-					{
-						auto info = ply.GetInfo();
-
-						// update if player in the server
-						if (info) info->type = ply.type;
-
-						// remove player from cache
-						if (ply.type == PlayerType::Normal)
-						{
-							if (info) info->Uncache();
-
-							cachedSelectedPlayer = -1;
-
-							cacheStatus = CacheStatus::FileOutdated;
-
-							// dont draw invalid info below
-							goto SKIP_THIS_PLAYER;
-						}
-					}
-
-					ImGui::NextColumn();
-
-					ImGui::TextUnformatted(UTIL_CXOR("Description"));
-					ImGui::InputTextMultiline("", &ply.description, ImVec2(260.f, 80.f));
-
-					ImGui::NewLine();
-
-					//
-					// draw last info
-					//
-
-					ImGuiCustom::CopiableText(UTIL_CXOR("Steam ID: %s"), ply.steamid.c_str());
-					ImGuiCustom::CopiableText(UTIL_CXOR("Last Name: %s"), ply.lastName.c_str());
-					ImGuiCustom::CopiableText(UTIL_CXOR("Last Server IP: %s"), ply.lastServerIp.c_str());
-				}
+					ImGui::TextUnformatted(UTIL_CXOR("Select player from list above"));
 
 				ImGui::Columns(1);
 				ImGui::EndTabItem();
 			}
 			ImGui::PopID();
 		}
-		
-		ImGui::EndTabBar();
+
+		ImGui::PushID(0);
+		if (ImGui::BeginTabItem(UTIL_CXOR("Cache")))
+		{
+			ImGui::Columns(2);
+
+			//
+			// draw cache's status
+			//
+			switch (cacheStatus)
+			{
+				case CacheStatus::UpToDate:
+					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), UTIL_CXOR("This cache is up to date"));
+					break;
+
+				case CacheStatus::FileOutdated:
+					ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated"));
+
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::TextUnformatted(UTIL_CXOR("You should save cache file"));
+						ImGui::EndTooltip();
+					}
+					break;
+
+				case CacheStatus::ThisOutdated:
+					ImGui::TextColored(ImVec4(1.f, 0.5f, 0.6f, 1.f), UTIL_CXOR("Cache is outdated"));
+
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::TextUnformatted(UTIL_CXOR("You should load cache file"));
+						ImGui::EndTooltip();
+					}
+					break;
+
+				case CacheStatus::FileLoadError:
+					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("This cache is outdated. Error occurred"));
+
+					if (!ImGui::IsItemClicked())
+					{
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::BeginTooltip();
+							ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
+							ImGui::EndTooltip();
+						}
+					}
+					else
+					{
+						cacheError.clear();
+						cacheStatus = CacheStatus::ThisOutdated;
+					}
+					break;
+
+				case CacheStatus::FileSaveError:
+					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated. Error occurred"));
+
+					if (!ImGui::IsItemClicked())
+					{
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::BeginTooltip();
+							ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
+							ImGui::EndTooltip();
+						}
+					}
+					else
+					{
+						cacheError.clear();
+						cacheStatus = CacheStatus::ThisOutdated;
+					}
+					break;
+			}
+
+			if (ImGui::Button(UTIL_CXOR("Save cache")))
+				Features::PlayerList::SaveCache();
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(UTIL_CXOR("Load cache")))
+				Features::PlayerList::LoadCache();
+
+			ImGui::PushID(1);
+			ImGui::ListBox("", &cachedSelectedPlayer, [] (void* data, int idx, const char** out) -> bool
+			{
+				*out = cachedPlayerList[idx].lastName.c_str();
+				return true;
+			}, nullptr, cachedPlayerList.size(), 8);
+			ImGui::PopID();
+
+			// if selected cache player is not valid then set
+			// index to -1 to prevent exception
+			if (std::size_t(cachedSelectedPlayer) >= cachedPlayerList.size())
+				cachedSelectedPlayer = -1;
+
+			SKIP_THIS_PLAYER:
+			if (cachedSelectedPlayer != -1)
+			{
+				auto& ply = cachedPlayerList[cachedSelectedPlayer];
+
+				if (ImGui::Combo("",
+					(int*)&ply.type,
+					UTIL_CXOR("Delete this record\0Dangerous\0Friend\0Rage\0")
+				))
+				{
+					auto info = ply.GetInfo();
+
+					// update if player in the server
+					if (info) info->type = ply.type;
+
+					// remove player from cache
+					if (ply.type == PlayerType::Normal)
+					{
+						if (info) info->Uncache();
+
+						cachedSelectedPlayer = -1;
+
+						cacheStatus = CacheStatus::FileOutdated;
+
+						// dont draw invalid info below
+						goto SKIP_THIS_PLAYER;
+					}
+				}
+
+				//
+				// actions
+				//
+
+				if (ImGui::Button(UTIL_CXOR("Stole name")))
+					Features::NameChanger::SetName(ply.lastName + UTIL_SXOR("\\t"));
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(UTIL_CXOR("Join last server")))
+					engine->ClientCmdUnrestricted((UTIL_SXOR("connect ") + ply.lastServerIp).c_str());
+
+				ImGui::NextColumn();
+
+				ImGui::TextUnformatted(UTIL_CXOR("Description"));
+				ImGui::PushID(2);
+				ImGui::InputTextMultiline("", &ply.description, ImVec2(260.f, 80.f));
+				ImGui::PopID();
+
+				ImGui::NewLine();
+
+				//
+				// draw last info
+				//
+
+				ImGui::Custom::CopiableText(UTIL_CXOR("Steam ID: %s"), ply.steamid.c_str());
+				ImGui::Custom::CopiableText(UTIL_CXOR("Last Name: %s"), ply.lastName.c_str());
+				ImGui::Custom::CopiableText(UTIL_CXOR("Last Server IP: %s"), ply.lastServerIp.c_str());
+			}
+
+			ImGui::Columns(1);
+			ImGui::EndTabItem();
+		}
+		ImGui::PopID();
 	}
-	ImGui::End();
+		
+	ImGui::EndTabBar();
+}
+
+void Features::PlayerList::RegisterWindow() noexcept
+{
+	ImGui::Custom::windowManager.RegisterWindow(
+		ImGui::Custom::Window(
+			UTIL_SXOR("Player List"),
+			0,
+			DrawMenu
+		)
+	);
 }

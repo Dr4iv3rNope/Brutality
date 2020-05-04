@@ -7,5 +7,5 @@ namespace Config
 	extern void Load(const std::wstring& filename);
 
 	extern const std::wstring& GetSettingsPath();
-	extern void DrawMenu();
+	extern void RegisterWindow() noexcept;
 }

@@ -10,6 +10,8 @@
 
 #include "../nlohmann/json.hpp"
 
+#include "../imgui/custom/keys.hpp"
+
 #include "../util/xorstr.hpp"
 #include "../util/debug/assert.hpp"
 
@@ -25,10 +27,10 @@ namespace Config
 	// registers new variable
 	//
 	// return false if variable with same group and key already presented
-	extern bool RegisterVariable(IVariable& variable);
+	extern bool RegisterVariable(IVariable& variable) noexcept;
 
 	// return true if variable with this group and key already presented
-	extern bool IsVariableRegistered(std::string_view group, std::string_view key);
+	extern bool IsVariableRegistered(std::string_view group, std::string_view key) noexcept;
 
 	// imports (loads) values to variables
 	extern void ImportVariables(const nlohmann::json& root);
@@ -37,7 +39,10 @@ namespace Config
 	extern void ExportVariables(nlohmann::json& root);
 	
 	// return all saved variables
-	extern SortedVariables& GetSortedVariables();
+	extern SortedVariables& GetSortedVariables() noexcept;
+
+	// register all variables in window manager
+	extern void RegisterVariablesInWindowManager() noexcept;
 
 	enum class VariableType
 	{
@@ -54,7 +59,8 @@ namespace Config
 
 		String,
 		Enum,
-		Color
+		Color,
+		Key
 	};
 
 	// basic variable that used to create unique variable
@@ -590,5 +596,47 @@ namespace Config
 
 		inline const auto& GetDefaultColor() const noexcept { return _defaultColor; }
 		inline void SetDefaultColor() noexcept { _value = _defaultColor; }
+	};
+
+	// used for key bindings
+	class Key : public IVariable
+	{
+	private:
+		ImGui::Custom::Key _key_value;
+
+	public:
+		inline Key(bool visible,
+				   const std::string& group, const std::string& key,
+				   ImGui::Custom::Key key_value = ImGui::Custom::Keys::INVALID)
+			: IVariable(visible, group, key), _key_value { key_value }
+		{
+			RegisterVariable(*this);
+		}
+
+		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
+		inline auto GetKeyValue() const noexcept { return _key_value; }
+
+		inline bool HasKeyValue() const noexcept { return _key_value != -1; }
+		inline void ResetKeyValue() noexcept { _key_value = -1; }
+
+
+		virtual bool Export(nlohmann::json& value) const override
+		{
+			value = _key_value;
+
+			return true;
+		}
+
+		virtual bool Import(const nlohmann::json& value) override
+		{
+			if (!value.is_number_unsigned())
+				return false;
+
+			_key_value = value;
+			return true;
+		}
+
+		virtual VariableType GetType() const override { return VariableType::Key; }
+		virtual bool IsLimitedVariable() const override { return false; }
 	};
 }

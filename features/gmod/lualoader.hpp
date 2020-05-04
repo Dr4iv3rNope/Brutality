@@ -8,7 +8,7 @@ namespace Features
 	{
 		namespace LuaLoader
 		{
-			void DrawMenu() noexcept;
+			void RegisterWindow() noexcept;
 		}
 	}
 }

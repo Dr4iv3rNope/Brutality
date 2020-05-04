@@ -7,9 +7,9 @@ namespace Features
 	{
 		extern void SetName(const std::string& new_name) noexcept;
 		
-		extern void DrawMenu() noexcept;
 		extern void Update() noexcept;
 
-		extern void Initialize();
+		extern void Initialize() noexcept;
+		extern void RegisterWindow() noexcept;
 	}
 }

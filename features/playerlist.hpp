@@ -25,7 +25,6 @@ namespace Features
 		// used in FrameStageNotify
 		void Update();
 
-		// used in endscene
-		void DrawMenu();
+		void RegisterWindow() noexcept;
 	}
 }

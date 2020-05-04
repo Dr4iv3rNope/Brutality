@@ -5,9 +5,14 @@
 #include "../sourcesdk/globals.hpp"
 
 #include "../imgui/imgui.h"
-#include "../imgui/custom.hpp"
+#include "../imgui/imgui_stdlib.h"
+#include "../imgui/custom/specialchars.hpp"
+#include "../imgui/custom/windowmanager.hpp"
 
 #include "../util/xorstr.hpp"
+#include "../util/strings.hpp"
+
+#include "../util/debug/logs.hpp"
 
 #include <deque>
 #include <functional>
@@ -21,7 +26,7 @@ static const std::string& GetRandomDllName()
 
 	if (!isFilled)
 	{
-		UTIL_XLOG(L"Getting random files from [game dir]\\bin\\*");
+		UTIL_XLOG(L"Enumerating files from [game dir]\\bin\\*.dll");
 
 		for (auto file : std::filesystem::directory_iterator(UTIL_SXOR("bin\\")))
 			if (file.is_regular_file() && file.path().extension() == UTIL_SXOR(".dll"))
@@ -112,34 +117,44 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 	BASIC_REASON("Couldn't send snapshot", "ERROR! Couldn't send snapshot.")
 };
 
-void Features::CustomDisconnect::DrawMenu() noexcept
-{
-	if (ImGui::Begin(UTIL_CXOR("Custom Disconnect"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		static std::string reason_buf, formated_buf;
-
-		if (ImGuiCustom::InputSysText("", reason_buf, &formated_buf) ||
-			ImGui::Button(UTIL_CXOR("Disconnect")))
-			Disconnect(formated_buf);
-
-		ImGui::NewLine();
-
-		if (int selected_item = -1; ImGui::ListBox("", &selected_item, [] (void*, int idx, const char** out) -> bool
-		{
-			*out = reason_list[idx].first.c_str();
-			return true;
-		}, nullptr, reason_list.size()))
-		{
-			auto reason = reason_list[selected_item].second();
-
-			Disconnect(reason);
-		}
-	}
-	ImGui::End();
-}
 
 static bool waitForDisconnect { false };
 static std::string disconnectReason;
+
+static void DrawMenu(ImGui::Custom::Window&) noexcept
+{
+	static std::string reason_buf;
+
+	const auto pressedEnter = ImGui::InputText("", &reason_buf, ImGuiInputTextFlags_EnterReturnsTrue);
+
+	if (ImGui::IsItemHovered())
+		ImGui::Custom::ShowSpecialChars();
+
+	ImGui::SameLine();
+
+	const auto pressedButton = ImGui::Button(UTIL_CXOR("Disconnect"));
+
+	if (pressedEnter || pressedButton)
+		Features::CustomDisconnect::Disconnect(ImGui::Custom::FormatSpecialChars(reason_buf));
+
+	if (int selected_item = -1; ImGui::ListBox("", &selected_item, [] (void*, int idx, const char** out) -> bool
+	{
+		*out = reason_list[idx].first.c_str();
+		return true;
+	}, nullptr, reason_list.size()))
+		Features::CustomDisconnect::Disconnect(reason_list[selected_item].second());
+}
+
+void Features::CustomDisconnect::RegisterWindow() noexcept
+{
+	ImGui::Custom::windowManager.RegisterWindow(
+		ImGui::Custom::Window(
+			UTIL_SXOR("Custom Disconnect"),
+			ImGuiWindowFlags_AlwaysAutoResize,
+			DrawMenu
+		)
+	);
+}
 
 void Features::CustomDisconnect::Think() noexcept
 {

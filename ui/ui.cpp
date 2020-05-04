@@ -20,6 +20,7 @@
 #include "../util/debug/logs.hpp"
 #include "../util/debug/labels.hpp"
 #include "../util/debug/assert.hpp"
+#include "../util/debug/errors.hpp"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"

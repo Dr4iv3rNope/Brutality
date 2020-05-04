@@ -3,7 +3,9 @@
 #include "../shutdown.hpp"
 
 #include "../imgui/imgui.h"
-#include "../imgui/custom.hpp"
+#include "../imgui/imgui_stdlib.h"
+#include "../imgui/custom/specialchars.hpp"
+#include "../imgui/custom/windowmanager.hpp"
 
 #include "../util/debug/labels.hpp"
 
@@ -15,8 +17,6 @@
 #include "../sourcesdk/netsetconvar.hpp"
 
 #include "../config/variable.hpp"
-
-static bool initialized { false };
 
 static bool nameSpam { false };
 static std::string oldName, formatedName;
@@ -39,38 +39,34 @@ void Features::NameChanger::SetName(const std::string& new_name) noexcept
 {
 	nameChangerName.SetValue(new_name);
 
-	formatedName = ImGuiCustom::FormatSysString(new_name);
+	formatedName = ImGui::Custom::FormatSpecialChars(new_name);
 
 	SendName();
 }
 
-void Features::NameChanger::DrawMenu() noexcept
+static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
-	if (!initialized)
-		Initialize();
+	if (std::string temp = nameChangerName.GetValue();
+		ImGui::InputText("", &temp))
+		nameChangerName.SetValue(temp);
 
-	if (ImGui::Begin(UTIL_CXOR("Name Changer"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		if (std::string temp = nameChangerName.GetValue();
-			ImGui::InputText("", &temp))
-			nameChangerName.SetValue(temp);
+	if (ImGui::IsItemHovered())
+		ImGui::Custom::ShowSpecialChars();
 
-		ImGuiCustom::ShowSysTextHelp();
 
-		if (ImGui::Button(UTIL_CXOR("Send Name")))
-			Features::NameChanger::SetName(*nameChangerName);
+	if (ImGui::Button(UTIL_CXOR("Send Name")))
+		Features::NameChanger::SetName(*nameChangerName);
 
-		ImGui::SameLine();
-		if (ImGui::Button(UTIL_CXOR("Reset name")))
-			SetName(oldName);
+	ImGui::SameLine();
+	if (ImGui::Button(UTIL_CXOR("Reset name")))
+		Features::NameChanger::SetName(oldName);
 		
-		if (bool autoSend = *nameChangerAutoSend;
-			ImGui::Checkbox(UTIL_CXOR("Auto Send"), &autoSend))
-			nameChangerAutoSend.SetValue(autoSend);
 
-		ImGui::Checkbox(UTIL_CXOR("Name Spam"), &nameSpam);
-	}
-	ImGui::End();
+	if (bool autoSend = *nameChangerAutoSend;
+		ImGui::Checkbox(UTIL_CXOR("Auto Send"), &autoSend))
+		nameChangerAutoSend.SetValue(autoSend);
+
+	ImGui::Checkbox(UTIL_CXOR("Name Spam"), &nameSpam);
 }
 
 void Features::NameChanger::Update() noexcept
@@ -125,17 +121,23 @@ void Features::NameChanger::Update() noexcept
 	}
 }
 
-static Main::ShutdownElement* shutdownElement;
-
-void Features::NameChanger::Initialize()
+void Features::NameChanger::Initialize() noexcept
 {
 	UTIL_XLOG(L"Initializing name changer");
-	UTIL_DEBUG_ASSERT(!initialized);
 
 	auto name = SourceSDK::cvar->FindVar(UTIL_CXOR("name"));	
 	UTIL_ASSERT(name, "failed to find 'name' convar");
 
 	formatedName = oldName = std::string(name->GetRaw()->stringValue, name->GetRaw()->stringValueLength);
+}
 
-	initialized = true;
+void Features::NameChanger::RegisterWindow() noexcept
+{
+	ImGui::Custom::windowManager.RegisterWindow(
+		ImGui::Custom::Window(
+			UTIL_SXOR("Name Changer"),
+			ImGuiWindowFlags_AlwaysAutoResize,
+			DrawMenu
+		)
+	);
 }
