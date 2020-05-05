@@ -7,10 +7,7 @@ namespace SourceSDK
 	class EngineClient final
 	{
 	public:
-		//[[deprecated("use ImGui::GetIO().DisplaySize")]]
-		//void GetScreenSize(int& w, int& h);
-		
-		void ServerCmd(const char* cmd);
+		void ServerCmd(const char* cmd, bool reliable = true);
 		bool GetPlayerInfo(int entidx, PlayerInfo& info);
 		void ClientCmdUnrestricted(const char* cmd);
 	};

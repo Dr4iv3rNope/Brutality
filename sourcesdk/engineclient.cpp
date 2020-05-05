@@ -4,7 +4,7 @@
 #include "../util/xorstr.hpp"
 #include "../util/vmt.hpp"
 
-void SourceSDK::EngineClient::ServerCmd(const char* cmd)
+void SourceSDK::EngineClient::ServerCmd(const char* cmd, bool reliable)
 {
 	// "vehicleRole %i\n"
 	#if SOURCE_SDK_IS_GMOD
@@ -13,12 +13,12 @@ void SourceSDK::EngineClient::ServerCmd(const char* cmd)
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
 			"client.dll",
 			"8B 0D ?? ?? ?? ?? 8D 55 ?? 83 C4 ?? 8B 01 6A 01 52 FF 50",
-			18
+			19
 		)) / 4
 	};
 	#endif
 
-	Util::Vmt::CallMethod<void, const char*>(this, offset, cmd);
+	Util::Vmt::CallMethod<void, const char*, bool>(this, offset, cmd, reliable);
 }
 
 bool SourceSDK::EngineClient::GetPlayerInfo(int entidx, PlayerInfo& info)
