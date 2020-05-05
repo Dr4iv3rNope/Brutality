@@ -182,9 +182,11 @@
     <ClCompile Include="hooks\renderview.cpp" />
     <ClCompile Include="hooks\reset.cpp" />
     <ClCompile Include="imgui\custom\colors.cpp" />
+    <ClCompile Include="imgui\custom\errors.cpp" />
     <ClCompile Include="imgui\custom\keys.cpp" />
     <ClCompile Include="imgui\custom\specialchars.cpp" />
     <ClCompile Include="imgui\custom\text.cpp" />
+    <ClCompile Include="imgui\custom\variableui.cpp" />
     <ClCompile Include="imgui\custom\windowmanager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -254,10 +256,12 @@
     <ClInclude Include="hooks\renderview.hpp" />
     <ClInclude Include="hooks\reset.hpp" />
     <ClInclude Include="imgui\custom\colors.hpp" />
+    <ClInclude Include="imgui\custom\errors.hpp" />
     <ClInclude Include="imgui\custom\keys.hpp" />
     <ClInclude Include="imgui\custom\numeric.hpp" />
     <ClInclude Include="imgui\custom\specialchars.hpp" />
     <ClInclude Include="imgui\custom\text.hpp" />
+    <ClInclude Include="imgui\custom\variableui.hpp" />
     <ClInclude Include="imgui\custom\windowmanager.hpp" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />

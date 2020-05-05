@@ -98,12 +98,24 @@ void UI::Initialize()
 		UTIL_ASSERT(SHGetKnownFolderPath(FOLDERID_Fonts, KF_FLAG_DONT_VERIFY, nullptr, &wfont) == S_OK,
 					"Failed to get font path");
 
+		static const ImWchar ranges[] =
+		{
+			0x0020, 0x00FF, // Basic Latin + Latin Supplement
+			0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
+			0x2500, 0x257F, // Frames
+			0x2580, 0x259F, // Filling symbols
+			0x25A0, 0x25FF,	// Geometry figures
+			0x2DE0, 0x2DFF, // Cyrillic Extended-A
+			0xA640, 0xA69F, // Cyrillic Extended-B
+			0,
+		};
+
 		ImGui::GetIO().Fonts->AddFontFromFileTTF(
 			//Util::ToString(std::wstring(wfont)).append(UTIL_SXOR("\\Arial.ttf")).c_str(),
 			Util::ToString(std::wstring(wfont)).append(UTIL_SXOR("\\Verdana.ttf")).c_str(),
 			14.f,
 			nullptr,
-			ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+			ranges);
 
 		CoTaskMemFree(wfont);
 	}

@@ -204,6 +204,12 @@
     <ClCompile Include="imgui\custom\windowmanager.cpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\custom\errors.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\variableui.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -777,6 +783,12 @@
     </ClInclude>
     <ClInclude Include="features\chatspam.hpp">
       <Filter>Features\Shared\Chat Spammer</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\variableui.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\errors.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
