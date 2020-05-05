@@ -544,9 +544,17 @@ Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"),
 */
 
 
+// chat spam
+
+Config::Bool chatSpamEnable(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Enable"), false);
+Config::LFloat chatSpamDelay(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 3.f);
+Config::String<char> chatSpamMessage(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Message"), UTIL_SXOR("\\n\\nBrutality B-)\\n\\n"));
+Config::Enum chatSpamMode(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Mode"), { UTIL_SXOR("Message"), UTIL_SXOR("Animated") });
+
+
 // user interface settings
 
-Config::Bool useTabs(false, UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), false);
+Config::Bool useTabs(false, UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), true);
 
 
 //
@@ -569,10 +577,10 @@ namespace
 //
 // Registering menu windows
 //
-#include "features/chatspam.hpp"
 #include "features/playerlist.hpp"
 #include "features/customdisconnect.hpp"
 #include "features/esp.hpp"
+#include "features/chatspam.hpp"
 #include "features/gmod/lualoader.hpp"
 
 #include "config/config.hpp"
@@ -582,9 +590,9 @@ namespace
 	__INLINE_RUN_FUNC(RegisterWindows)
 	{
 		Features::NameChanger::RegisterWindow();
-		Features::ChatSpam::RegisterWindow();
 		Features::Esp::RegisterEntityListWindow();
 		Features::PlayerList::RegisterWindow();
+		Features::ChatSpam::RegisterWindow();
 		Features::CustomDisconnect::RegisterWindow();
 		#if SOURCE_SDK_IS_GMOD
 		Features::GarrysMod::LuaLoader::RegisterWindow();

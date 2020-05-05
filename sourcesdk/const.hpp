@@ -12,6 +12,7 @@ namespace SourceSDK
 	constexpr int MAX_WEAPON_STRING { 80 };			// game/shared/weapon_parse.h:48
 	constexpr int MAX_WEAPON_PREFIX { 16 };			// game/shared/weapon_parse.h:49
 	constexpr int MAX_WEAPON_AMMO_LENGTH { 32 };	// game/shared/weapon_parse.h:50
+	constexpr float TALK_INTERVAL { 0.66f };		// game/server/client.cpp:747
 
 	using CRC32 = unsigned long;
 	using FileHandle = void*;

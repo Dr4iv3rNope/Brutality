@@ -7,6 +7,7 @@
 #include "../features/customdisconnect.hpp"
 #include "../features/textradar.hpp"
 #include "../features/namechanger.hpp"
+#include "../features/chatspam.hpp"
 #include "../features/gmod/luainterface.hpp"
 
 #include "../shutdown.hpp"
@@ -26,6 +27,7 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 			Features::GarrysMod::LuaInterface::TryToInitialize();
 			#endif
 			Features::NameChanger::Update();
+			Features::ChatSpam::Think();
 			Features::CustomDisconnect::Think();
 			break;
 
