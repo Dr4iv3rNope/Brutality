@@ -5,6 +5,7 @@
 #include "../imgui/custom/windowmanager.hpp"
 #include "../imgui/custom/numeric.hpp"
 #include "../imgui/custom/colors.hpp"
+#include "../imgui/custom/variableui.hpp"
 
 #include "../util/strings.hpp"
 #include "../util/stringhash.hpp"
@@ -35,141 +36,52 @@ static void DrawWindow(ImGui::Custom::Window& window) noexcept
 				break;
 
 			case Config::VariableType::Unsigned:
-			{
-				auto var = (Config::LimitedVariable<std::uint32_t>*)variable;
-
-				if (auto temp = var->GetValue();
-					ImGui::Custom::InputAny<std::uint32_t, ImGuiDataType_U32>(
-						var->GetKey().c_str(),
-						temp,
-						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<std::uint32_t>(),
-						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<std::uint32_t>()
-						))
-					var->SetValue(temp);
+				if (variable->IsLimitedVariable())
+					ImGui::Custom::Variable::LimitedUnsigned(*(Config::LimitedVariable<std::uint32_t>*)variable);
+				else
+					ImGui::Custom::Variable::Unsigned(*(Config::Variable<std::uint32_t>*)variable);
 
 				break;
-			}
 
 			case Config::VariableType::Signed:
-			{
-				auto var = (Config::LimitedVariable<int>*)variable;
-
-				if (auto temp = var->GetValue();
-					ImGui::Custom::InputAny<int, ImGuiDataType_S32>(
-						var->GetKey().c_str(),
-						temp,
-						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<int>(),
-						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<int>()
-						))
-					var->SetValue(temp);
+				if (variable->IsLimitedVariable())
+					ImGui::Custom::Variable::LimitedSigned(*(Config::LimitedVariable<std::int32_t>*)variable);
+				else
+					ImGui::Custom::Variable::Signed(*(Config::Variable<std::int32_t>*)variable);
 
 				break;
-			}
 
 			case Config::VariableType::Float:
-			{
-				auto var = (Config::LimitedVariable<float>*)variable;
-
-				if (auto temp = var->GetValue();
-					ImGui::Custom::InputAny<float, ImGuiDataType_Float>(
-						var->GetKey().c_str(),
-						temp,
-						var->IsLimitedVariable() ? std::optional(var->GetMin()) : std::optional<float>(),
-						var->IsLimitedVariable() ? std::optional(var->GetMax()) : std::optional<float>()
-						))
-					var->SetValue(temp);
+				if (variable->IsLimitedVariable())
+					ImGui::Custom::Variable::LimitedFloat(*(Config::LimitedVariable<float>*)variable);
+				else
+					ImGui::Custom::Variable::Float(*(Config::Variable<float>*)variable);
 
 				break;
-			}
 
 			case Config::VariableType::String:
-			{
 				if (variable->IsLimitedVariable())
-				{
-					auto var = (Config::LimitedString<char>*)variable;
-
-					ImGui::InputText(
-						var->GetKey().data(),
-						var->GetBuffer(),
-						var->GetMaxLength()
-					);
-				}
+					ImGui::Custom::Variable::LimitedString(*(Config::LimitedString<char>*)variable);
 				else
-				{
-					auto var = (Config::String<char>*)variable;
-
-					if (std::string temp = var->GetValue();
-						ImGui::InputText(var->GetKey().data(), &temp))
-						var->SetValue(temp);
-				}
+					ImGui::Custom::Variable::String(*(Config::String<char>*)variable);
 
 				break;
-			}
 
 			case Config::VariableType::Boolean:
-			{
-				auto var = (Config::Variable<bool>*)variable;
-
-				if (bool temp = var->GetValue();
-					ImGui::Checkbox(
-						var->GetKey().data(),
-						&temp
-					))
-					var->SetValue(temp);
-
+				ImGui::Custom::Variable::Boolean(*(Config::Bool*)variable);
 				break;
-			}
 
 			case Config::VariableType::Enum:
-			{
-				auto var = (Config::Enum*)variable;
-
-				static auto callback = [] (void* data, int idx, const char** out) -> bool
-				{
-					auto items = (std::deque<std::string_view>*)data;
-
-					*out = items->at(idx).data();
-					return true;
-				};
-
-				if (int temp = var->GetCurrentItem();
-					ImGui::Combo(
-						var->GetKey().data(),
-						&temp,
-						callback,
-						(void*)&var->GetItems(),
-						var->GetItems().size()
-					))
-					var->SetCurrentItem(temp);
-				
+				ImGui::Custom::Variable::Enum(*(Config::Enum*)variable);
 				break;
-			}
 
 			case Config::VariableType::Color:
-			{
-				auto var = (Config::Color*)variable;
-
-				if (ImVec4 temp = ImGui::ColorConvertU32ToFloat4(var->Hex());
-					ImGui::Custom::ColorPicker(
-						var->GetKey().c_str(),
-						temp,
-						ImGui::ColorConvertU32ToFloat4(*(std::uint32_t*) & var->GetDefaultColor())
-					))
-					var->SetValue(ImGui::ColorConvertFloat4ToU32(temp));
-
+				ImGui::Custom::Variable::Color(*(Config::Color*)variable);
 				break;
-			}
 
 			case Config::VariableType::Key:
-			{
-				auto var = (Config::Key*)variable;
-
-				if (auto temp = var->GetKeyValue();
-					ImGui::Custom::InputKey(var->GetKey().c_str(), temp))
-					var->SetKeyValue(temp);
-
+				ImGui::Custom::Variable::Key(*(Config::Key*)variable);
 				break;
-			}
 
 			default:
 				UTIL_DEBUG_ASSERT(false);

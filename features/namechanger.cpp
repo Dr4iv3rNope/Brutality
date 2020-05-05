@@ -6,6 +6,7 @@
 #include "../imgui/imgui_stdlib.h"
 #include "../imgui/custom/specialchars.hpp"
 #include "../imgui/custom/windowmanager.hpp"
+#include "../imgui/custom/variableui.hpp"
 
 #include "../util/debug/labels.hpp"
 
@@ -46,9 +47,7 @@ void Features::NameChanger::SetName(const std::string& new_name) noexcept
 
 static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
-	if (std::string temp = nameChangerName.GetValue();
-		ImGui::InputText("", &temp))
-		nameChangerName.SetValue(temp);
+	ImGui::Custom::Variable::String(nameChangerName);
 
 	if (ImGui::IsItemHovered())
 		ImGui::Custom::ShowSpecialChars();
@@ -61,11 +60,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 	if (ImGui::Button(UTIL_CXOR("Reset name")))
 		Features::NameChanger::SetName(oldName);
 		
-
-	if (bool autoSend = *nameChangerAutoSend;
-		ImGui::Checkbox(UTIL_CXOR("Auto Send"), &autoSend))
-		nameChangerAutoSend.SetValue(autoSend);
-
+	ImGui::Custom::Variable::Boolean(nameChangerAutoSend);
 	ImGui::Checkbox(UTIL_CXOR("Name Spam"), &nameSpam);
 }
 

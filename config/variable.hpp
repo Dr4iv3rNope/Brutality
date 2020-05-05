@@ -445,16 +445,19 @@ namespace Config
 
 	class Enum : public IVariable
 	{
+	public:
+		using Items = std::deque<std::string>;
+
 	protected:
-		std::deque<std::string_view> _items;
+		Items _items;
 
 		std::size_t _typehash = typeid(Enum).hash_code();
 		std::size_t _currentItem { 0 };
 
 	public:
 		inline Enum(bool visible,
-					const std::string& group, const std::string& key,
-					const std::initializer_list<std::string_view> items)
+					const Items::value_type& group, const Items::value_type& key,
+					std::initializer_list<Items::value_type> items)
 			: IVariable(visible, group, key), _items(items)
 		{
 			// empty item list disallow
@@ -488,7 +491,7 @@ namespace Config
 		inline void SetCurrentItem(std::size_t idx) noexcept { _currentItem = idx; }
 		inline void operator=(std::size_t idx) noexcept { SetCurrentItem(idx); }
 
-		inline const std::string_view& GetStringItem() const noexcept{ return _items[_currentItem]; }
+		inline const Items::value_type& GetStringItem() const noexcept{ return _items[_currentItem]; }
 
 		inline const auto& GetItems() const noexcept { return this->_items; }
 	};
