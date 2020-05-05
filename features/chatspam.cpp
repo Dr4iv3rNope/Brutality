@@ -25,6 +25,7 @@
 extern Config::Bool chatSpamEnable;
 extern Config::String<char> chatSpamMessage;
 extern Config::LFloat chatSpamDelay;
+extern Config::Bool chatSpamTeam;
 
 constexpr int MODE_DEAFULT { 0 };
 constexpr int MODE_ANIMATION { 1 };
@@ -46,7 +47,7 @@ static inline bool TryToSay(const std::string& message) noexcept
 
 	if (lastSay < SourceSDK::globals->curTime)
 	{
-		const auto msg = UTIL_SXOR("say \"")
+		const auto msg = (*chatSpamTeam ? UTIL_SXOR("say_team \"") : UTIL_SXOR("say \""))
 			+ ImGui::Custom::FormatSpecialChars(message) + '\"';
 
 		SourceSDK::engine->ServerCmd(msg.c_str());
@@ -265,6 +266,7 @@ static bool SaveAnimations() noexcept
 static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
 	ImGui::Custom::Variable::Boolean(chatSpamEnable);
+	ImGui::Custom::Variable::Boolean(chatSpamTeam);
 	ImGui::Custom::Variable::LimitedFloat(chatSpamDelay);
 	ImGui::NewLine();
 	ImGui::Custom::Variable::Enum(chatSpamMode);

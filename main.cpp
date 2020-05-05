@@ -547,6 +547,7 @@ Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"),
 // chat spam
 
 Config::Bool chatSpamEnable(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Enable"), false);
+Config::Bool chatSpamTeam(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Team chat mode"), false);
 Config::LFloat chatSpamDelay(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 3.f);
 Config::String<char> chatSpamMessage(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Message"), UTIL_SXOR("\\n\\nBrutality B-)\\n\\n"));
 Config::Enum chatSpamMode(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Mode"), { UTIL_SXOR("Message"), UTIL_SXOR("Animated") });
