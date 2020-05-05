@@ -41,10 +41,10 @@ static std::deque<Animation> animationList;
 static int currentAnimation { -1 };
 static int currentSequence { -1 };
 
+static float lastSay { 0.f };
+
 static inline bool TryToSay(const std::string& message) noexcept
 {
-	static float lastSay { 0.f };
-
 	if (lastSay < SourceSDK::globals->curTime)
 	{
 		const auto msg = (*chatSpamTeam ? UTIL_SXOR("say_team \"") : UTIL_SXOR("say \""))
@@ -65,8 +65,6 @@ static inline bool TryToSay(const std::string& message) noexcept
 
 void Features::ChatSpam::Think() noexcept
 {
-	static float lastSay { 0.f };
-
 	if (*chatSpamEnable && SourceSDK::IsInGame())
 	{
 		switch (chatSpamMode.GetCurrentItem())
