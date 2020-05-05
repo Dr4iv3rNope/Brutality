@@ -5,6 +5,7 @@
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_stdlib.h"
 #include "../../imgui/custom/windowmanager.hpp"
+#include "../../imgui/custom/errors.hpp"
 
 #include "../../main.hpp"
 
@@ -19,6 +20,19 @@
 #include <filesystem>
 
 static std::deque<std::string> luaList;
+
+
+constexpr int ERR_NOERR { -1 };
+constexpr int ERR_FAILED_LOAD { 0 };
+
+static int currentError { ERR_NOERR };
+static ImGui::Custom::ErrorList errorList =
+{
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to load file"),
+		ImVec4(1.f, 0.f, 0.f, 1.f)
+	),
+};
 
 static inline const std::wstring& GetLuaPath() noexcept
 {
@@ -52,10 +66,7 @@ static bool GetLuaScript(const std::string& filename, std::string& out) noexcept
 	}
 	else
 	{
-		UTIL_LOG(UTIL_WFORMAT(
-			UTIL_XOR(L"Failed to get content of the lua script! Path: ") <<
-			path
-		));
+		UTIL_XLOG(L"Failed to open the lua script!");
 
 		return false;
 	}
@@ -116,6 +127,8 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 			if (*Features::GarrysMod::luaInterface)
 			{
+				ImGui::Custom::StatusError(currentError, errorList);
+
 				if (ImGui::Button(UTIL_CXOR("Run file")))
 					if (std::string content; GetLuaScript(luaList[currentLuaScript], content))
 						(*Features::GarrysMod::luaInterface)->RunString(luaId.c_str(), content.c_str());

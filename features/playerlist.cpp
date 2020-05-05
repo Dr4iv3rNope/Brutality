@@ -22,6 +22,7 @@
 #include "../imgui/imgui_stdlib.h"
 #include "../imgui/custom/text.hpp"
 #include "../imgui/custom/windowmanager.hpp"
+#include "../imgui/custom/errors.hpp"
 
 #include <deque>
 #include <fstream>
@@ -140,8 +141,57 @@ enum class CacheStatus
 	UpToDate
 };
 
-static CacheStatus cacheStatus { CacheStatus::ThisOutdated };
-static std::string cacheError; // used for CacheStatus::FileLoad/SaveError
+
+static constexpr int CACHE_ERR_NOERROR { -1 };
+static constexpr int CACHE_ERR_THIS_OUTDATED { 0 };
+static constexpr int CACHE_ERR_FILE_OUTDATED { 1 };
+static constexpr int CACHE_ERR_NOT_OPENED { 2 };
+static constexpr int CACHE_ERR_LOAD_NOT_COMPATIBLE { 4 };
+static constexpr int CACHE_ERR_LOAD_CORRUPTED { 5 };
+static constexpr int CACHE_ERR_LOAD_UNKNOWN { 6 };
+
+static int cacheCurrentError { CACHE_ERR_THIS_OUTDATED };
+static ImGui::Custom::ErrorList cacheErrors =
+{
+	//
+	// warnings
+	//
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Cache is outdated"),
+		ImVec4(1.f, 0.f, 0.f, 1.f),
+		UTIL_SXOR("You should load cache file")
+	),
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("File's cache is outdated"),
+		ImVec4(1.f, 0.f, 0.f, 1.f),
+		UTIL_SXOR("You should save cache file")
+	),
+
+	//
+	// errors
+	//
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to open file"),
+		ImVec4(1.f, 0.f, 0.f, 1.f)
+	),
+
+	// load errors
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to load cache"),
+		ImVec4(1.f, 0.f, 0.f, 1.f),
+		UTIL_SXOR("Player List is corrupted")
+	),
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to load cache"),
+		ImVec4(1.f, 0.f, 0.f, 1.f),
+		UTIL_SXOR("Unknown error. Check logs")
+	),
+};
 
 static inline CachedPlayerList::iterator GetCachedPlayerBySteamID(const std::string& steamid) noexcept
 {
@@ -282,17 +332,13 @@ void Features::PlayerList::LoadCache()
 				auto& version = root[UTIL_SXOR("version")];
 
 				if (!version.is_number_unsigned())
-				{
-					UTIL_DEBUG_OPLOG(throw std::runtime_error(UTIL_XOR("Player list version not a number")));
-				}
+					cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
 				else
 					if (std::uint32_t int_version = version; int_version > PLAYER_LIST_VERSION)
-					{
-						UTIL_RUNTIME_ERROR("Player list is not compatible");
-					}
+						cacheCurrentError = CACHE_ERR_LOAD_NOT_COMPATIBLE;
 			}
 			else
-				UTIL_DEBUG_OPLOG(throw std::runtime_error(UTIL_XOR("Player list haven't version. Outdated")));
+				cacheCurrentError = CACHE_ERR_LOAD_NOT_COMPATIBLE;
 
 			if (root.contains(UTIL_SXOR("player_list")))
 			{
@@ -323,28 +369,24 @@ void Features::PlayerList::LoadCache()
 						cachedPlayerList.push_back(cached_info);
 					}
 
-					cacheStatus = CacheStatus::UpToDate;
+					cacheCurrentError = CACHE_ERR_NOERROR;
 				}
 				else
-					UTIL_DEBUG_OPLOG(throw std::runtime_error(UTIL_XOR("Tried to parse json, but player_list is not array")));
+					cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
 			}
 			else
-				UTIL_DEBUG_OPLOG(throw std::runtime_error(UTIL_XOR("Tried to parse json, but player_list is null")));
+				cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
 		}
 		catch (const std::exception& ex)
 		{
-			cacheStatus = CacheStatus::FileLoadError;
-			cacheError = UTIL_FORMAT(ex.what() << UTIL_XOR("\nSeems like your file is corrupted or outdated"));
-
-			UTIL_LOG(UTIL_SXOR(L"Load Cache exception: ") + Util::ToWString(cacheError));
+			UTIL_LOG(UTIL_SXOR(L"Load Cache exception: ") + Util::ToWString(ex.what()));
 		}
 
 		file.close();
 	}
 	else
 	{
-		cacheStatus = CacheStatus::FileLoadError;
-		cacheError = UTIL_SXOR("Failed to open file");
+		cacheCurrentError = CACHE_ERR_LOAD_UNKNOWN;
 
 		UTIL_LOG(UTIL_SXOR(L"Failed to open player list stream ") + GetCachedPlayerListPath());
 	}
@@ -380,14 +422,14 @@ void Features::PlayerList::SaveCache()
 			json_plylist.push_back(json_cachedInfo);
 		}
 
-		cacheStatus = CacheStatus::UpToDate;
 		file << root.dump(4);
 		file.close();
+
+		cacheCurrentError = CACHE_ERR_NOERROR;
 	}
 	else
 	{
-		cacheStatus = CacheStatus::FileSaveError;
-		cacheError = UTIL_SXOR("Failed to open file");
+		cacheCurrentError = CACHE_ERR_NOT_OPENED;
 
 		UTIL_LOG(UTIL_SXOR(L"Failed to open and save cached player list ") + GetCachedPlayerListPath());
 	}
@@ -432,13 +474,14 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 	{
 		if (IsInGame())
 		{
-			ImGui::PushID(0);
+			ImGui::PushID(UTIL_CXOR("##SERVER_PLAYER_SECT"));
 			if (ImGui::BeginTabItem(UTIL_CXOR("Server")))
 			{
 				ImGui::Columns(2);
 
 				ImGui::Text(UTIL_CXOR("Clients: %i"), globals->maxClients);
 
+				ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
 				ImGui::ListBox("", &selectedPlayer, [] (void*, int idx, const char** out) -> bool
 				{
 					static auto no_player { UTIL_SXOR("*No Player*") };
@@ -449,6 +492,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 					return true;
 				}, nullptr, globals->maxClients, 8);
+				ImGui::PopID(); // ##PLAYER_LIST
 
 				if (selectedPlayer != -1)
 				{
@@ -460,6 +504,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 						if (!playerListInfo.isLocalPlayer && !playerListInfo.engineInfo.fakePlayer)
 						{
+							ImGui::PushID(UTIL_CXOR("##PLAYER_TYPE_COMBO"));
 							if (ImGui::Combo
 							(
 								UTIL_CXOR("Type"),
@@ -521,8 +566,10 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 								}
 
 								if (is_updated)
-									cacheStatus = CacheStatus::FileOutdated;
+									cacheCurrentError = CACHE_ERR_FILE_OUTDATED;
 							}
+
+							ImGui::PopID(); // ##PLAYER_TYPE_COMBO
 						}
 
 						//
@@ -585,86 +632,18 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				else
 					ImGui::TextUnformatted(UTIL_CXOR("Select player from list above"));
 
-				ImGui::Columns(1);
+				ImGui::Columns();
 				ImGui::EndTabItem();
 			}
-			ImGui::PopID();
+			ImGui::PopID(); // ##SERVER_PLAYER_SECT
 		}
 
-		ImGui::PushID(0);
+		ImGui::PushID(UTIL_CXOR("##CACHED_PLAYER_SECT"));
 		if (ImGui::BeginTabItem(UTIL_CXOR("Cache")))
 		{
 			ImGui::Columns(2);
 
-			//
-			// draw cache's status
-			//
-			switch (cacheStatus)
-			{
-				case CacheStatus::UpToDate:
-					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), UTIL_CXOR("This cache is up to date"));
-					break;
-
-				case CacheStatus::FileOutdated:
-					ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated"));
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::TextUnformatted(UTIL_CXOR("You should save cache file"));
-						ImGui::EndTooltip();
-					}
-					break;
-
-				case CacheStatus::ThisOutdated:
-					ImGui::TextColored(ImVec4(1.f, 0.5f, 0.6f, 1.f), UTIL_CXOR("Cache is outdated"));
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::TextUnformatted(UTIL_CXOR("You should load cache file"));
-						ImGui::EndTooltip();
-					}
-					break;
-
-				case CacheStatus::FileLoadError:
-					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("This cache is outdated. Error occurred"));
-
-					if (!ImGui::IsItemClicked())
-					{
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
-							ImGui::EndTooltip();
-						}
-					}
-					else
-					{
-						cacheError.clear();
-						cacheStatus = CacheStatus::ThisOutdated;
-					}
-					break;
-
-				case CacheStatus::FileSaveError:
-					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("File's cache is outdated. Error occurred"));
-
-					if (!ImGui::IsItemClicked())
-					{
-						if (ImGui::IsItemHovered())
-						{
-							ImGui::BeginTooltip();
-							ImGui::Text(UTIL_CXOR("Error: \"%s\"\n\nClick to reset error"), cacheError.c_str());
-							ImGui::EndTooltip();
-						}
-					}
-					else
-					{
-						cacheError.clear();
-						cacheStatus = CacheStatus::ThisOutdated;
-					}
-					break;
-			}
+			ImGui::Custom::StatusError(cacheCurrentError, cacheErrors);
 
 			if (ImGui::Button(UTIL_CXOR("Save cache")))
 				Features::PlayerList::SaveCache();
@@ -674,13 +653,13 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			if (ImGui::Button(UTIL_CXOR("Load cache")))
 				Features::PlayerList::LoadCache();
 
-			ImGui::PushID(1);
+			ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
 			ImGui::ListBox("", &cachedSelectedPlayer, [] (void* data, int idx, const char** out) -> bool
 			{
 				*out = cachedPlayerList[idx].lastName.c_str();
 				return true;
 			}, nullptr, cachedPlayerList.size(), 8);
-			ImGui::PopID();
+			ImGui::PopID(); // ##PLAYER_LIST
 
 			// if selected cache player is not valid then set
 			// index to -1 to prevent exception
@@ -692,6 +671,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			{
 				auto& ply = cachedPlayerList[cachedSelectedPlayer];
 
+				ImGui::PushID(UTIL_CXOR("##PLAYERTYPE_COMBO"));
 				if (ImGui::Combo("",
 					(int*)&ply.type,
 					UTIL_CXOR("Delete this record\0Dangerous\0Friend\0Rage\0")
@@ -709,12 +689,14 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 						cachedSelectedPlayer = -1;
 
-						cacheStatus = CacheStatus::FileOutdated;
+						cacheCurrentError = CACHE_ERR_FILE_OUTDATED;
 
 						// dont draw invalid info below
+						ImGui::PopID(); // ##PLAYERTYPE_COMBO
 						goto SKIP_THIS_PLAYER;
 					}
 				}
+				ImGui::PopID(); // ##PLAYERTYPE_COMBO
 
 				//
 				// actions
@@ -731,9 +713,9 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::NextColumn();
 
 				ImGui::TextUnformatted(UTIL_CXOR("Description"));
-				ImGui::PushID(2);
+				ImGui::PushID(UTIL_CXOR("##DESC_INPUT"));
 				ImGui::InputTextMultiline("", &ply.description, ImVec2(260.f, 80.f));
-				ImGui::PopID();
+				ImGui::PopID(); // ##DESC_INPUT
 
 				ImGui::NewLine();
 
@@ -746,10 +728,10 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::Custom::CopiableText(UTIL_CXOR("Last Server IP: %s"), ply.lastServerIp.c_str());
 			}
 
-			ImGui::Columns(1);
+			ImGui::Columns();
 			ImGui::EndTabItem();
 		}
-		ImGui::PopID();
+		ImGui::PopID(); // ##CACHED_PLAYER_SECT
 	}
 		
 	ImGui::EndTabBar();
