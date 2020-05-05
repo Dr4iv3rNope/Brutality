@@ -193,13 +193,15 @@ void ImGui::Custom::WindowManager::RenderWindows() noexcept
 		ImGuiTabBarFlags_NoTooltip
 	};
 
-	if (*useTabs
+	const bool use_tabs = *useTabs;
+
+	if (use_tabs
 		? ImGui::Begin(UTIL_CXOR("Brutality")) && ImGui::BeginTabBar(UTIL_CXOR("TABS##BRUTALITY"), FLAGS)
 		: true)
 	{
 		for (auto& data : _windows)
 		{
-			if (*useTabs
+			if (use_tabs
 				? ImGui::BeginTabItem(data.window->_title.c_str(), &data.window->_isOpen, data.window->_flags)
 				: ImGui::Begin(data.window->_title.c_str(), &data.window->_isOpen, data.window->_flags))
 			{
@@ -210,16 +212,16 @@ void ImGui::Custom::WindowManager::RenderWindows() noexcept
 				data.window->_onWindowRender(*data.window);
 				ImGui::PopID();
 
-				if (*useTabs)
+				if (use_tabs)
 					ImGui::EndTabItem();
 			}
 
-			if (!*useTabs)
+			if (!use_tabs)
 				ImGui::End();
 		}
 	}
 
-	if (*useTabs)
+	if (use_tabs)
 	{
 		ImGui::EndTabBar();
 		ImGui::End();
