@@ -328,8 +328,12 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARA
         /*if (wParam > 0 && wParam < 0x10000)
             io.AddInputCharacterUTF16((unsigned short)wParam);*/
 
-        if (wchar_t wide_char; MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, (const char*)&wParam, 1, &wide_char, 1))
+        /*if (wchar_t wide_char; MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, (const char*)&wParam, 1, &wide_char, 1))
+            io.AddInputCharacter(wide_char);*/
+
+        if (wchar_t wide_char; MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, (const char*)&wParam, 1, &wide_char, 1))
             io.AddInputCharacter(wide_char);
+
         return 0;
     case WM_SETCURSOR:
         if (LOWORD(lParam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
