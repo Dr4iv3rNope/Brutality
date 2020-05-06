@@ -1,6 +1,8 @@
 #define NOMINMAX
 #include "main.hpp"
 
+#include "util/httpclient.hpp"
+
 #include "util/debug/logs.hpp"
 #include "util/debug/winapi.hpp"
 #include "util/debug/errors.hpp"
@@ -78,12 +80,33 @@ namespace
 	}
 }
 
+//
+// initialize steam interfaces
+//
+#include "sourcesdk/interfaces.hpp"
+#include "steamapi/steamuser.hpp"
+#include "steamapi/steamclient.hpp"
+
+SteamAPI::SteamClient* const SteamAPI::client
+{
+	(SteamAPI::SteamClient*)SourceSDK::GetInterface(
+		UTIL_SXOR("steamclient.dll"),
+		UTIL_SXOR("SteamClient018")
+	)
+};
+
+auto steamPipeHandle = SteamAPI::client->CreateSteamPipe();
+auto steamUserHandle = SteamAPI::client->ConnectToGlobalUser(steamPipeHandle);
+
+SteamAPI::SteamUser* const SteamAPI::user
+{
+	SteamAPI::client->GetSteamUser(steamUserHandle, steamPipeHandle, UTIL_CXOR("SteamUser020"))
+};
+
 
 //
 // initializing interfaces
 //
-
-#include "sourcesdk/interfaces.hpp"
 
 #include "sourcesdk/cvar.hpp"
 #include "sourcesdk/inputsystem.hpp"
