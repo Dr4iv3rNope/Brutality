@@ -8,6 +8,7 @@
 #include <ShlObj.h>
 
 #include <stdexcept>
+#include <filesystem>
 #include <cassert>
 
 #include "../sourcesdk/inputsystem.hpp"
@@ -35,11 +36,12 @@ static WNDPROC oldWindowProc;
 static Util::Vmt::HookedMethod* oldLockCursor { nullptr };
 
 
-static LRESULT __stdcall windowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static LRESULT __stdcall WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
-
+	if (auto result = ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+		result != 0)
+		return result;
 
 	if (isMenuOpen)
 	{
@@ -75,7 +77,7 @@ void UI::Initialize()
 	gameWindow = FindWindowA(UTIL_CXOR("Valve001"), nullptr);
 	UTIL_ASSERT(gameWindow, "game window not found");
 
-	oldWindowProc = WNDPROC(SetWindowLongA(gameWindow, GWLP_WNDPROC, LONG(windowProc)));
+	oldWindowProc = WNDPROC(SetWindowLongA(gameWindow, GWLP_WNDPROC, LONG(WindowProc)));
 
 	ImGui::CreateContext();
 
@@ -111,8 +113,8 @@ void UI::Initialize()
 		};
 
 		ImGui::GetIO().Fonts->AddFontFromFileTTF(
-			//Util::ToString(std::wstring(wfont)).append(UTIL_SXOR("\\Arial.ttf")).c_str(),
-			Util::ToString(std::wstring(wfont)).append(UTIL_SXOR("\\Verdana.ttf")).c_str(),
+			//Util::ToMultiByte(std::wstring(wfont)).append(UTIL_SXOR("\\Arial.ttf")).c_str(),
+			Util::ToMultiByte(std::wstring(wfont)).append(UTIL_SXOR("\\Verdana.ttf")).c_str(),
 			14.f,
 			nullptr,
 			ranges);
@@ -227,10 +229,18 @@ void UI::Initialize()
 	// setup imgui.ini directory
 	//
 	{
-		static auto ini_path { Util::ToString(Main::GetLocalPath()) + UTIL_SXOR("imgui\\windows.ini") };
+		if (auto directory = Util::ToMultiByte(Main::GetLocalPath()) + UTIL_SXOR("imgui");
+			!std::filesystem::is_directory(directory))
+		{
+			UTIL_XLOG(L"Imgui folder not exist, creating it");
+
+			std::filesystem::create_directory(directory);
+		}
+
+		static auto ini_path { Util::ToMultiByte(Main::GetLocalPath()) + UTIL_SXOR("imgui\\windows.ini") };
 		ImGui::GetIO().IniFilename = ini_path.c_str();
 
-		static auto logs_path { Util::ToString(Main::GetLocalPath()) + UTIL_SXOR("imgui\\logs.log") };
+		static auto logs_path { Util::ToMultiByte(Main::GetLocalPath()) + UTIL_SXOR("imgui\\logs.log") };
 		ImGui::GetIO().LogFilename = logs_path.c_str();
 	}
 
