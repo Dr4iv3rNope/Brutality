@@ -26,7 +26,12 @@ void Util::Debug::MessageBoxAssert(const wchar_t* what) noexcept
 
 void Util::Debug::LogLastWinapiError() noexcept
 {
+	const auto last_error = GetLastError();
+
 	UTIL_LOG(UTIL_WFORMAT(
-		UTIL_XOR(L"LastError: ") << std::hex << GetLastError()
+		UTIL_XOR(L"LastError: ")
+		<< last_error
+		<< UTIL_XOR(L" (Hex: 0x") << std::hex
+		<< last_error << ')'
 	));
 }
