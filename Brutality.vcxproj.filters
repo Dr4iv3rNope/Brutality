@@ -210,6 +210,12 @@
     <ClCompile Include="imgui\custom\variableui.cpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
+    <ClCompile Include="util\httpclient.cpp">
+      <Filter>Utilities\HTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="features\spectatorlist.cpp">
+      <Filter>Features\Shared\Spectator List</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -424,6 +430,15 @@
     </Filter>
     <Filter Include="Features\Shared\Chat Spammer">
       <UniqueIdentifier>{7550cfce-fff6-4b4e-b74f-14ade3218c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Steam API">
+      <UniqueIdentifier>{c5e7b8f6-ca38-4064-8889-260fc3bb0ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\HTTP">
+      <UniqueIdentifier>{11ba6495-1486-4ad0-9d06-52fe1b64ac62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Spectator List">
+      <UniqueIdentifier>{e1c2873b-565c-47a3-8230-08e107160691}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -789,6 +804,21 @@
     </ClInclude>
     <ClInclude Include="imgui\custom\errors.hpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="steamapi\steamuser.hpp">
+      <Filter>Steam API</Filter>
+    </ClInclude>
+    <ClInclude Include="steamapi\steamid.hpp">
+      <Filter>Steam API</Filter>
+    </ClInclude>
+    <ClInclude Include="util\httpclient.hpp">
+      <Filter>Utilities\HTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="steamapi\steamclient.hpp">
+      <Filter>Steam API</Filter>
+    </ClInclude>
+    <ClInclude Include="features\spectatorlist.hpp">
+      <Filter>Features\Shared\Spectator List</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,11 +5,11 @@ namespace Features
 {
 	namespace TextRadar
 	{
-		void Update() noexcept;
+		extern void Update() noexcept;
 
 		// call when menu is opened
-		void DrawPreview(ImDrawList* list);
+		extern void DrawPreview(ImDrawList* list);
 
-		void Draw(ImDrawList* list);
+		extern void Draw(ImDrawList* list);
 	}
 }
