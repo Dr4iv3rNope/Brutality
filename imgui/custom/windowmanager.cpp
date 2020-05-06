@@ -1,4 +1,5 @@
 #include "windowmanager.hpp"
+#include "variableui.hpp"
 
 #include "../../config/variable.hpp"
 
@@ -58,7 +59,7 @@ bool ImGui::Custom::WindowManager::UnregisterWindow(const Window& window) noexce
 {
 	UTIL_LOG(UTIL_WFORMAT(
 		UTIL_XOR(L"Trying to unregister window ") <<
-		Util::ToWString(window.GetTitle())
+		Util::ToWideChar(window.GetTitle())
 	));
 
 	if (!IsRegistered(window))
@@ -102,7 +103,7 @@ bool ImGui::Custom::WindowManager::RegisterWindow(Window window, std::size_t* wi
 {
 	UTIL_LOG(UTIL_WFORMAT(
 		UTIL_XOR(L"Registering window ") <<
-		Util::ToWString(window.GetTitle())
+		Util::ToWideChar(window.GetTitle())
 	));
 
 	if (IsRegistered(window))
@@ -154,10 +155,10 @@ void ImGui::Custom::WindowManager::Render() noexcept
 {
 	if (ImGui::Begin(UTIL_CXOR("Window Manager"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		if (bool use_tabs = *useTabs; ImGui::Checkbox(useTabs.GetKey().c_str(), &use_tabs))
-			useTabs.SetValue(use_tabs);
+		ImGui::Custom::Variable::Boolean(useTabs);
+		ImGui::Separator();
 
-		if (ImGui::BeginChild(UTIL_CXOR("WNDMGR##ITEMS"), ImVec2(250.f, ImGui::GetTextLineHeight() * 12.f)))
+		if (ImGui::BeginChild(UTIL_CXOR("WNDMGR##ITEMS"), ImVec2(250.f, ImGui::GetTextLineHeightWithSpacing() * 6.f)))
 		{
 			for (auto& data : _windows)
 			{
@@ -166,9 +167,9 @@ void ImGui::Custom::WindowManager::Render() noexcept
 				ImGui::PushID(data.id);
 
 				if (data.window->_isOpen)
-					selected = ImGui::Selectable(UTIL_CXOR("[-]"));
+					selected = ImGui::Selectable(UTIL_CXOR("[-]"), false);
 				else
-					selected = ImGui::Selectable(UTIL_CXOR("[+]"));
+					selected = ImGui::Selectable(UTIL_CXOR("[+]"), true);
 
 				ImGui::SameLine();
 				ImGui::TextUnformatted(data.window->_title.c_str());
@@ -201,9 +202,12 @@ void ImGui::Custom::WindowManager::RenderWindows() noexcept
 	{
 		for (auto& data : _windows)
 		{
+			if (!use_tabs && !data.window->_isOpen)
+				continue;
+
 			if (use_tabs
 				? ImGui::BeginTabItem(data.window->_title.c_str(), &data.window->_isOpen, data.window->_flags)
-				: ImGui::Begin(data.window->_title.c_str(), &data.window->_isOpen, data.window->_flags))
+				: ImGui::Begin(data.window->_title.c_str(), nullptr, data.window->_flags))
 			{
 				UTIL_DEBUG_ASSERT(data.window);
 				UTIL_DEBUG_ASSERT(data.window->_onWindowRender);
