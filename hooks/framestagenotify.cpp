@@ -7,6 +7,7 @@
 #include "../features/customdisconnect.hpp"
 #include "../features/textradar.hpp"
 #include "../features/namechanger.hpp"
+#include "../features/spectatorlist.hpp"
 #include "../features/chatspam.hpp"
 #include "../features/gmod/luainterface.hpp"
 
@@ -41,9 +42,10 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 			break;
 
 		case SourceSDK::ClientFrameStage::NetUpdateEnd:
-			Features::PlayerList::Update();
 			Features::Esp::Update();
+			Features::PlayerList::Update();
 			Features::TextRadar::Update();
+			Features::SpectatorList::Update();
 			break;
 
 		case SourceSDK::ClientFrameStage::RenderStart:

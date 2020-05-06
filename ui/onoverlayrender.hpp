@@ -10,6 +10,7 @@
 #include "../util/xorstr.hpp"
 
 #include "../features/esp.hpp"
+#include "../features/spectatorlist.hpp"
 #include "../features/textradar.hpp"
 #include "../features/crosshair.hpp"
 
@@ -18,6 +19,7 @@ void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 	Features::Esp::Draw(draw);
 	Features::Crosshair::Draw(draw, isMenuOpen);
 	Features::TextRadar::Draw(draw);
+	Features::SpectatorList::Draw(draw);
 
 	// draw black transparent background
 	// is menu is opened
@@ -39,5 +41,6 @@ void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 	{
 		Features::Crosshair::DrawPreview(draw);
 		Features::TextRadar::DrawPreview(draw);
+		Features::SpectatorList::DrawPreview(draw);
 	}
 }

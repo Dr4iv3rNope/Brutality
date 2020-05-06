@@ -8,9 +8,9 @@ namespace SourceSDK
 		None,
 		DeathCam,
 		FreezeCam,
-		Fixed,
-		InEye,
-		Chase,
+		Fixed,		// view from a fixed camera position
+		InEye,		// first person
+		Chase,		// third person
 		Roaming
 	};
 }

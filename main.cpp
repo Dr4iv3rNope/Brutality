@@ -545,6 +545,15 @@ Config::LFloat textRadarMaxDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Ma
 Config::Bool textRadarDrawDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
 
 
+// spectator list
+Config::Bool spectatorListEnable(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Enable"), false);
+
+Config::UInt32 spectatorListX(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("X"), 0);
+Config::UInt32 spectatorListY(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"), 0);
+
+Config::LUInt32 spectatorListMaxPlayers(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Max Players"), 5, 2, 32);
+
+
 // crosshair
 
 Config::Bool crosshairEnable(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Enable"), false);
