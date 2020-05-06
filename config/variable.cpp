@@ -161,8 +161,8 @@ void Config::ImportVariables(const nlohmann::json& root)
 							if (!variable->Import(json_value))
 								UTIL_LOG(UTIL_WFORMAT(
 									UTIL_XOR(L"Failed to import variable ") <<
-									Util::ToWString(variable->GetGroup().data()) << ' ' <<
-									Util::ToWString(variable->GetKey().data())
+									Util::ToWideChar(variable->GetGroup().data()) << ' ' <<
+									Util::ToWideChar(variable->GetKey().data())
 								));
 }
 
@@ -181,8 +181,8 @@ void Config::ExportVariables(nlohmann::json& root)
 			else
 				UTIL_LOG(UTIL_WFORMAT(
 					UTIL_XOR(L"Failed to export variable ") <<
-					Util::ToWString(variable->GetGroup().data()) << ' ' <<
-					Util::ToWString(variable->GetKey().data())
+					Util::ToWideChar(variable->GetGroup().data()) << ' ' <<
+					Util::ToWideChar(variable->GetKey().data())
 				));
 		}
 	}

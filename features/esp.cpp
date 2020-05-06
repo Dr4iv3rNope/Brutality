@@ -238,7 +238,7 @@ static void PushPlayer(
 		if (auto weapon = player->GetActiveWeapon())
 		{
 			if (auto text = localize->Find(weapon->GetWeaponInfo().printname); text)
-				info.GetPlayerInfo()->activeWeaponText = Util::ToString(text);
+				info.GetPlayerInfo()->activeWeaponText = Util::ToMultiByte(text);
 			else
 				info.GetPlayerInfo()->activeWeaponText = weapon->GetClassname();
 		}
@@ -575,6 +575,7 @@ static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
 
 	static int currentItem { -1 };
 
+	ImGui::PushItemWidth(-1.f);
 	ImGui::Combo("", &currentItem, [] (void* data, int idx, const char** out_text) -> bool
 	{
 		*out_text = entityClassnames[idx].classname.c_str();

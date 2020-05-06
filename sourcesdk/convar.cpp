@@ -14,7 +14,7 @@ SourceSDK::ConVar* SourceSDK::CreateConVar(const char* name, const char* default
 	ConVar::ChangeCallbackFn callback)
 {
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(
-		UTIL_XOR(L"Creating convar ") << Util::ToWString(name)
+		UTIL_XOR(L"Creating convar ") << Util::ToWideChar(name)
 	));
 
 	ConVar* convar = (ConVar*)new char[ConVar::SIZE]{};

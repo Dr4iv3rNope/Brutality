@@ -10,7 +10,7 @@ SourceSDK::ConCommand* SourceSDK::CreateConCommand(const char* name, ConCommand:
 	const char* help_string, int flags, ConCommand::AutoCompleteFn ac_callback)
 {
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(
-		UTIL_XOR(L"Create ConCommand ") << Util::ToWString(name)
+		UTIL_XOR(L"Create ConCommand ") << Util::ToWideChar(name)
 	));
 
 	using ConstructorFn = ConCommand*(*__thiscall)(ConCommand*,

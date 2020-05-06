@@ -5,8 +5,8 @@
 
 namespace Util
 {
-	extern std::wstring ToWString(const std::string& str);
-	extern std::string ToString(const std::wstring& str);
+	extern std::wstring ToWideChar(const std::string& str);
+	extern std::string ToMultiByte(const std::wstring& str);
 
 	template <typename T>
 	inline std::basic_string<T> ToLower(std::basic_string<T> str) noexcept
@@ -20,7 +20,7 @@ namespace Util
 	}
 }
 
-#define UTIL_FORMAT_EX(str_type, fmt)	((std::basic_stringstream<str_type::value_type>{} << fmt).str()) // formats string using stringstream
+#define UTIL_FORMAT_EX(str_type, fmt) ((std::basic_stringstream<str_type::value_type>{} << fmt).str()) // formats string using stringstream
 	// example: UTIL_FORMAT_EX(std::string, "100 in hex is " << std::hex << 100);
 
 #define UTIL_FORMAT(fmt) UTIL_FORMAT_EX(std::string, fmt)	// formats multibyte string using stringstream

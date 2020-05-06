@@ -52,7 +52,7 @@ Util::Pattern Util::Aob(const std::string& pattern)
 	#ifdef _DEBUG
 	UTIL_LOG(UTIL_WFORMAT(
 		UTIL_XOR(L"Created pattern \"") <<
-		Util::ToWString(pattern) <<
+		Util::ToWideChar(pattern) <<
 		UTIL_XOR(L"\" (") <<
 		UTIL_RUNTIME_HASH(pattern) <<
 		UTIL_XOR(L") got UID ") <<
@@ -144,7 +144,7 @@ std::uintptr_t Util::FindPattern(std::uintptr_t begin, std::uintptr_t end, const
 std::uintptr_t Util::FindPattern(const std::string& module_name, const Pattern& bytes)
 {
 	UTIL_LOG(UTIL_WFORMAT(
-		UTIL_XOR(L"Trying to find pattern in module ") << ToWString(module_name)
+		UTIL_XOR(L"Trying to find pattern in module ") << ToWideChar(module_name)
 	));
 
 	auto module = GetModuleHandleA(module_name.c_str());

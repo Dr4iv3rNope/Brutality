@@ -10,8 +10,8 @@ void* SourceSDK::GetInterface(const std::string& module_name, const std::string&
 {
 	UTIL_LOG(UTIL_WFORMAT(
 		UTIL_XOR(L"Finding interface: ") <<
-		Util::ToWString(module_name) << ' ' <<
-		Util::ToWString(iface_name)
+		Util::ToWideChar(module_name) << ' ' <<
+		Util::ToWideChar(iface_name)
 	));
 
 	auto hmodule = GetModuleHandleA(module_name.c_str());

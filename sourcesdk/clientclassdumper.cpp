@@ -20,6 +20,6 @@ const SourceSDK::ClientClass* SourceSDK::ClientClassDumper::FindClientClass(cons
 	else
 		UTIL_RUNTIME_ERROR_EX(UTIL_WFORMAT(
 			UTIL_XOR(L"failed to find client class ") <<
-			Util::ToWString(cs_name)
+			Util::ToWideChar(cs_name)
 		), UTIL_XOR("failed to find client class"));
 }

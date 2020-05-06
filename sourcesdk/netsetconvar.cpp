@@ -42,8 +42,8 @@ bool SourceSDK::SendConVarValue(const char* name, const char* value)
 {
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(
 		UTIL_XOR(L"Sending \"changed\" convar: ") <<
-		Util::ToWString(name) << ' ' <<
-		Util::ToWString(value)
+		Util::ToWideChar(name) << ' ' <<
+		Util::ToWideChar(value)
 	));
 
 	if (!clientState->netChannel)

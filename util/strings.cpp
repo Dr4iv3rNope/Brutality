@@ -8,7 +8,7 @@
 
 #include <memory>
 
-std::wstring Util::ToWString(const std::string& str)
+std::wstring Util::ToWideChar(const std::string& str)
 {
 	auto size_required = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.size(), nullptr, 0);
 
@@ -33,9 +33,9 @@ std::wstring Util::ToWString(const std::string& str)
 	}
 }
 
-std::string Util::ToString(const std::wstring& wstr)
+std::string Util::ToMultiByte(const std::wstring& wstr)
 {
-	auto size_required = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
+	auto size_required = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), wstr.size(), nullptr, 0, nullptr, nullptr);
 
 	if (!size_required)
 	{
