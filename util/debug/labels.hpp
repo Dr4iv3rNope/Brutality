@@ -98,7 +98,7 @@ namespace Util
 #define UTIL_LABEL_OK()			UTIL_LABEL_OK_EX(_)												// succeeds default label
 
 #define UTIL_LABEL_OVERRIDE_EX(id)	Util::Debug::LogLabel::ExitOverride(UTIL_LABEL_EX(id).release())	// disables assert and fail unique label
-#define UTIL_LABEL_OVERRIDE()		UTIL_LABEL_OK_EX(_)													// disables assert and fail default label
+#define UTIL_LABEL_OVERRIDE()		UTIL_LABEL_OVERRIDE_EX(_)											// disables assert and fail default label
 #else
 #define UTIL_LABEL_EX(id)
 #define UTIL_LABEL()
