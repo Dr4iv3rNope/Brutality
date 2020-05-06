@@ -19,6 +19,7 @@
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_stdlib.h"
 #include "../imgui/custom/windowmanager.hpp"
+#include "../imgui/custom/errors.hpp"
 
 void Config::Save(const std::wstring& filename)
 {
@@ -90,41 +91,25 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 {
 	static std::string configName;
 
-	enum class ConfigError {
-		None, SuccessLoad, SuccessSave, FailedLoad, FailedSave
-	};
-	static ConfigError lastError { ConfigError::None };
+	static constexpr int ERR_NONE { -1 };
+	static constexpr int ERR_FAILED_LOAD { 0 };
+	static constexpr int ERR_FAILED_SAVE { 1 };
 
-	switch (lastError)
+	static int currentError { ERR_NONE };
+	static ImGui::Custom::ErrorList errorList =
 	{
-		//
-		// save
-		//
+		ImGui::Custom::Error(
+			UTIL_SXOR("Failed to load config"),
+			ImVec4(1.f, 0.f, 0.f, 1.f)
+		),
 
-		case ConfigError::SuccessSave:
-			ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), UTIL_CXOR("Successfully saved config"));
-			break;
+		ImGui::Custom::Error(
+			UTIL_SXOR("Failed to save config"),
+			ImVec4(1.f, 0.f, 0.f, 1.f)
+		)
+	};
 
-		case ConfigError::FailedSave:
-			ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("Failed to save config"));
-			break;
-
-		//
-		// load
-		//
-
-		case ConfigError::SuccessLoad:
-			ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), UTIL_CXOR("Successfully loaded config"));
-			break;
-
-		case ConfigError::FailedLoad:
-			ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), UTIL_CXOR("Failed to load config"));
-			break;
-
-		default:
-			ImGui::NewLine();
-			break;
-	}
+	ImGui::Custom::StatusError(currentError, errorList);
 
 	ImGui::InputText("", &configName);
 
@@ -132,12 +117,12 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 	{
 		try
 		{
-			Config::Save(Util::ToWString(configName));
-			lastError = ConfigError::SuccessSave;
+			Config::Save(Util::ToWideChar(configName));
+			currentError = ERR_NONE;
 		}
 		catch (...)
 		{
-			lastError = ConfigError::FailedSave;
+			currentError = ERR_FAILED_SAVE;
 		}
 	}
 
@@ -147,12 +132,12 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 	{
 		try
 		{
-			Config::Load(Util::ToWString(configName));
-			lastError = ConfigError::SuccessLoad;
+			Config::Load(Util::ToWideChar(configName));
+			currentError = ERR_NONE;
 		}
 		catch (...)
 		{
-			lastError = ConfigError::FailedLoad;
+			currentError = ERR_FAILED_LOAD;
 		}
 	}
 }
