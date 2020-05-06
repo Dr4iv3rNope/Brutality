@@ -43,18 +43,27 @@ static inline const std::wstring& GetLuaPath() noexcept
 
 static void UpdateLuaList() noexcept
 {
-	UTIL_XLOG(L"Updating lua scipt list");
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Updating lua script list"));
+
+	if (!std::filesystem::is_directory(GetLuaPath()))
+	{
+		UTIL_XLOG(L"Lua script folder not exist, creating it");
+
+		std::filesystem::create_directory(GetLuaPath());
+	}
 
 	luaList.clear();
 
 	for (auto& file : std::filesystem::directory_iterator(GetLuaPath()))
 		if (file.is_regular_file() && file.path().has_filename())
 			luaList.push_back(file.path().filename().string());
+
+	UTIL_LABEL_OK();
 }
 
 static bool GetLuaScript(const std::string& filename, std::string& out) noexcept
 {
-	const auto path = GetLuaPath() + Util::ToWString(filename);
+	const auto path = GetLuaPath() + Util::ToWideChar(filename);
 	std::ifstream file(path);
 
 	if (file)
@@ -77,6 +86,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 	static std::string luaId {};
 
 	ImGui::TextUnformatted(UTIL_CXOR("Identificator"));
+	ImGui::PushItemWidth(-1.f);
 	ImGui::InputText("", &luaId);
 
 	if (ImGui::BeginTabBar(UTIL_CXOR("#TAB_BAR")))
@@ -86,7 +96,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			static std::string luaBuffer {};
 
 			ImGui::PushID(1);
-			ImGui::InputTextMultiline("", &luaBuffer, ImVec2(300, 200), ImGuiInputTextFlags_AllowTabInput);
+			ImGui::InputTextMultiline("", &luaBuffer, ImVec2(-1.f, 200), ImGuiInputTextFlags_AllowTabInput);
 			ImGui::PopID();
 
 			if (*Features::GarrysMod::luaInterface)
@@ -112,13 +122,14 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 			if (ImGui::IsItemHovered())
 			{
-				static auto path { Util::ToString(GetLuaPath()) };
+				static auto path { Util::ToMultiByte(GetLuaPath()) };
 
 				ImGui::BeginTooltip();
 				ImGui::Text(UTIL_CXOR("Lua script path: %s"), path.c_str());
 				ImGui::EndTooltip();
 			}
 
+			ImGui::PushItemWidth(-1.f);
 			ImGui::ListBox("", &currentLuaScript, [] (void*, int idx, const char** out) -> bool
 			{
 				*out = luaList[idx].c_str();
@@ -148,7 +159,7 @@ void Features::GarrysMod::LuaLoader::RegisterWindow() noexcept
 	ImGui::Custom::windowManager.RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Lua Loader"),
-			ImGuiWindowFlags_AlwaysAutoResize,
+			0,
 			DrawMenu
 		)
 	);
