@@ -64,7 +64,6 @@ struct PlayerListInfo
 			: UTIL_SXOR("You");
 	}
 
-	inline void Uncache() noexcept;
 	inline void Cache(const PlayerListCachedInfo& cache) noexcept;
 	inline PlayerListCachedInfo* GetCacheInfo() const noexcept;
 	inline bool TryLoadFromCache() noexcept;
@@ -159,13 +158,13 @@ static ImGui::Custom::ErrorList cacheErrors =
 
 	ImGui::Custom::Error(
 		UTIL_SXOR("Cache is outdated"),
-		ImVec4(1.f, 0.f, 0.f, 1.f),
+		ImVec4(1.f, 1.f, 0.f, 1.f),
 		UTIL_SXOR("You should load cache file")
 	),
 
 	ImGui::Custom::Error(
 		UTIL_SXOR("File's cache is outdated"),
-		ImVec4(1.f, 0.f, 0.f, 1.f),
+		ImVec4(1.f, 1.f, 0.f, 1.f),
 		UTIL_SXOR("You should save cache file")
 	),
 
@@ -212,20 +211,6 @@ inline PlayerListCachedInfo* PlayerListInfo::GetCacheInfo() const noexcept
 		return &*iter;
 	else
 		return nullptr;
-}
-
-inline void PlayerListInfo::Uncache() noexcept
-{
-	if (isCached)
-	{
-		if (auto iter = GetCachedPlayerBySteamID(this->steamid);
-			IsCachedPlayerValid(iter))
-		{
-			cachedPlayerList.erase(iter);
-
-			this->isCached = false;
-		}
-	}
 }
 
 inline bool PlayerListInfo::TryLoadFromCache() noexcept
@@ -379,7 +364,7 @@ void Features::PlayerList::LoadCache()
 		}
 		catch (const std::exception& ex)
 		{
-			UTIL_LOG(UTIL_SXOR(L"Load Cache exception: ") + Util::ToWString(ex.what()));
+			UTIL_LOG(UTIL_SXOR(L"Load Cache exception: ") + Util::ToWideChar(ex.what()));
 		}
 
 		file.close();
@@ -422,7 +407,7 @@ void Features::PlayerList::SaveCache()
 			json_plylist.push_back(json_cachedInfo);
 		}
 
-		file << root.dump(4);
+		file << root.dump();
 		file.close();
 
 		cacheCurrentError = CACHE_ERR_NOERROR;
@@ -482,6 +467,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::Text(UTIL_CXOR("Clients: %i"), globals->maxClients);
 
 				ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
+				ImGui::PushItemWidth(-1.f);
 				ImGui::ListBox("", &selectedPlayer, [] (void*, int idx, const char** out) -> bool
 				{
 					static auto no_player { UTIL_SXOR("*No Player*") };
@@ -654,6 +640,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				Features::PlayerList::LoadCache();
 
 			ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
+			ImGui::PushItemWidth(-1.f);
 			ImGui::ListBox("", &cachedSelectedPlayer, [] (void* data, int idx, const char** out) -> bool
 			{
 				*out = cachedPlayerList[idx].lastName.c_str();
@@ -671,7 +658,8 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			{
 				auto& ply = cachedPlayerList[cachedSelectedPlayer];
 
-				ImGui::PushID(UTIL_CXOR("##PLAYERTYPE_COMBO"));
+				ImGui::PushID(UTIL_CXOR("##PLAYERTYPE_COMBO"));				
+				ImGui::PushItemWidth(-1.f);
 				if (ImGui::Combo("",
 					(int*)&ply.type,
 					UTIL_CXOR("Delete this record\0Dangerous\0Friend\0Rage\0")
@@ -685,10 +673,9 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 					// remove player from cache
 					if (ply.type == PlayerType::Normal)
 					{
-						if (info) info->Uncache();
+						cachedPlayerList.erase(cachedPlayerList.begin() + cachedSelectedPlayer);
 
 						cachedSelectedPlayer = -1;
-
 						cacheCurrentError = CACHE_ERR_FILE_OUTDATED;
 
 						// dont draw invalid info below
@@ -714,7 +701,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 				ImGui::TextUnformatted(UTIL_CXOR("Description"));
 				ImGui::PushID(UTIL_CXOR("##DESC_INPUT"));
-				ImGui::InputTextMultiline("", &ply.description, ImVec2(260.f, 80.f));
+				ImGui::InputTextMultiline("", &ply.description, ImVec2(-1.f, 80.f));
 				ImGui::PopID(); // ##DESC_INPUT
 
 				ImGui::NewLine();
