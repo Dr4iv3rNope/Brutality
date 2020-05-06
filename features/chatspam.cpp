@@ -308,6 +308,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			ImGui::Text(UTIL_CXOR("Current Animation Index: %i"), currentAnimation);
 
 			ImGui::PushID(UTIL_CXOR("##ANIM_LIST"));
+			ImGui::PushItemWidth(-1.f);
 			if (ImGui::ListBox("", &currentAnimation, [] (void*, int idx, const char** out) -> bool
 			{
 				*out = animationList[idx].name.c_str();
@@ -371,6 +372,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::Text(UTIL_CXOR("Current Sequence Index: %i"), currentSequence);
 
 				ImGui::PushID(UTIL_CXOR("##SEQ_LIST"));
+				ImGui::PushItemWidth(-1.f);
 				if (ImGui::ListBox("", &currentSequence, [] (void* sequence, int idx, const char** out) -> bool
 				{
 					const auto& str = reinterpret_cast<std::deque<std::string>*>(sequence)->at(idx);
@@ -420,7 +422,9 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 				ImGui::Text(
 					UTIL_CXOR("Total time to print: %f s."),
-					SourceSDK::TALK_INTERVAL * float(sequences.size())
+					*chatSpamDelay != 0.f
+					? *chatSpamDelay * float(sequences.size())
+					: SourceSDK::TALK_INTERVAL * float(sequences.size())
 				);
 
 				//
@@ -443,7 +447,7 @@ void Features::ChatSpam::RegisterWindow() noexcept
 	ImGui::Custom::windowManager.RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Chat Spammer"),
-			ImGuiWindowFlags_AlwaysAutoResize,
+			0,
 			DrawMenu
 		)
 	);

@@ -137,6 +137,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 	if (pressedEnter || pressedButton)
 		Features::CustomDisconnect::Disconnect(ImGui::Custom::FormatSpecialChars(reason_buf));
 
+	ImGui::PushItemWidth(-1.f);
 	if (int selected_item = -1; ImGui::ListBox("", &selected_item, [] (void*, int idx, const char** out) -> bool
 	{
 		*out = reason_list[idx].first.c_str();
