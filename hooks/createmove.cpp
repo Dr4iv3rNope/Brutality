@@ -1,6 +1,7 @@
 #include "createmove.hpp"
 
 #include "../features/bhop.hpp"
+#include "../features/fastwalk.hpp"
 
 #include "../sourcesdk/hlinput.hpp"
 #include "../sourcesdk/usercmd.hpp"
@@ -22,5 +23,6 @@ bool __fastcall Hooks::CreateMove(SourceSDK::ClientModeShared* clientMode, void*
 		(clientMode, edx, input_sample_frametime, cmd);
 
 	Features::BunnyHop::Think(cmd);
+	Features::FastWalk::Think(cmd);
 	return false;
 }
