@@ -23,8 +23,7 @@ namespace Features
 			// return true if hooked
 			static bool TryToInitialize();
 
-			// return true if runstring has been unhooked
-			static bool Shutdown();
+			static void Shutdown();
 
 			bool RunString(const char* id, const char* code) noexcept;
 		};

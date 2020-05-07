@@ -51,7 +51,7 @@ extern Config::Bool preventRunString;
 
 static bool __fastcall RunString(void* ecx, void* edx,
 								 const char* id, const char* unk0, const char* code,
-								 int unk1, int unk2) noexcept
+								 bool unk1, bool unk2) noexcept
 {
 	if (preventRunString)
 		return false;
@@ -86,40 +86,41 @@ bool Features::GarrysMod::LuaInterface::TryToInitialize()
 	return true;
 }
 
-bool Features::GarrysMod::LuaInterface::Shutdown()
+void Features::GarrysMod::LuaInterface::Shutdown()
 {
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Initializing RunString hook"));
 	UTIL_DEBUG_ASSERT(oldRunString);
 
-	if (!oldRunString)
-		return false;
-
 	delete oldRunString;
-	return true;
+	UTIL_LABEL_OK();
 }
 
 bool Features::GarrysMod::LuaInterface::RunString(const char* id, const char* code) noexcept
 {
-	bool(__thiscall* function)(void*, const char*, const char*, const char*, int, int) = nullptr;
+	static bool(__thiscall* function)(void*, const char*, const char*, const char*, bool, bool) = nullptr;
 
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(L"RunString " << id << ' ' << code));
 	
-	if (!oldRunString)
+	if (!function)
 	{
-		// uh, we trying to run string but hook not installed
-		// whatever, we'll run it anyway, but this mistake must be fixed!
-		UTIL_DEBUG_XLOG(L"Tried to RunString, but RunString not hooked!");
+		if (!oldRunString)
+		{
+			// uh, we trying to run string but hook not installed
+			// whatever, we'll run it anyway, but this mistake must be fixed!
+			UTIL_DEBUG_XLOG(L"Tried to RunString, but RunString not hooked!");
 
-		function = (decltype(function))Util::Vmt::GetMethod(this, GetRunStringIndex());
+			function = (decltype(function))Util::Vmt::GetMethod(this, GetRunStringIndex());
+		}
+		else
+			function = (decltype(function))oldRunString->GetOriginal();
+
+		UTIL_ASSERT(function, "Failed to get old RunString!");
 	}
-	else
-		function = (decltype(function))oldRunString->GetOriginal();
-
-	UTIL_DEBUG_ASSERT(function);
 
 	UTIL_XLOG(L"Running original RunString");
-	auto result = function(this, id, "", code, 1, 1);
-	
+	auto result = function(this, id, "", code, true, true);	
 	UTIL_LABEL_OK();
+
 	return result;
 }
 #endif

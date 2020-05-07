@@ -23,7 +23,6 @@ const SourceSDK::VMatrix& SourceSDK::Render::WorldToScreenMatrix()
 	*/
 	static const auto offset
 	{
-		// uid: 7392095838440461317
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
 			"engine.dll", "8B 0D ?? ?? ?? ?? 8B 01 FF 50 ?? 8B 4D 08 8B 55 0C", 10
 		)) / 4

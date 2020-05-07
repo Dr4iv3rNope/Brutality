@@ -79,6 +79,7 @@ namespace SourceSDK
 	};
 
 	SOURCE_SDK_INTERFACE_DECL(ClientState, clientState);
+	SOURCE_SDK_INTERFACE_DECL(float, netTime);
 
 	inline auto IsInGame() noexcept
 	{

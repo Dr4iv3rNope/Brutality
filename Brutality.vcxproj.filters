@@ -216,6 +216,9 @@
     <ClCompile Include="features\spectatorlist.cpp">
       <Filter>Features\Shared\Spectator List</Filter>
     </ClCompile>
+    <ClCompile Include="features\fastwalk.cpp">
+      <Filter>Features\Shared\Fast Walk</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -332,9 +335,6 @@
     <Filter Include="Source SDK\Structures\Enums">
       <UniqueIdentifier>{95e38da0-f8d1-44ae-97d8-8a48f7865f42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source SDK\Interfaces\CHostState">
-      <UniqueIdentifier>{e828ae22-9db6-42e3-a67a-813d197c45a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source SDK\Interfaces\CShaderAPIBase">
       <UniqueIdentifier>{ef70931f-303e-4666-93c1-c2f13b2a8b0d}</UniqueIdentifier>
     </Filter>
@@ -440,6 +440,12 @@
     <Filter Include="Features\Shared\Spectator List">
       <UniqueIdentifier>{e1c2873b-565c-47a3-8230-08e107160691}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Features\Shared\Fast Walk">
+      <UniqueIdentifier>{16d7af6e-361c-4cde-921d-142982958306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Third Person">
+      <UniqueIdentifier>{31f4a48b-c235-48ec-9dcd-ac2e0ea46b8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sourcesdk\sdk.hpp">
@@ -513,9 +519,6 @@
       <Filter>Source SDK\Structures\Enums</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\rendermode.hpp">
-      <Filter>Source SDK\Structures\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="sourcesdk\flags.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\lifestate.hpp">
@@ -625,9 +628,6 @@
     </ClInclude>
     <ClInclude Include="sourcesdk\buttoncode.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
-    </ClInclude>
-    <ClInclude Include="sourcesdk\hoststate.hpp">
-      <Filter>Source SDK\Interfaces\CHostState</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\bonemasks.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
@@ -819,6 +819,24 @@
     </ClInclude>
     <ClInclude Include="features\spectatorlist.hpp">
       <Filter>Features\Shared\Spectator List</Filter>
+    </ClInclude>
+    <ClInclude Include="features\fastwalk.hpp">
+      <Filter>Features\Shared\Fast Walk</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\hoststate.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\entityflags.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\bspflags.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="util\flags.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\math.hpp">
+      <Filter>Source SDK\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

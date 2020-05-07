@@ -12,4 +12,6 @@ void __stdcall Hooks::OverrideView(SourceSDK::ViewSetup* view_setup)
 	reinterpret_cast<decltype(Hooks::OverrideView)*>
 		(oldOverrideView->GetOriginal())
 		(view_setup);
+
+	//Features::ThirdPerson::Think(view_setup);
 }

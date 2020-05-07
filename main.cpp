@@ -136,7 +136,7 @@ SOURCE_SDK_INTERFACE(SourceSDK::EngineTraceClient, SourceSDK::enginetrace, "engi
 SOURCE_SDK_INTERFACE(SourceSDK::EngineClient, SourceSDK::engine, "engine.dll", "VEngineClient013");
 SOURCE_SDK_INTERFACE(SourceSDK::ClientEntityList, SourceSDK::entitylist, "client.dll", "VClientEntityList003");
 SOURCE_SDK_INTERFACE(SourceSDK::IGameEventManager, SourceSDK::gameevents, "engine.dll", "GAMEEVENTSMANAGER002");
-SOURCE_SDK_INTERFACE(SourceSDK::CMDLCache, SourceSDK::mdlCache, "datacache.dll", "MDLCache004");
+SOURCE_SDK_INTERFACE(SourceSDK::MDLCache, SourceSDK::mdlCache, "datacache.dll", "MDLCache004");
 SOURCE_SDK_INTERFACE(SourceSDK::MatSystemSurface, SourceSDK::surface, "vguimatsurface.dll", "VGUI_Surface030");
 SOURCE_SDK_INTERFACE(SourceSDK::LocalizedStringTable, SourceSDK::localize, "vgui2.dll", "VguiLocalize004");
 //SOURCE_SDK_INTERFACE(SourceSDK::Panel, SourceSDK::panel, "vgui2.dll", "VGUI_Panel009");
@@ -172,7 +172,7 @@ SOURCE_SDK_INTERFACE_PATTERN
 	SourceSDK::Render,
 	SourceSDK::render,
 	"engine.dll",
-	"8B 0D ?? ?? ?? ?? FF 75 ?? FF 75 ?? 8B 01 FF 50 ?? 0F B6 40", // uid: 9360
+	"8B 0D ?? ?? ?? ?? FF 75 ?? FF 75 ?? 8B 01 FF 50 ?? 0F B6 40",
 	2, 2
 );
 
@@ -225,42 +225,6 @@ SOURCE_SDK_INTERFACE_PATTERN
 	2, 2
 );
 
-/* "Save file %s can't be found!\n"
-
-push    100h
-push    esi; char*
-push    offset byte_1069D0F0; char*
-call    Q_strncpy
-mov     ecx, dword_109CAE40
-add     esp, 0Ch
-cmp     dword_1064BA3C, 2
-setnl   al
-mov     edx, [ecx]
-movzx   eax, al
-push    eax
-push    esi
-call    dword ptr[edx + 84h]
-mov     al, [ebp + remember_location]
-mov     byte_1069D1F5, al
-mov     word_1069D1F6, 100h
-test    al, al
-jz      short loc_101A343E
-mov     ecx, offset g_HostState
-call    RememberLocation
-mov     g_HostState_NextState, 1
-pop     esi
-pop     ebp
-retn
-*/
-SOURCE_SDK_INTERFACE_PATTERN
-(
-	SourceSDK::HostState,
-	SourceSDK::nextHostState,
-	"engine.dll",
-	"C7 05 ?? ?? ?? ?? 01 00 00 00 5E 5D C3", // uid: 1692443618314294131
-	2, 1
-);
-
 /*
 push    offset aGuid    ; "guid"
 call    sub_10257D70
@@ -283,8 +247,18 @@ SOURCE_SDK_INTERFACE_PATTERN
 	SourceSDK::ClientState,
 	SourceSDK::clientState,
 	"engine.dll",
-	"B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 51 D9 1C 24 68", // uid: 12854204129183460047
+	"B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 51 D9 1C 24 68",
 	1, 1
+);
+
+// "Auto-disconnect in %.1f seconds" in CL_Move
+SOURCE_SDK_INTERFACE_PATTERN
+(
+	float,
+	SourceSDK::netTime,
+	"engine.dll",
+	"DD 05 ?? ?? ?? ?? DD 05 ?? ?? ?? ?? D8 E9 D9 55",
+	2, 1
 );
 
 /*
@@ -312,7 +286,7 @@ SOURCE_SDK_INTERFACE_PATTERN
 	SourceSDK::GlobalVars,
 	SourceSDK::globals,
 	"client.dll",
-	"A1 ?? ?? ?? ?? C1 E6 ?? 03 B3", // uid: 6779721209880579392
+	"A1 ?? ?? ?? ?? C1 E6 ?? 03 B3",
 	1, 2
 );
 
@@ -337,7 +311,7 @@ SOURCE_SDK_INTERFACE_PATTERN
 	IDirect3DDevice9,
 	SourceSDK::device,
 	"shaderapidx9.dll",
-	"8B 35 ?? ?? ?? ?? 8B CB", // uid: 2736
+	"8B 35 ?? ?? ?? ?? 8B CB",
 	2, 2
 );
 #endif
@@ -552,6 +526,20 @@ Config::UInt32 spectatorListX(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("X"),
 Config::UInt32 spectatorListY(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"), 0);
 
 Config::LUInt32 spectatorListMaxPlayers(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Max Players"), 5, 2, 32);
+
+
+// movement
+Config::Bool fastWalkEnable(true, UTIL_SXOR("Movement"), UTIL_SXOR("Fast Walk"), false);
+
+
+// third person
+//Config::Bool thirdPersonEnable(true, UTIL_SXOR("Third Person"), UTIL_SXOR("Enable"), false);
+//Config::Bool thirdPersonCameraCollide(true, UTIL_SXOR("Third Person"), UTIL_SXOR("Collideable Camera"), true);
+//Config::Key thirdPersonSwitchKey(true, UTIL_SXOR("Third Person"), UTIL_SXOR("Toggle Key"), ImGui::Custom::Keys::ALT);
+//
+//Config::LFloat thirdPersonX(true, UTIL_SXOR("Third Person"), UTIL_SXOR("X"), -100.f, -500.f, 500.f);
+//Config::LFloat thirdPersonY(true, UTIL_SXOR("Third Person"), UTIL_SXOR("Y"), 0.f, -200.f, 200.f);
+//Config::LFloat thirdPersonZ(true, UTIL_SXOR("Third Person"), UTIL_SXOR("Z"), 0.f, -200.f, 200.f);
 
 
 // crosshair

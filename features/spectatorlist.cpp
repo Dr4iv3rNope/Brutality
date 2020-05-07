@@ -57,6 +57,7 @@ static bool PushPlayer(ObserverMode obs_mode, const PlayerInfo& engine_info, con
 	info.color = color.Hex();
 	info.name = std::string(engine_info.name, MAX_PLAYER_NAME_LENGTH);
 
+	spectatorList.push_back(info);
 	return true;
 }
 
@@ -191,8 +192,8 @@ void Features::SpectatorList::Draw(ImDrawList* list)
 				spectator.color,
 				UTIL_FORMAT(
 					'[' << ObserverModeToString(spectator.obs_mode) <<
-					UTIL_XOR("] \"") <<
-					spectator.name << '\"'
+					UTIL_XOR("] ") <<
+					spectator.name
 				).c_str()
 			);
 	}

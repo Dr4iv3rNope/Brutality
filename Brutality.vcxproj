@@ -169,6 +169,7 @@
     <ClCompile Include="features\crosshair.cpp" />
     <ClCompile Include="features\customdisconnect.cpp" />
     <ClCompile Include="features\esp.cpp" />
+    <ClCompile Include="features\fastwalk.cpp" />
     <ClCompile Include="features\gmod\antiscreengrab.cpp" />
     <ClCompile Include="features\gmod\luainterface.cpp" />
     <ClCompile Include="features\gmod\lualoader.cpp" />
@@ -245,6 +246,7 @@
     <ClInclude Include="features\crosshair.hpp" />
     <ClInclude Include="features\customdisconnect.hpp" />
     <ClInclude Include="features\esp.hpp" />
+    <ClInclude Include="features\fastwalk.hpp" />
     <ClInclude Include="features\gmod\antiscreengrab.hpp" />
     <ClInclude Include="features\gmod\luainterface.hpp" />
     <ClInclude Include="features\gmod\lualoader.hpp" />
@@ -278,14 +280,17 @@
     <ClInclude Include="main.hpp" />
     <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="shutdown.hpp" />
+    <ClInclude Include="sourcesdk\bspflags.hpp" />
     <ClInclude Include="sourcesdk\clientclassdumper.hpp" />
     <ClInclude Include="sourcesdk\concmdflags.hpp" />
     <ClInclude Include="sourcesdk\entity.hpp" />
+    <ClInclude Include="sourcesdk\entityflags.hpp" />
     <ClInclude Include="sourcesdk\fileweaponinfo.hpp" />
     <ClInclude Include="sourcesdk\gmodentity.hpp" />
     <ClInclude Include="sourcesdk\gmodplayer.hpp" />
     <ClInclude Include="sourcesdk\inputbuttons.hpp" />
     <ClInclude Include="sourcesdk\localize.hpp" />
+    <ClInclude Include="sourcesdk\math.hpp" />
     <ClInclude Include="sourcesdk\modelcache.hpp" />
     <ClInclude Include="sourcesdk\netmessage.hpp" />
     <ClInclude Include="sourcesdk\netsetconvar.hpp" />
@@ -323,7 +328,6 @@
     <ClInclude Include="sourcesdk\netvars.hpp" />
     <ClInclude Include="sourcesdk\networkstringtable.hpp" />
     <ClInclude Include="sourcesdk\observermode.hpp" />
-    <ClInclude Include="sourcesdk\flags.hpp" />
     <ClInclude Include="sourcesdk\playerinfo.hpp" />
     <ClInclude Include="sourcesdk\playerstate.hpp" />
     <ClInclude Include="sourcesdk\recv.hpp" />
@@ -356,6 +360,7 @@
     <ClInclude Include="util\debug\labels.hpp" />
     <ClInclude Include="util\debug\logs.hpp" />
     <ClInclude Include="util\debug\winapi.hpp" />
+    <ClInclude Include="util\flags.hpp" />
     <ClInclude Include="util\httpclient.hpp" />
     <ClInclude Include="util\memory.hpp" />
     <ClInclude Include="util\pattern.hpp" />
