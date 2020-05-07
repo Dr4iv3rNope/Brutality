@@ -1,4 +1,6 @@
 #include "player.hpp"
+#include "renderable.hpp"
+#include "modelcache.hpp"
 
 #include "../util/memory.hpp"
 #include "../util/xorstr.hpp"
@@ -40,4 +42,16 @@ SourceSDK::BaseWeapon* SourceSDK::BasePlayer::GetActiveWeapon()
 	#endif
 
 	return Util::Vmt::CallMethod<BaseWeapon*>(this, offset);
+}
+
+bool SourceSDK::BasePlayer::GetEyePosition(SourceSDK::Vector3& eye_pos) const noexcept
+{
+	if (auto model = ToRenderable()->GetModel())
+		if (auto studio = mdlCache->GetStudioHDR(model))
+		{
+			eye_pos = GetOrigin() + studio->eyePos;
+			return true;
+		}
+
+	return false;
 }

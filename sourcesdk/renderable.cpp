@@ -1,4 +1,3 @@
-#pragma once
 #include "renderable.hpp"
 #include "sdk.hpp"
 #include "modelcache.hpp"
@@ -10,7 +9,7 @@
 
 #include "../util/debug/assert.hpp"
 
-const SourceSDK::Model* SourceSDK::Renderable::GetModel()
+const SourceSDK::Model* SourceSDK::Renderable::GetModel() noexcept
 {
 	// "mod_studio: MOVETYPE_FOLLOW with no model."
 	#if SOURCE_SDK_IS_GMOD
@@ -27,7 +26,7 @@ const SourceSDK::Model* SourceSDK::Renderable::GetModel()
 }
 
 
-bool SourceSDK::Renderable::SetupBones(Matrix3x4* matrices, int max_bones, BoneMaskFlags bone_mask, float current_time)
+bool SourceSDK::Renderable::SetupBones(Matrix3x4* matrices, int max_bones, BoneMask bone_mask, float current_time)
 {
 	UTIL_DEBUG_ASSERT(matrices);
 
@@ -39,7 +38,7 @@ bool SourceSDK::Renderable::SetupBones(Matrix3x4* matrices, int max_bones, BoneM
 	};
 	#endif
 
-	return Util::Vmt::CallMethod<bool, Matrix3x4*, int, int, float>
+	return Util::Vmt::CallMethod<bool, Matrix3x4*, int, BoneMask, float>
 		(this, offset, matrices, max_bones, bone_mask, current_time);
 }
 
@@ -92,10 +91,10 @@ bool SourceSDK::Renderable::FindBoneIndex(const std::string& bone_name, int& bon
 	}) && bone_out != -1;
 }
 
-bool SourceSDK::Renderable::GetBonePosition(int bone_idx, Vector& bone_pos, float time) noexcept
+bool SourceSDK::Renderable::GetBonePosition(int bone_idx, Vector3& bone_pos, float time) noexcept
 {
 	static Matrix3x4 matrices[MAX_STUDIO_BONES];
 
-	return this->SetupBones(matrices, MAX_STUDIO_BONES, int(BoneMask::Anything), time) &&
+	return this->SetupBones(matrices, MAX_STUDIO_BONES, BoneMask_Anything, time) &&
 		SourceSDK::GetBonePosition(matrices, bone_idx, bone_pos);
 }

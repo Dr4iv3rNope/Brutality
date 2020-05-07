@@ -3,7 +3,7 @@
 #include "lifestate.hpp"
 #include "observermode.hpp"
 #include "const.hpp"
-#include "flags.hpp"
+#include "entityflags.hpp"
 
 #include <array>
 
@@ -43,19 +43,22 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(int, GetBonusProgress, "CBasePlayer", "m_iBonusProgress", 0);
 		SOURCE_SDK_NETVAR(int, GetBonusChallenge, "CBasePlayer", "m_iBonusChallenge", 0);
 		SOURCE_SDK_NETVAR(float, GetMaxSpeed, "CBasePlayer", "m_flMaxspeed", 0);
-		SOURCE_SDK_NETVAR(int, GetFlags, "CBasePlayer", "m_fFlags", 0);
+		SOURCE_SDK_NETVAR(Util::Flags<EntityFlags_>, GetFlags, "CBasePlayer", "m_fFlags", 0);
 		SOURCE_SDK_NETVAR(ObserverMode, GetObserverMode, "CBasePlayer", "m_iObserverMode", 0);
 		SOURCE_SDK_NETVAR(EntityHandle, GetObserverTarget, "CBasePlayer", "m_hObserverTarget", 0);
 		SOURCE_SDK_NETVAR(EntityHandle, GetViewModel, "CBasePlayer", "m_hViewModel[0]", 0);
 
-		inline bool IsOnGround() const noexcept { return this->GetFlags() & int(Flags::OnGround); }
-		inline bool IsDucking() const noexcept { return this->GetFlags() & int(Flags::Ducking); }
-		inline bool IsInWater() const noexcept { return this->GetFlags() & int(Flags::InWater); }
-		inline bool IsSwim() const noexcept { return this->GetFlags() & int(Flags::Swim); }
-		inline bool IsInRain() const noexcept { return this->GetFlags() & int(Flags::InRain); }
-		inline bool IsFrozen() const noexcept { return this->GetFlags() & int(Flags::Frozen); }
-		inline bool IsFly() const noexcept { return this->GetFlags() & int(Flags::Fly); }
-		inline bool IsFakeClient() const noexcept { return this->GetFlags() & int(Flags::FakeClient); }
-		inline bool IsClient() const noexcept { return this->GetFlags() & int(Flags::Client); }
+		inline bool IsOnGround() const noexcept { return this->GetFlags() & EntityFlags_OnGround; }
+		inline bool IsDucking() const noexcept { return this->GetFlags() & EntityFlags_Ducking; }
+		inline bool IsInWater() const noexcept { return this->GetFlags() & EntityFlags_InWater; }
+		inline bool IsSwim() const noexcept { return this->GetFlags() & EntityFlags_Swim; }
+		inline bool IsInRain() const noexcept { return this->GetFlags() & EntityFlags_InRain; }
+		inline bool IsFrozen() const noexcept { return this->GetFlags() & EntityFlags_Frozen; }
+		inline bool IsFly() const noexcept { return this->GetFlags() & EntityFlags_Fly; }
+		inline bool IsFakeClient() const noexcept { return this->GetFlags() & EntityFlags_FakeClient; }
+		inline bool IsClient() const noexcept { return this->GetFlags() & EntityFlags_Client; }
+		inline bool HasGodMode() const noexcept { return this->GetFlags() & EntityFlags_Godmode; }
+
+		bool GetEyePosition(SourceSDK::Vector3& eye_pos) const noexcept;
 	};
 }
