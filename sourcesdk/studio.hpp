@@ -34,12 +34,12 @@ namespace SourceSDK
 			int parentIndex;
 			int boneController[BONE_CONTROLLER_COUNT];
 
-			Vector pos;
+			Vector3 pos;
 			Quaternion quat;
 			RadianEuler rot;
 
-			Vector posScale;
-			Vector rotScale;
+			Vector3 posScale;
+			Vector3 rotScale;
 
 			Matrix3x4 poseToBone;
 			Quaternion alignment;
@@ -63,7 +63,7 @@ namespace SourceSDK
 			int boneIndex;
 			int group;
 
-			Vector bbMin, bbMax;
+			Vector3 bbMin, bbMax;
 
 			__SOURCE_SDK_STUDIO_DECL_GETNAME;
 
@@ -88,7 +88,7 @@ namespace SourceSDK
 		char name[MAX_STUDIO_NAME_LENGTH];
 		int length;
 
-		Vector eyePos, illumPos, hullMin, hullMax, viewBBMin, viewBBMax;
+		Vector3 eyePos, illumPos, hullMin, hullMax, viewBBMin, viewBBMax;
 
 		int flags;
 

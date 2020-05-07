@@ -14,6 +14,4 @@ namespace SourceSDK
 		Shutdown,
 		Restart,
 	};
-
-	SOURCE_SDK_INTERFACE_DECL(HostState, nextHostState);
 }

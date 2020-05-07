@@ -1,5 +1,6 @@
 #include "entity.hpp"
 #include "entitylist.hpp"
+#include "networkable.hpp"
 #include "sdk.hpp"
 
 #include "../util/vmt.hpp"
@@ -11,7 +12,9 @@ SourceSDK::BaseEntity* SourceSDK::BaseEntity::GetByIndex(int idx) noexcept
 
 SourceSDK::BaseEntity* SourceSDK::BaseEntity::GetByHandle(EntityHandle handle) noexcept
 {
-	return entitylist->GetEntity(handle);
+	const auto networkable { entitylist->GetNetworkable(handle) };
+
+	return networkable ? networkable->ToEntity() : nullptr;
 }
 
 const char* SourceSDK::BaseEntity::GetClassname()

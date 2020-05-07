@@ -1,10 +1,11 @@
 #pragma once
 #include "interfaces.hpp"
 #include "gametrace.hpp"
+#include "bspflags.hpp"
 
 namespace SourceSDK
 {
-	class Entity;
+	class BaseEntity;
 
 	enum class TraceType
 	{
@@ -14,14 +15,34 @@ namespace SourceSDK
 	class ITraceFilter
 	{
 	public:
-		virtual bool ShouldHitEntity(Entity* entity, int mask) const = 0;
+		virtual bool ShouldHitEntity(BaseEntity* entity, Mask mask) const = 0;
 		virtual TraceType GetTraceType() const = 0;
+	};
+
+	class BasicTraceFilter : public ITraceFilter
+	{
+	private:
+		BaseEntity* _ignore;
+
+	public:
+		inline BasicTraceFilter(BaseEntity* ignore) noexcept
+			: _ignore { ignore } {}
+
+		virtual bool ShouldHitEntity(BaseEntity* entity, Mask) const override
+		{
+			return entity == _ignore;
+		}
+
+		virtual TraceType GetTraceType() const override
+		{
+			return TraceType::Everything;
+		}
 	};
 
 	class EngineTraceClient final
 	{
 	public:
-		void TraceRay(const Ray& ray, int mask, const ITraceFilter& filter, GameTrace& trace);
+		void TraceRay(const Ray& ray, Mask mask, const ITraceFilter& filter, GameTrace& trace);
 	};
 
 	SOURCE_SDK_INTERFACE_DECL(EngineTraceClient, enginetrace);

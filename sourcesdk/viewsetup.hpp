@@ -2,11 +2,13 @@
 #include "sdk.hpp"
 #include "vector.hpp"
 
+#include "../util/pad.hpp"
+
 namespace SourceSDK
 {
 	struct ViewSetup final
 	{
-		int x, y, w, h;
+		UTIL_PAD(0, 0x20);
 
 		struct
 		{
@@ -16,27 +18,27 @@ namespace SourceSDK
 		} ortho;
 
 		float fov;
-		float fov_viewmodel;
+		float fovViewmodel;
 
-		Vector origin;
+		Vector3 origin;
 		Angle angles;
 
-		float z_near;
-		float z_far;
-		float z_near_viewmodel;
-		float z_far_viewmodel;
+		float zNear;
+		float zFar;
+		float zNearViewmodel;
+		float zFarViewmodel;
 
-		bool render_to_subrect_of_larger_screen;
-		float aspect_ratio;
+		bool renderToSubrectOfLargerScreen;
+		float aspectRatio;
 
 		struct
 		{
 			bool enabled;
 
 			float top, bottom, left, right;
-		} off_center;
+		} offCenter;
 
-		bool bloom_and_tone_mapping;
-		bool cache_full_scene_state;
+		bool bloomAndToneMapping;
+		bool cacheFullSceneState;
 	};
 }

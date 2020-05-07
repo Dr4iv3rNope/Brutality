@@ -4,14 +4,16 @@
 
 namespace SourceSDK
 {
+	class Networkable;
+
 	class ClientEntityList final
 	{
 	public:
 		// get entity by entity idx
 		BaseEntity* GetEntity(int idx);
 
-		// get entity from handle
-		BaseEntity* GetEntity(EntityHandle handle);
+		// get networkable from handle
+		Networkable* GetNetworkable(EntityHandle handle);
 
 		int GetMaxEntities();
 	};

@@ -39,7 +39,7 @@ namespace SourceSDK
 		UTIL_PAD(2, 4);
 		#endif
 
-		Vector mins, maxs;
+		Vector3 mins, maxs;
 		float radius;
 
 		union

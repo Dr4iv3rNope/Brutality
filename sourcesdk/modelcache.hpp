@@ -5,7 +5,7 @@
 
 namespace SourceSDK
 {
-	class CMDLCache final
+	class MDLCache final
 	{
 	public:
 		const StudioHDR* GetStudioHDR(MDLHandle handle);
@@ -20,5 +20,5 @@ namespace SourceSDK
 		}
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(CMDLCache, mdlCache);
+	SOURCE_SDK_INTERFACE_DECL(MDLCache, mdlCache);
 }

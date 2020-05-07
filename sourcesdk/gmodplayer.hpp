@@ -16,7 +16,7 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(bool, GetGmodBool, "CBaseEntity", "m_GMOD_bool", 0);
 		SOURCE_SDK_NETVAR(float, GetGmodFloat, "CBaseEntity", "m_GMOD_float", 0);
 		SOURCE_SDK_NETVAR(int, GetGmodInt, "CBaseEntity", "m_GMOD_int", 0);
-		SOURCE_SDK_NETVAR(Vector, GetGmodVector, "CBaseEntity", "m_GMOD_Vector", 0);
+		SOURCE_SDK_NETVAR(Vector3, GetGmodVector, "CBaseEntity", "m_GMOD_Vector", 0);
 		SOURCE_SDK_NETVAR(Angle, GetGmodAngle, "CBaseEntity", "m_GMOD_QAngle", 0);
 		SOURCE_SDK_NETVAR(EntityHandle, GetEntity, "CBaseEntity", "m_GMOD_EHANDLE", 0);
 		SOURCE_SDK_NETVAR(bool, CanUseWeaponInVehicle, "CBasePlayer", "m_bUseWeaponsInVehicle", 0);
@@ -31,11 +31,11 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(bool, IsTyping, "CGMOD_Player", "m_bIsTyping", 0);
 		SOURCE_SDK_NETVAR(float, GetStepSize, "CGMOD_Player", "m_StepSize", 0);
 		SOURCE_SDK_NETVAR(float, GetJumpPower, "CGMOD_Player", "m_JumpPower", 0);
-		SOURCE_SDK_NETVAR(Vector, GetViewOffset, "CGMOD_Player", "m_ViewOffset", 0);
-		SOURCE_SDK_NETVAR(Vector, GetViewOffsetDucked, "CGMOD_Player", "m_ViewOffsetDucked", 0);
+		SOURCE_SDK_NETVAR(Vector3, GetViewOffset, "CGMOD_Player", "m_ViewOffset", 0);
+		SOURCE_SDK_NETVAR(Vector3, GetViewOffsetDucked, "CGMOD_Player", "m_ViewOffsetDucked", 0);
 		SOURCE_SDK_NETVAR(float, GetGestureEndTime, "CGMOD_Player", "m_fGestureEndTime", 0);
-		SOURCE_SDK_NETVAR(VecColor, GetPlayerColor, "CGMOD_Player", "m_PlayerColor", 0);
-		SOURCE_SDK_NETVAR(VecColor, GetWeaponColor, "CGMOD_Player", "m_WeaponColor", 0);
+		SOURCE_SDK_NETVAR(VecColor3, GetPlayerColor, "CGMOD_Player", "m_PlayerColor", 0);
+		SOURCE_SDK_NETVAR(VecColor3, GetWeaponColor, "CGMOD_Player", "m_WeaponColor", 0);
 		SOURCE_SDK_NETVAR(EntityHandle, GetHandse, "CGMOD_Player", "m_Hands", 0);
 		SOURCE_SDK_NETVAR(WaterLevel, GetWaterLevel, "CGMOD_Player", "m_nWaterLevel", 0);
 		SOURCE_SDK_NETVAR(bool, IsSprinting, "CHL2_Player", "m_fIsSprinting", 0);

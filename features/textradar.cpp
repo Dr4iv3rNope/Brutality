@@ -109,7 +109,7 @@ void Features::TextRadar::Update() noexcept
 		if (!engine->GetPlayerInfo(i, playerInfo))
 			continue;
 
-		const auto distance = player->GetOrigin().Distance(localPlayer->GetOrigin());
+		const auto distance = player->GetOrigin().DistanceTo(localPlayer->GetOrigin());
 
 		if ((float)textRadarMaxDistance &&
 			distance > (float)textRadarMaxDistance)

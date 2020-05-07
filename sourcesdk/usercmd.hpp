@@ -11,7 +11,7 @@ namespace SourceSDK
 		int commandNumber;
 		int tickCount;
 		Angle viewAngles;
-		Vector move;
+		Vector3 move;
 		int buttons;
 		char impulse;
 		int weaponSelect;

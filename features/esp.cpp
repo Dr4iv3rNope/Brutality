@@ -87,7 +87,7 @@ struct PlayerDrawInfo
 	std::string healthText;
 	std::optional<std::string> activeWeaponText;
 	std::string nameText;
-	std::list<std::pair<Vector, Vector>> skeletonPath;
+	std::list<std::pair<Vector3, Vector3>> skeletonPath;
 };
 
 struct EntityDrawInfo
@@ -114,7 +114,7 @@ public:
 	BaseEntity* dbg_entity { nullptr };
 	#endif
 
-	Vector center {};
+	Vector3 center {};
 
 	inline DrawInfo(bool isPlayer) noexcept
 		: _isPlayer { isPlayer }
@@ -186,7 +186,7 @@ static inline auto FindEntityEspSettings(const char* classname) noexcept
 }
 
 
-static void EspGetCenter(BasePlayer* player, Vector& center)
+static void EspGetCenter(BasePlayer* player, Vector3& center)
 {
 	UTIL_DEBUG_ASSERT(player);
 
@@ -247,9 +247,9 @@ static void PushPlayer(
 	{
 		player->ToRenderable()->EnumerateBones([&player, &info] (int idx, const Studio::Bone* bone) -> bool
 		{
-			if (bone->parentIndex != -1 && bone->flags & int(BoneMask::Hitbox))
-				if (Vector parent; player->ToRenderable()->GetBonePosition(bone->parentIndex, parent))
-					if (Vector child; player->ToRenderable()->GetBonePosition(idx, child))
+			if (bone->parentIndex != -1 && bone->flags & BoneMask_Hitbox)
+				if (Vector3 parent; player->ToRenderable()->GetBonePosition(bone->parentIndex, parent))
+					if (Vector3 child; player->ToRenderable()->GetBonePosition(idx, child))
 						info.GetPlayerInfo()->skeletonPath.push_back(std::make_pair(parent, child));
 
 			return false;
@@ -293,7 +293,7 @@ static void UpdateESP() noexcept
 			continue;
 
 		if (*espMaxDistance &&
-			entity->GetOrigin().Distance(BasePlayer::GetLocalPlayer()->GetOrigin()) > *espMaxDistance)
+			entity->GetOrigin().DistanceTo(BasePlayer::GetLocalPlayer()->GetOrigin()) > *espMaxDistance)
 			continue;
 
 		// players
@@ -405,25 +405,25 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 	{
 		list->AddRectFilled(
 			// left top corner
-			ImVec2(screen->x - 3.f, screen->y - 3.f),
+			ImVec2(screen->X() - 3.f, screen->Y() - 3.f),
 
 			// right bottom corner
-			ImVec2(screen->x + 3.f, screen->y + 3.f),
+			ImVec2(screen->X() + 3.f, screen->Y() + 3.f),
 
 			info.GetPlayerInfo()->color->Hex()
 		);
 
 		list->AddRect(
 			// left top corner
-			ImVec2(screen->x - 6.f, screen->y - 6.f),
+			ImVec2(screen->X() - 6.f, screen->Y() - 6.f),
 
 			// right bottom corner
-			ImVec2(screen->x + 6.f, screen->y + 6.f),
+			ImVec2(screen->X() + 6.f, screen->Y() + 6.f),
 
 			info.GetPlayerInfo()->color->Hex()
 		);
 
-		DrawTextCentered(ImVec2(screen->x, screen->y - 8.f), info.GetPlayerInfo()->color->Hex(), info.GetPlayerInfo()->status, list);
+		DrawTextCentered(ImVec2(screen->X(), screen->Y() - 8.f), info.GetPlayerInfo()->color->Hex(), info.GetPlayerInfo()->status, list);
 
 		// draw info
 
@@ -431,7 +431,7 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 
 		if (espDrawDormantPlayers && info.isDormant)
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				0xCCCCCCCC,
 				UTIL_XOR("*Dormant*"),
 				list
@@ -439,7 +439,7 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 
 		if (espDrawDeadPlayers && info.GetPlayerInfo()->isDead)
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				0xFF1111CC,
 				UTIL_XOR("*Dead*"),
 				list
@@ -447,7 +447,7 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 
 		if (espHealth)
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				espHealthColor.Hex(),
 				info.GetPlayerInfo()->healthText.c_str(),
 				list
@@ -455,7 +455,7 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 
 		if (espName)
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				espNameColor.Hex(),
 				info.GetPlayerInfo()->nameText.c_str(),
 				list
@@ -464,7 +464,7 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 		if (espActiveWeapon &&
 			info.GetPlayerInfo()->activeWeaponText.has_value())
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				espActiveWeaponColor.Hex(),
 				info.GetPlayerInfo()->activeWeaponText->c_str(),
 				list
@@ -480,13 +480,13 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 
 			player->ToRenderable()->EnumerateBones([&player, &list] (int idx, const Studio::Bone* bone) -> bool
 			{
-				if (Vector pos; player->ToRenderable()->GetBonePosition(idx, pos))
+				if (Vector3 pos; player->ToRenderable()->GetBonePosition(idx, pos))
 					if (auto screen = pos.ToScreen())
 					{
 						const auto bone_name = bone->GetName();
 						const auto str_idx = UTIL_FORMAT(idx << ' ' << (bone_name ? bone_name : "?"));
 
-						list->AddText(ImVec2(screen->x, screen->y), IM_COL32_WHITE, str_idx.c_str());
+						list->AddText(ImVec2(screen->X(), screen->Y()), IM_COL32_WHITE, str_idx.c_str());
 					}
 
 				return false;
@@ -499,8 +499,8 @@ static void EspRenderPlayer(const DrawInfo& info, ImDrawList* list)
 				if (auto parent = pair.first.ToScreen())
 					if (auto child = pair.second.ToScreen())
 						list->AddLine(
-							ImVec2(parent->x, parent->y),
-							ImVec2(child->x, child->y),
+							ImVec2(parent->X(), parent->Y()),
+							ImVec2(child->X(), child->Y()),
 							info.GetPlayerInfo()->color->Hex(),
 							*espSkeletonThickness
 						);
@@ -515,18 +515,18 @@ static void EspRenderEntity(const DrawInfo& info, ImDrawList* list)
 	if (auto screen = info.center.ToScreen())
 	{
 		list->AddRect(
-			ImVec2(screen->x - 4.f, screen->y - 4.f),
-			ImVec2(screen->x + 4.f, screen->y + 4.f),
+			ImVec2(screen->X() - 4.f, screen->Y() - 4.f),
+			ImVec2(screen->X() + 4.f, screen->Y() + 4.f),
 			info.GetEntityInfo()->color
 		);
 
-		DrawTextCentered(ImVec2(screen->x, screen->y - 8.f), info.GetEntityInfo()->color, info.GetEntityInfo()->classname, list);
+		DrawTextCentered(ImVec2(screen->X(), screen->Y() - 8.f), info.GetEntityInfo()->color, info.GetEntityInfo()->classname, list);
 
 		int y_offset = 0;
 
 		if (info.isDormant)
 			DrawTextCentered(
-				ImVec2(screen->x, screen->y + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
+				ImVec2(screen->X(), screen->Y() + INFO_OFFSET + (ImGui::GetCurrentContext()->Font->FontSize * y_offset++)),
 				0xCCCCCCCC,
 				UTIL_XOR("*Dormant*"),
 				list

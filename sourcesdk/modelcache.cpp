@@ -4,7 +4,7 @@
 #include "../util/vmt.hpp"
 #include "../util/pattern.hpp"
 
-const SourceSDK::StudioHDR* SourceSDK::CMDLCache::GetStudioHDR(MDLHandle handle)
+const SourceSDK::StudioHDR* SourceSDK::MDLCache::GetStudioHDR(MDLHandle handle)
 {
 	#if SOURCE_SDK_IS_GMOD
 	/*

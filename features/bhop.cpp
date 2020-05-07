@@ -20,9 +20,9 @@ extern Config::Bool bhopAutoStrafe;
 static inline void AutoStrafe(SourceSDK::UserCmd* cmd) noexcept
 {
 	if (cmd->mouseX > 0)
-		cmd->move.y = SourceSDK::MAX_CMD_MOVE_SPEED;
+		cmd->move.Y() = SourceSDK::MAX_CMD_MOVE_SPEED;
 	else if (cmd->mouseX < 0)
-		cmd->move.y = -SourceSDK::MAX_CMD_MOVE_SPEED;
+		cmd->move.Y() = -SourceSDK::MAX_CMD_MOVE_SPEED;
 }
 
 void Features::BunnyHop::Think(SourceSDK::UserCmd* cmd) noexcept

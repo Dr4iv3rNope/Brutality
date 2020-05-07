@@ -17,7 +17,7 @@ SourceSDK::BaseEntity* SourceSDK::ClientEntityList::GetEntity(int idx)
 	return Util::Vmt::CallMethod<BaseEntity*, int>(this, offset, idx);
 }
 
-SourceSDK::BaseEntity* SourceSDK::ClientEntityList::GetEntity(EntityHandle handle)
+SourceSDK::Networkable* SourceSDK::ClientEntityList::GetNetworkable(EntityHandle handle)
 {
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
@@ -26,7 +26,7 @@ SourceSDK::BaseEntity* SourceSDK::ClientEntityList::GetEntity(EntityHandle handl
 	};
 	#endif
 
-	return Util::Vmt::CallMethod<BaseEntity*, EntityHandle>(this, offset, handle);
+	return Util::Vmt::CallMethod<Networkable*, EntityHandle>(this, offset, handle);
 }
 
 int SourceSDK::ClientEntityList::GetMaxEntities()

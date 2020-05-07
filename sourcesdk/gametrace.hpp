@@ -6,12 +6,12 @@
 
 namespace SourceSDK
 {
-	class Entity;
+	class BaseEntity;
 
 	// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/public/mathlib/mathlib.h#L148
 	struct Plane final
 	{
-		Vector normal;
+		Vector3 normal;
 		float dist;
 
 		UTIL_PAD(0, 4);
@@ -20,8 +20,8 @@ namespace SourceSDK
 	// https://github.com/ValveSoftware/source-sdk-2013/blob/0d8dceea4310fde5706b3ce1c70609d72a38efdf/sp/src/public/trace.h#L36
 	struct IGameTrace
 	{
-		Vector startPos;
-		Vector endPos;
+		Vector3 startPos;
+		Vector3 endPos;
 		Plane plane;
 		float fraction;
 		int contents;
@@ -45,12 +45,12 @@ namespace SourceSDK
 		Surface surface;
 		int hit_group;
 		short physicsBone;
-		Entity* entity;
+		BaseEntity* entity;
 		int hitbox;
 
 		inline bool DidHit() const noexcept
 		{
-			return fraction < 1 || allSolid || startSolid;
+			return fraction < 1.f || allSolid || startSolid;
 		}
 	};
 
@@ -65,9 +65,9 @@ namespace SourceSDK
 		bool isRay{ true };
 		bool isSwept;
 
-		inline Ray(const Vector& start, const Vector& end) noexcept
+		inline Ray(const Vector3& start, const Vector3& end) noexcept
 		{
-			this->delta = end - start;
+			this->delta = Vector4(end - start);
 			this->isSwept = this->delta.IsNull();
 			this->start = start;
 		}
