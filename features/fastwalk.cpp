@@ -13,7 +13,7 @@ void Features::FastWalk::Think(SourceSDK::UserCmd* cmd) noexcept
 		return;
 
 	if (auto local_player = SourceSDK::BasePlayer::GetLocalPlayer();
-		local_player && local_player->IsOnGround())
+		local_player && local_player->IsAlive() && local_player->IsOnGround())
 	{
 		// if we moving only forward or backward
 		if ((cmd->HasButton(SourceSDK::InButton::Forward) || cmd->HasButton(SourceSDK::InButton::Back))
