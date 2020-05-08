@@ -61,7 +61,7 @@ static bool __fastcall RunString(void* ecx, void* edx,
 		(ecx, edx, id, unk0, code, unk1, unk2);
 }
 
-static Main::ShutdownElement* shutdownElement;
+static Shutdown::Element* shutdownElement;
 
 bool Features::GarrysMod::LuaInterface::IsInitialized() noexcept { return oldRunString; }
 bool Features::GarrysMod::LuaInterface::TryToInitialize()
@@ -77,7 +77,7 @@ bool Features::GarrysMod::LuaInterface::TryToInitialize()
 	UTIL_CHECK_ALLOC(oldRunString = new Util::Vmt::HookedMethod(*luaInterface, GetRunStringIndex()));
 	oldRunString->Initialize(::RunString);
 
-	UTIL_CHECK_ALLOC(shutdownElement = new Main::ShutdownElement(UTIL_XOR(L"LuaInterface"), [] ()
+	UTIL_CHECK_ALLOC(shutdownElement = new Shutdown::Element(UTIL_XOR(L"LuaInterface"), [] ()
 	{
 		LuaInterface::Shutdown();
 	}));
