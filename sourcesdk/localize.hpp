@@ -1,5 +1,5 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
 
 namespace SourceSDK
 {
@@ -9,5 +9,5 @@ namespace SourceSDK
 		const wchar_t* Find(const char* token);
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(LocalizedStringTable, localize);
+	VALVE_SDK_INTERFACE_DECL(LocalizedStringTable, localize);
 }

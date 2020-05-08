@@ -10,6 +10,6 @@
 
 void OnMenuRender()
 {
-	ImGui::Custom::windowManager.Render();
-	ImGui::Custom::windowManager.RenderWindows();
+	ImGui::Custom::windowManager->Render();
+	ImGui::Custom::windowManager->RenderWindows();
 }

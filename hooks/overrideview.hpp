@@ -1,4 +1,6 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "../util/vmt.hpp"
 
 namespace SourceSDK
@@ -8,6 +10,6 @@ namespace SourceSDK
 
 namespace Hooks
 {
-	extern Util::Vmt::HookedMethod* oldOverrideView;
+	VALVE_SDK_INTERFACE_DECL(Util::Vmt::HookedMethod, oldOverrideView);
 	extern void __stdcall OverrideView(SourceSDK::ViewSetup*);
 }

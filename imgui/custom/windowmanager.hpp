@@ -1,4 +1,6 @@
 #pragma once
+#include "../../valvesdk/interfaces.hpp"
+
 #include <string>
 #include <functional>
 #include <list>
@@ -89,6 +91,6 @@ namespace ImGui
 			void RenderWindows() noexcept;
 		};
 
-		extern WindowManager windowManager;
+		VALVE_SDK_INTERFACE_DECL(WindowManager, windowManager);
 	}
 }

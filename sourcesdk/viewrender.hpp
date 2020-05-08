@@ -1,5 +1,5 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
 
 namespace SourceSDK
 {
@@ -9,5 +9,5 @@ namespace SourceSDK
 		std::size_t GetRenderViewIndex();
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(ViewRender, view);
+	VALVE_SDK_INTERFACE_DECL(ViewRender, view);
 }

@@ -128,7 +128,7 @@ void Features::NameChanger::Initialize() noexcept
 
 void Features::NameChanger::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Name Changer"),
 			ImGuiWindowFlags_AlwaysAutoResize,

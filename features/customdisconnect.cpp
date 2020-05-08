@@ -148,7 +148,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 void Features::CustomDisconnect::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Custom Disconnect"),
 			ImGuiWindowFlags_AlwaysAutoResize,

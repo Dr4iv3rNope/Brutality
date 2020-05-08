@@ -241,5 +241,5 @@ ImGui::Custom::Window::Window(const std::string& title, ImGuiWindowFlags flags, 
 ImGui::Custom::Window::Window(const std::string& title, ImGuiWindowFlags flags, WindowRenderCallback callback, std::size_t* id)
 	: Window(title, flags, callback)
 {
-	UTIL_DEBUG_ASSERT(windowManager.RegisterWindow(*this, id));
+	UTIL_DEBUG_ASSERT(windowManager->RegisterWindow(*this, id));
 }

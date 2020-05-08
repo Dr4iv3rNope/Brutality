@@ -444,7 +444,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 void Features::ChatSpam::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Chat Spammer"),
 			0,

@@ -1,4 +1,6 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "steamuser.hpp"
 
 namespace SteamAPI
@@ -20,5 +22,5 @@ namespace SteamAPI
 		virtual SteamUser* GetSteamUser(SteamUserHandle hSteamUser, SteamPipeHandle hSteamPipe, const char* pchVersion) = 0;
 	};
 
-	extern SteamClient* const client;
+	VALVE_SDK_INTERFACE_DECL(SteamClient, client);
 }

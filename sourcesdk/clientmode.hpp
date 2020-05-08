@@ -1,7 +1,7 @@
 #pragma once
 #include <cstddef>
 
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
 
 namespace SourceSDK
 {
@@ -12,5 +12,5 @@ namespace SourceSDK
 		std::size_t GetOverrideViewIdx();
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(ClientModeShared, clientMode);
+	VALVE_SDK_INTERFACE_DECL(ClientModeShared, clientMode);
 }

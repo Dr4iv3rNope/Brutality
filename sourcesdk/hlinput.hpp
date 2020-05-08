@@ -1,6 +1,7 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "sdk.hpp"
-#include "interfaces.hpp"
 #include "vector.hpp"
 
 #include "../util/pad.hpp"
@@ -25,5 +26,5 @@ namespace SourceSDK
 		#endif
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(Input, input);
+	VALVE_SDK_INTERFACE_DECL(Input, input);
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "../util/vmt.hpp"
 
 namespace SourceSDK
@@ -9,6 +11,6 @@ namespace SourceSDK
 
 namespace Hooks
 {
-	extern Util::Vmt::HookedMethod* oldCreateMove;
+	VALVE_SDK_INTERFACE_DECL(Util::Vmt::HookedMethod, oldCreateMove);
 	extern bool __fastcall CreateMove(SourceSDK::ClientModeShared*, void*, float input_sample_frametime, SourceSDK::UserCmd* cmd) noexcept;
 }

@@ -1,5 +1,6 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
+
 #include "gametrace.hpp"
 #include "bspflags.hpp"
 
@@ -45,5 +46,5 @@ namespace SourceSDK
 		void TraceRay(const Ray& ray, Mask mask, const ITraceFilter& filter, GameTrace& trace);
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(EngineTraceClient, enginetrace);
+	VALVE_SDK_INTERFACE_DECL(EngineTraceClient, enginetrace);
 }

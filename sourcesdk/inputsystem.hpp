@@ -1,10 +1,11 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
+
 #include "buttoncode.hpp"
 
 namespace SourceSDK
 {
-	class CInputSystem
+	class InputSystem
 	{
 	public:
 		void EnableInput(bool enable);
@@ -12,5 +13,5 @@ namespace SourceSDK
 		void ResetInputState();
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(CInputSystem, inputsystem);
+	VALVE_SDK_INTERFACE_DECL(InputSystem, inputsystem);
 }

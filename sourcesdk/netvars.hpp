@@ -28,9 +28,9 @@ namespace SourceSDK
 		std::size_t FindOffset(Util::HashType net_name);
 	};
 
-	extern NetvarManager netvars;
+	extern NetvarManager* netvars;
 }
 
 #define SOURCE_SDK_NETVAR(typeName, funcName, tableName, propName, offset) \
-	typeName& funcName() const { static const auto s_offset = SourceSDK::netvars.FindOffset(UTIL_HASH(tableName##":"##propName)); \
+	typeName& funcName() const { static const auto s_offset = SourceSDK::netvars->FindOffset(UTIL_HASH(tableName##":"##propName)); \
 		return *(typeName*)(std::uintptr_t(this) + offset + s_offset); }

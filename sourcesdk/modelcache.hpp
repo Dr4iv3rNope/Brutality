@@ -1,5 +1,6 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
+
 #include "model.hpp"
 #include "studio.hpp"
 
@@ -20,5 +21,5 @@ namespace SourceSDK
 		}
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(MDLCache, mdlCache);
+	VALVE_SDK_INTERFACE_DECL(MDLCache, mdlCache);
 }

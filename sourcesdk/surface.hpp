@@ -1,5 +1,5 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
 
 namespace SourceSDK
 {
@@ -22,5 +22,5 @@ namespace SourceSDK
 		std::size_t GetPaintTraverseExIndex();
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(MatSystemSurface, surface);
+	VALVE_SDK_INTERFACE_DECL(MatSystemSurface, surface);
 }

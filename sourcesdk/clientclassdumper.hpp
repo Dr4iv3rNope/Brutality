@@ -1,4 +1,6 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "clientclass.hpp"
 
 #include <string>
@@ -17,5 +19,5 @@ namespace SourceSDK
 		const ClientClass* FindClientClass(const std::string& cs_name);
 	};
 
-	extern ClientClassDumper clientClassDumper;
+	VALVE_SDK_INTERFACE_DECL(ClientClassDumper, clientClassDumper);
 }

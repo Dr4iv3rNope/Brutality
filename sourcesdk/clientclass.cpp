@@ -9,7 +9,7 @@
 bool SourceSDK::ClientClass::IsPlayer() const
 {
 	#if SOURCE_SDK_IS_GMOD
-	static auto playerClass = clientClassDumper.FindClientClass(UTIL_XOR("CGMOD_Player"));
+	static auto playerClass = clientClassDumper->FindClientClass(UTIL_XOR("CGMOD_Player"));
 
 	UTIL_ASSERT(playerClass, "Failed to find Player ClientClass");
 	#endif

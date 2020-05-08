@@ -1,6 +1,7 @@
 #pragma once
+#include "../valvesdk/interfaces.hpp"
+
 #include "sdk.hpp"
-#include "interfaces.hpp"
 #include "networkstringtable.hpp"
 #include "playerinfo.hpp"
 #include "vector.hpp"
@@ -78,8 +79,8 @@ namespace SourceSDK
 	#endif
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(ClientState, clientState);
-	SOURCE_SDK_INTERFACE_DECL(float, netTime);
+	VALVE_SDK_INTERFACE_DECL(ClientState, clientState);
+	VALVE_SDK_INTERFACE_DECL(float, netTime);
 
 	inline auto IsInGame() noexcept
 	{

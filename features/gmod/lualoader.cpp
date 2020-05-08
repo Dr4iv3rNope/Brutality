@@ -156,7 +156,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 void Features::GarrysMod::LuaLoader::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Lua Loader"),
 			0,

@@ -593,7 +593,7 @@ static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
 
 void Features::Esp::RegisterEntityListWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Entity List"),
 			ImGuiWindowFlags_AlwaysAutoResize,

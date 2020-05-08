@@ -3,7 +3,7 @@
 
 #include "../util/vmt.hpp"
 
-void SourceSDK::CInputSystem::EnableInput(bool enable)
+void SourceSDK::InputSystem::EnableInput(bool enable)
 {
 	// "Unable to create game window" in CGame::CreateGameWindow
 	#if SOURCE_SDK_IS_GMOD
@@ -20,7 +20,7 @@ void SourceSDK::CInputSystem::EnableInput(bool enable)
 	Util::Vmt::CallMethod<void, bool>(this, offset, enable);
 }
 
-bool SourceSDK::CInputSystem::IsButtonDown(ButtonCode code)
+bool SourceSDK::InputSystem::IsButtonDown(ButtonCode code)
 {
 	// "scores" in CClientScoreBoardDialog::OnThink
 	#if SOURCE_SDK_IS_GMOD
@@ -37,7 +37,7 @@ bool SourceSDK::CInputSystem::IsButtonDown(ButtonCode code)
 	return Util::Vmt::CallMethod<bool, ButtonCode>(this, offset, code);
 }
 
-void SourceSDK::CInputSystem::ResetInputState()
+void SourceSDK::InputSystem::ResetInputState()
 {
 	// in CInputSystem::DetachFromWindow
 	#if SOURCE_SDK_IS_GMOD

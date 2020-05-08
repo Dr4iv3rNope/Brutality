@@ -12,7 +12,9 @@
 
 #include "../util/strings.hpp"
 #include "../util/xorstr.hpp"
+
 #include "../util/debug/logs.hpp"
+#include "../util/debug/errors.hpp"
 
 #include "../nlohmann/json.hpp"
 
@@ -36,7 +38,7 @@ void Config::Save(const std::wstring& filename)
 			file.close();
 		}
 		else
-			UTIL_XLOG(L"failed to open and save config file");
+			UTIL_RUNTIME_ERROR("failed to open and save config file");
 	}
 }
 
@@ -57,7 +59,7 @@ void Config::Load(const std::wstring& filename)
 			file.close();
 		}
 		else
-			UTIL_XLOG(L"failed to open and load config file");
+			UTIL_RUNTIME_ERROR("failed to open and load config file");
 	}
 
 	Config::ImportVariables(json_root);
@@ -111,6 +113,7 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 
 	ImGui::Custom::StatusError(currentError, errorList);
 
+	ImGui::PushItemWidth(-1.f);
 	ImGui::InputText("", &configName);
 
 	if (ImGui::Button(UTIL_CXOR("Save")))
@@ -144,7 +147,7 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 
 void Config::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Config"),
 			ImGuiWindowFlags_AlwaysAutoResize,

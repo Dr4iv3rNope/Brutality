@@ -1,5 +1,6 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
+
 #include "playerinfo.hpp"
 
 namespace SourceSDK
@@ -12,5 +13,5 @@ namespace SourceSDK
 		void ClientCmdUnrestricted(const char* cmd);
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(EngineClient, engine);
+	VALVE_SDK_INTERFACE_DECL(EngineClient, engine);
 }

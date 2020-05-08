@@ -2,7 +2,7 @@
 #include "../../sourcesdk/sdk.hpp"
 
 #if SOURCE_SDK_IS_GMOD
-#include "../../sourcesdk/interfaces.hpp"
+#include "../../valvesdk/interfaces.hpp"
 
 namespace Features
 {
@@ -29,7 +29,7 @@ namespace Features
 		};
 
 		// luaInterface can be null!
-		SOURCE_SDK_INTERFACE_DECL(LuaInterface*, luaInterface);
+		VALVE_SDK_INTERFACE_DECL(LuaInterface*, luaInterface);
 	}
 }
 #endif

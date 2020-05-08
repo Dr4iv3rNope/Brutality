@@ -1,5 +1,6 @@
 #pragma once
-#include "interfaces.hpp"
+#include "../valvesdk/interfaces.hpp"
+
 #include "color.hpp"
 
 namespace SourceSDK
@@ -12,5 +13,5 @@ namespace SourceSDK
 		ConVar* FindVar(const char*);
 	};
 
-	SOURCE_SDK_INTERFACE_DECL(CVar, cvar);
+	VALVE_SDK_INTERFACE_DECL(CVar, cvar);
 }

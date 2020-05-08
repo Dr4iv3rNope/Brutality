@@ -104,7 +104,7 @@ void Config::RegisterVariablesInWindowManager() noexcept
 		ImGui::Custom::Window window(group, ImGuiWindowFlags_AlwaysAutoResize, DrawWindow);
 		window.SetUserData(&variables);
 
-		ImGui::Custom::windowManager.RegisterWindow(window);
+		ImGui::Custom::windowManager->RegisterWindow(window);
 	}
 }
 
