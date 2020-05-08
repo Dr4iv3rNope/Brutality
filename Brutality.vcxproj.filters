@@ -88,13 +88,9 @@
     <ClCompile Include="sourcesdk\vector.cpp">
       <Filter>Source SDK\Math</Filter>
     </ClCompile>
-    <ClCompile Include="sourcesdk\interfaces.cpp">
-      <Filter>Source SDK</Filter>
-    </ClCompile>
     <ClCompile Include="config\variable.cpp">
       <Filter>Config System</Filter>
     </ClCompile>
-    <ClCompile Include="shutdown.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sourcesdk\clientclassdumper.cpp">
       <Filter>Source SDK\ClientClass Dumper</Filter>
@@ -219,6 +215,22 @@
     <ClCompile Include="features\fastwalk.cpp">
       <Filter>Features\Shared\Fast Walk</Filter>
     </ClCompile>
+    <ClCompile Include="sourcesdk\modelrender.cpp">
+      <Filter>Source SDK\Interfaces\CModelRender</Filter>
+    </ClCompile>
+    <ClCompile Include="valvesdk\interfaces.cpp">
+      <Filter>Valve SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="hooks\drawmodelexecute.cpp">
+      <Filter>Hooks\DrawModelExecute</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\materialsystem.cpp">
+      <Filter>Source SDK\Interfaces\CMaterialSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\keyvalues.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="features\chams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -446,6 +458,21 @@
     <Filter Include="Features\Shared\Third Person">
       <UniqueIdentifier>{31f4a48b-c235-48ec-9dcd-ac2e0ea46b8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source SDK\Interfaces\CModelRender">
+      <UniqueIdentifier>{ea5fe14f-4aa4-4f2a-a1ab-12f6822d32fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hooks\DrawModelExecute">
+      <UniqueIdentifier>{e84aa353-efa5-415e-b63d-6e7003eea93b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Valve SDK">
+      <UniqueIdentifier>{6b2223be-db15-4473-b583-616870462066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CMaterialSystem">
+      <UniqueIdentifier>{703ddc45-21b7-4dbf-88b7-e6660a4fcf5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Features\Shared\Chams">
+      <UniqueIdentifier>{33f8c173-34c1-41a9-9ada-70518393ce86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sourcesdk\sdk.hpp">
@@ -568,9 +595,6 @@
     </ClInclude>
     <ClInclude Include="sourcesdk\netvars.hpp">
       <Filter>Source SDK\NetVar Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="sourcesdk\interfaces.hpp">
-      <Filter>Source SDK</Filter>
     </ClInclude>
     <ClInclude Include="util\memory.hpp">
       <Filter>Utilities\Memory</Filter>
@@ -837,6 +861,27 @@
     </ClInclude>
     <ClInclude Include="sourcesdk\math.hpp">
       <Filter>Source SDK\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\modelrender.hpp">
+      <Filter>Source SDK\Interfaces\CModelRender</Filter>
+    </ClInclude>
+    <ClInclude Include="hooks\drawmodelexecute.hpp">
+      <Filter>Hooks\DrawModelExecute</Filter>
+    </ClInclude>
+    <ClInclude Include="valvesdk\interfaces.hpp">
+      <Filter>Valve SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\overridetype.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\keyvalues.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\materialsystem.hpp">
+      <Filter>Source SDK\Interfaces\CMaterialSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="features\chams.hpp">
+      <Filter>Features\Shared\Chams</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

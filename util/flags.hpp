@@ -54,3 +54,6 @@ namespace Util
 
 #define UTIL_MAKE_FLAG(flagName, name, value) \
 	flagName##_##name = value
+
+#define UTIL_MAKE_BIT_FLAG(flagName, name, bit) \
+	UTIL_MAKE_FLAG(flagName, name, 1 << bit)

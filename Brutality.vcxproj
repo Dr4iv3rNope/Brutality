@@ -165,6 +165,7 @@
     <ClCompile Include="config\config.cpp" />
     <ClCompile Include="config\variable.cpp" />
     <ClCompile Include="features\bhop.cpp" />
+    <ClCompile Include="features\chams.cpp" />
     <ClCompile Include="features\chatspam.cpp" />
     <ClCompile Include="features\crosshair.cpp" />
     <ClCompile Include="features\customdisconnect.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="features\spectatorlist.cpp" />
     <ClCompile Include="features\textradar.cpp" />
     <ClCompile Include="hooks\createmove.cpp" />
+    <ClCompile Include="hooks\drawmodelexecute.cpp" />
     <ClCompile Include="hooks\endscene.cpp" />
     <ClCompile Include="hooks\framestagenotify.cpp" />
     <ClCompile Include="hooks\overrideview.cpp" />
@@ -197,13 +199,15 @@
     <ClCompile Include="imgui\imgui_stdlib.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="shutdown.cpp" />
     <ClCompile Include="sourcesdk\clientclassdumper.cpp" />
     <ClCompile Include="sourcesdk\entity.cpp" />
     <ClCompile Include="sourcesdk\hlinput.cpp" />
     <ClCompile Include="sourcesdk\inputsystem.cpp" />
+    <ClCompile Include="sourcesdk\keyvalues.cpp" />
     <ClCompile Include="sourcesdk\localize.cpp" />
+    <ClCompile Include="sourcesdk\materialsystem.cpp" />
     <ClCompile Include="sourcesdk\modelcache.cpp" />
+    <ClCompile Include="sourcesdk\modelrender.cpp" />
     <ClCompile Include="sourcesdk\netchannel.cpp" />
     <ClCompile Include="sourcesdk\netsetconvar.cpp" />
     <ClCompile Include="sourcesdk\networkable.cpp" />
@@ -218,7 +222,6 @@
     <ClCompile Include="sourcesdk\enginetraceclient.cpp" />
     <ClCompile Include="sourcesdk\entitylist.cpp" />
     <ClCompile Include="sourcesdk\hlclient.cpp" />
-    <ClCompile Include="sourcesdk\interfaces.cpp" />
     <ClCompile Include="sourcesdk\netvars.cpp" />
     <ClCompile Include="sourcesdk\render.cpp" />
     <ClCompile Include="sourcesdk\surface.cpp" />
@@ -236,12 +239,14 @@
     <ClCompile Include="util\shellcodebuilder.cpp" />
     <ClCompile Include="util\strings.cpp" />
     <ClCompile Include="util\vmt.cpp" />
+    <ClCompile Include="valvesdk\interfaces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brutality.hpp" />
     <ClInclude Include="config\config.hpp" />
     <ClInclude Include="config\variable.hpp" />
     <ClInclude Include="features\bhop.hpp" />
+    <ClInclude Include="features\chams.hpp" />
     <ClInclude Include="features\chatspam.hpp" />
     <ClInclude Include="features\crosshair.hpp" />
     <ClInclude Include="features\customdisconnect.hpp" />
@@ -255,6 +260,7 @@
     <ClInclude Include="features\spectatorlist.hpp" />
     <ClInclude Include="features\textradar.hpp" />
     <ClInclude Include="hooks\createmove.hpp" />
+    <ClInclude Include="hooks\drawmodelexecute.hpp" />
     <ClInclude Include="hooks\endscene.hpp" />
     <ClInclude Include="hooks\framestagenotify.hpp" />
     <ClInclude Include="hooks\overrideview.hpp" />
@@ -289,12 +295,16 @@
     <ClInclude Include="sourcesdk\gmodentity.hpp" />
     <ClInclude Include="sourcesdk\gmodplayer.hpp" />
     <ClInclude Include="sourcesdk\inputbuttons.hpp" />
+    <ClInclude Include="sourcesdk\keyvalues.hpp" />
     <ClInclude Include="sourcesdk\localize.hpp" />
+    <ClInclude Include="sourcesdk\materialsystem.hpp" />
     <ClInclude Include="sourcesdk\math.hpp" />
     <ClInclude Include="sourcesdk\modelcache.hpp" />
+    <ClInclude Include="sourcesdk\modelrender.hpp" />
     <ClInclude Include="sourcesdk\netmessage.hpp" />
     <ClInclude Include="sourcesdk\netsetconvar.hpp" />
     <ClInclude Include="sourcesdk\networkable.hpp" />
+    <ClInclude Include="sourcesdk\overridetype.hpp" />
     <ClInclude Include="sourcesdk\player.hpp" />
     <ClInclude Include="sourcesdk\renderable.hpp" />
     <ClInclude Include="sourcesdk\appsystem.hpp" />
@@ -320,7 +330,6 @@
     <ClInclude Include="sourcesdk\hlinput.hpp" />
     <ClInclude Include="sourcesdk\hoststate.hpp" />
     <ClInclude Include="sourcesdk\inputsystem.hpp" />
-    <ClInclude Include="sourcesdk\interfaces.hpp" />
     <ClInclude Include="sourcesdk\lifestate.hpp" />
     <ClInclude Include="sourcesdk\matrix.hpp" />
     <ClInclude Include="sourcesdk\model.hpp" />
@@ -370,6 +379,7 @@
     <ClInclude Include="util\pad.hpp" />
     <ClInclude Include="util\vmt.hpp" />
     <ClInclude Include="util\xorstr.hpp" />
+    <ClInclude Include="valvesdk\interfaces.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sourcesdk\renderfx.hpp" />

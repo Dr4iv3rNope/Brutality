@@ -93,9 +93,7 @@ namespace SourceSDK
 	{
 		inline Vector2(float x, float y) noexcept : BaseVector({ x, y }) {}
 		inline Vector2(float all = 0.f) noexcept : BaseVector(all) {}
-
-		inline Vector2(const Base& vec2) noexcept
-			: Vector2(vec2[Vector_X], vec2[Vector_Y]) {}
+		inline Vector2(const Base& vec2) noexcept : BaseVector(vec2) {}
 
 		inline float& X() noexcept { return Get(Vector_X); }
 		inline float X() const noexcept { return Get(Vector_X); }
@@ -108,9 +106,7 @@ namespace SourceSDK
 	{
 		inline Vector3(float x, float y, float z) noexcept : BaseVector({ x, y, z }) {}
 		inline Vector3(float all = 0.f) noexcept : BaseVector(all) {}
-
-		inline Vector3(const Base& vec3) noexcept
-			: Vector3(vec3[Vector_X], vec3[Vector_Y], vec3[Vector_Z]) {}
+		inline Vector3(const Base& vec3) noexcept : BaseVector(vec3) {}
 
 		inline float& X() noexcept { return Get(Vector_X); }
 		inline float X() const noexcept { return Get(Vector_X); }
@@ -127,9 +123,7 @@ namespace SourceSDK
 	{
 		inline Vector4(float x, float y, float z, float w) noexcept : BaseVector({ x, y, z, w }) {}
 		inline Vector4(float all = 0.f) noexcept : BaseVector(all) {}
-
-		inline Vector4(const Base& vec4) noexcept
-			: Vector4(vec4[Vector_X], vec4[Vector_Y], vec4[Vector_Z], vec4[Vector_W]) {}
+		inline Vector4(const Base& vec4) noexcept : BaseVector(vec4) {}
 
 		inline Vector4(const Vector3::Base& vec3) noexcept
 			: Vector4(vec3[Vector_X], vec3[Vector_Y], vec3[Vector_Z], 0.f) {}
@@ -153,9 +147,7 @@ namespace SourceSDK
 	{
 		inline Angle(float p, float y, float r) noexcept : BaseVector({ p, y, r }) {}
 		inline Angle(float all = 0.f) noexcept : BaseVector(all) {}
-
-		inline Angle(const Base& ang) noexcept
-			: Angle(ang[Angle_P], ang[Angle_Y], ang[Angle_R]) {}
+		inline Angle(const Base& ang) noexcept : BaseVector(ang) {}
 
 
 		inline float& Pitch() noexcept { return Get(Angle_P); }
@@ -271,6 +263,21 @@ namespace SourceSDK
 	public:
 		inline VecColor3(float r, float g, float b) noexcept : BaseVector({ r, g, b }) {}
 		inline VecColor3(float all = 0.f) noexcept : BaseVector(all) {}
+		inline VecColor3(const Base& vec) noexcept : BaseVector(vec) {}
+
+		inline VecColor3& NormalizeThis() noexcept
+		{
+			Red() = std::clamp(Red(), 0.f, 1.f);
+			Green() = std::clamp(Green(), 0.f, 1.f);
+			Blue() = std::clamp(Blue(), 0.f, 1.f);
+
+			return *this;
+		}
+
+		inline VecColor3 Normalize() const noexcept
+		{
+			return VecColor3(*this).NormalizeThis();
+		}
 
 		inline float& Red() noexcept { return Get(VecColor_R); }
 		inline float Red() const noexcept { return Get(VecColor_R); }
@@ -278,6 +285,38 @@ namespace SourceSDK
 		inline float Green() const noexcept { return Get(VecColor_G); }
 		inline float& Blue() noexcept { return Get(VecColor_B); }
 		inline float Blue() const noexcept { return Get(VecColor_B); }
+	};
+
+	struct VecColor4 : public BaseVector<float, 4>
+	{
+	public:
+		inline VecColor4(float r, float g, float b, float a = 1.f) noexcept : BaseVector({ r, g, b, a }) {}
+		inline VecColor4(float all = 0.f) noexcept : BaseVector(all) {}
+		inline VecColor4(const Base& vec) noexcept : BaseVector(vec) {}
+
+		inline VecColor4& NormalizeThis() noexcept
+		{
+			Red() = std::clamp(Red(), 0.f, 1.f);
+			Green() = std::clamp(Green(), 0.f, 1.f);
+			Blue() = std::clamp(Blue(), 0.f, 1.f);
+			Alpha() = std::clamp(Alpha(), 0.f, 1.f);
+
+			return *this;
+		}
+
+		inline VecColor4 Normalize() const noexcept
+		{
+			return VecColor4(*this).NormalizeThis();
+		}
+
+		inline float& Red() noexcept { return Get(VecColor_R); }
+		inline float Red() const noexcept { return Get(VecColor_R); }
+		inline float& Green() noexcept { return Get(VecColor_G); }
+		inline float Green() const noexcept { return Get(VecColor_G); }
+		inline float& Blue() noexcept { return Get(VecColor_B); }
+		inline float Blue() const noexcept { return Get(VecColor_B); }
+		inline float& Alpha() noexcept { return Get(VecColor_A); }
+		inline float Alpha() const noexcept { return Get(VecColor_A); }
 	};
 }
 
@@ -299,7 +338,7 @@ template<typename T, unsigned C>
 inline bool SourceSDK::BaseVector<T, C>::IsNull() const noexcept
 {
 	for (auto value : data)
-		if (value != 0.f)
+		if (value != T(0))
 			return false;
 
 	return true;
@@ -309,45 +348,25 @@ inline bool SourceSDK::BaseVector<T, C>::IsNull() const noexcept
 template<typename T, unsigned C>
 inline SourceSDK::BaseVector<T, C> SourceSDK::BaseVector<T, C>::operator+(const BaseVector& vec) const noexcept
 {
-	BaseVector result(*this);
-
-	for (auto i = 0; i < C; i++)
-		result[i] += vec[i];
-
-	return result;
+	return BaseVector(*this) += vec;
 }
 
 template<typename T, unsigned C>
 inline SourceSDK::BaseVector<T, C> SourceSDK::BaseVector<T, C>::operator-(const BaseVector& vec) const noexcept
 {
-	BaseVector result(*this);
-
-	for (auto i = 0; i < C; i++)
-		result[i] -= vec[i];
-
-	return result;
+	return BaseVector(*this) -= vec;
 }
 
 template<typename T, unsigned C>
 inline SourceSDK::BaseVector<T, C> SourceSDK::BaseVector<T, C>::operator/(const BaseVector& vec) const noexcept
 {
-	BaseVector result(*this);
-
-	for (auto i = 0; i < C; i++)
-		result[i] /= vec[i];
-
-	return result;
+	return BaseVector(*this) /= vec;
 }
 
 template<typename T, unsigned C>
 inline SourceSDK::BaseVector<T, C> SourceSDK::BaseVector<T, C>::operator*(const BaseVector& vec) const noexcept
 {
-	BaseVector result(*this);
-
-	for (auto i = 0; i < C; i++)
-		result[i] *= vec[i];
-
-	return result;
+	return BaseVector(*this) *= vec;
 }
 
 
