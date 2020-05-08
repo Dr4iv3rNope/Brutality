@@ -55,7 +55,7 @@ static bool PushPlayer(ObserverMode obs_mode, const PlayerInfo& engine_info, con
 	SpectatorInfo info;
 	info.obs_mode = obs_mode;
 	info.color = color.Hex();
-	info.name = std::string(engine_info.name, MAX_PLAYER_NAME_LENGTH);
+	info.name = engine_info.GetName();
 
 	spectatorList.push_back(info);
 	return true;

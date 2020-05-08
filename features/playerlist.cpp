@@ -59,7 +59,7 @@ struct PlayerListInfo
 				'[' << (player_index + 1) <<
 				UTIL_XOR(" | ") <<
 				this->steamid <<
-				UTIL_XOR("] ") << info.name
+				UTIL_XOR("] ") << info.GetName()
 			)
 			: UTIL_SXOR("You");
 	}
@@ -104,7 +104,7 @@ struct PlayerListCachedInfo
 	//
 	inline void Update(const PlayerListInfo& info)
 	{
-		this->lastName = info.engineInfo.name;
+		this->lastName = info.engineInfo.GetName();
 		this->lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
 	}
 
@@ -513,7 +513,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 										PlayerListCachedInfo cached_info;
 										cached_info.steamid = playerListInfo.steamid;
-										cached_info.lastName = std::string(playerListInfo.engineInfo.name, MAX_PLAYER_NAME_LENGTH);
+										cached_info.lastName = playerListInfo.engineInfo.GetName();
 										cached_info.lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
 										cached_info.type = playerListInfo.type;
 										playerListInfo.isCached = true;
@@ -564,7 +564,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 						if (ImGui::Button(UTIL_CXOR("Stole name")))
 							Features::NameChanger::SetName(
-								std::string(playerListInfoIter->value().engineInfo.name, MAX_PLAYER_NAME_LENGTH) + UTIL_SXOR("\\t")
+								playerListInfoIter->value().engineInfo.GetName() + UTIL_SXOR("\\t\\t")
 							);
 
 						ImGui::NextColumn();
@@ -584,7 +584,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 							if (auto player = BaseEntity::GetByIndex(selectedPlayer + 1))
 							{
 								ImGui::Custom::CopiableText(UTIL_CXOR("Steam ID: %s"), playerListInfoIter->value().steamid.c_str());
-								ImGui::Custom::CopiableText(UTIL_CXOR("Name: %s"), playerListInfoIter->value().engineInfo.name);
+								ImGui::Custom::CopiableText(UTIL_CXOR("Name: %s"), playerListInfoIter->value().engineInfo.GetName().c_str());
 								ImGui::Custom::CopiableText(UTIL_CXOR("User ID: %i"), playerListInfoIter->value().engineInfo.userid);
 								ImGui::Custom::CopiableText(
 									UTIL_CXOR("Bot?: %s"),
@@ -726,7 +726,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 void Features::PlayerList::RegisterWindow() noexcept
 {
-	ImGui::Custom::windowManager.RegisterWindow(
+	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
 			UTIL_SXOR("Player List"),
 			0,

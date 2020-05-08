@@ -57,7 +57,7 @@ static bool PushPlayer(float distance, const PlayerInfo& engine_info, const Conf
 	TextRadarInfo info;
 	info.distance = distance;
 	info.color = color.Hex();
-	info.name = std::string(engine_info.name, MAX_PLAYER_NAME_LENGTH);
+	info.name = engine_info.GetName();
 
 	// sorting values
 	{

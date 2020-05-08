@@ -2,6 +2,7 @@
 #include "const.hpp"
 
 #include <cstdint>
+#include <string>
 
 namespace SourceSDK
 {
@@ -16,5 +17,10 @@ namespace SourceSDK
 		bool isHLTV;
 		CRC32 customFiles[MAX_CUSTOM_FILES]; // custom files CRC for this player
 		std::uint8_t filesDownloaded;
+
+		inline std::string GetName() const noexcept
+		{
+			return std::string(this->name).substr(0, MAX_PLAYER_NAME_LENGTH);
+		}
 	};
 }
