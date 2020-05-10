@@ -13,6 +13,7 @@
 #include "../imgui/custom/keys.hpp"
 
 #include "../util/xorstr.hpp"
+#include "../util/flags.hpp"
 #include "../util/debug/assert.hpp"
 
 namespace Config
@@ -30,7 +31,7 @@ namespace Config
 	extern bool RegisterVariable(IVariable& variable) noexcept;
 
 	// return true if variable with this group and key already presented
-	extern bool IsVariableRegistered(std::string_view group, std::string_view key) noexcept;
+	extern bool IsVariableRegistered(const std::string& group, const std::string& key) noexcept;
 
 	// imports (loads) values to variables
 	extern void ImportVariables(const nlohmann::json& root);
@@ -43,6 +44,13 @@ namespace Config
 
 	// register all variables in window manager
 	extern void RegisterVariablesInWindowManager() noexcept;
+
+	UTIL_FLAGS(VariableFlags)
+	{
+		UTIL_MAKE_BIT_FLAG(VariableFlags, DontRegister, 0),		// dont register variable when created
+		UTIL_MAKE_BIT_FLAG(VariableFlags, NotVisible, 1),		// prevent render element in menu
+		UTIL_MAKE_BIT_FLAG(VariableFlags, DontSave, 2)			// prevent save variable in config
+	};
 
 	enum class VariableType
 	{
@@ -60,7 +68,8 @@ namespace Config
 		String,
 		Enum,
 		Color,
-		Key
+		Key,
+		Flags
 	};
 
 	// basic variable that used to create unique variable
@@ -68,18 +77,22 @@ namespace Config
 	{
 	private:
 		std::string _group, _key;
-		bool _isVisible { true };
+		VariableFlags _flags;
 
 	public:
-		inline IVariable(bool visible, const std::string& group, const std::string& key)
-			: _group { group }, _key { key }, _isVisible { visible } {}
+		inline IVariable(const std::string& group, const std::string& key, VariableFlags flags = 0)
+			: _group { group }, _key { key }, _flags { flags }
+		{
+			if (!flags.HasFlag(VariableFlags_DontRegister))
+				RegisterVariable(*this);
+		}
 
 		// disallow copying setting
 		IVariable(const IVariable&) = delete;
 
 		inline auto GetGroup() const noexcept { return _group; }
 		inline auto GetKey() const noexcept { return _key; }
-		inline auto IsVisible() const noexcept { return _isVisible; }
+		inline auto GetFlags() const noexcept { return _flags; }
 
 		virtual bool Export(nlohmann::json& value) const = 0;
 		virtual bool Import(const nlohmann::json& value) = 0;
@@ -108,9 +121,11 @@ namespace Config
 	protected:
 		T _value;
 
+		inline IBaseVariable(const std::string& group, const std::string& key, VariableFlags flags = 0, T default_value = T {})
+			: IVariable(group, key, flags), _value { default_value } {}
+
 	public:
-		inline IBaseVariable(bool visible, const std::string& group, const std::string& key, T default_value = T {})
-			: IVariable(visible, group, key), _value { default_value } {}
+		using Type = T;
 				
 		virtual VariableType GetType() const override
 		{
@@ -157,11 +172,10 @@ namespace Config
 		static_assert(!std::is_pointer<T>(), "T cannot be pointer");
 		
 	public:
-		inline Variable(bool visible, const std::string& group, const std::string& key, T default_value = T {})
-			: IBaseVariable<T>(visible, group, key, default_value)
-		{
-			RegisterVariable(*this);
-		}
+		inline Variable(const std::string& group, const std::string& key,
+						VariableFlags flags = 0, T default_value = T {})
+			: IBaseVariable<T>(group, key, flags, default_value)
+		{}
 
 		virtual void SetValue(T value) override { this->_value = value; }
 
@@ -228,22 +242,12 @@ namespace Config
 		std::optional<Limits> _limits;
 
 	public:
-		inline LimitedVariable(bool visible,
-							   const std::string& group, const std::string& key,
-							   T default_value, T min, T max)
-			: IBaseVariable<T>(visible, group, key, default_value),
+		inline LimitedVariable(const std::string& group, const std::string& key,
+							   T default_value, T min, T max,
+							   VariableFlags flags = 0)
+			: IBaseVariable<T>(group, key, flags, default_value),
 			_limits { std::make_pair(min, max) }
-		{
-			RegisterVariable(*this);
-		}
-
-		inline LimitedVariable(bool visible,
-							   const std::string& group, const std::string& key, T default_value = T {})
-			: IBaseVariable<T>(group, key, default_value),
-			_limits {}
-		{
-			RegisterVariable(*this);
-		}
+		{}
 		
 		inline T GetMin() const noexcept
 		{
@@ -362,16 +366,14 @@ namespace Config
 		std::size_t _max_length;
 
 	public:
-		inline LimitedString(bool visible,
-							 const std::string& group, const std::string& key,
-							 std::basic_string<T> default_value,
-							 std::size_t max_length)
-			: IBaseVariable<std::basic_string<T>>(visible, group, key, default_value),
+		inline LimitedString(const std::string& group, const std::string& key,
+							 std::size_t max_length,
+							 VariableFlags flags = 0,
+							 std::basic_string<T> default_value = std::basic_string<T>())
+			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value),
 			_max_length { max_length }
 		{
 			this->_value.resize(_max_length);
-
-			RegisterVariable(*this);
 		}
 
 		virtual VariableType GetType() const override { return VariableType::String; }
@@ -407,13 +409,11 @@ namespace Config
 	class String : public IBaseVariable<std::basic_string<T>>
 	{
 	public:
-		inline String(bool visible,
-					  const std::string& group, const std::string& key,
-					  std::basic_string<T> default_value)
-			: IBaseVariable<std::basic_string<T>>(visible, group, key, default_value)
-		{
-			RegisterVariable(*this);
-		}
+		inline String(const std::string& group, const std::string& key,
+					  VariableFlags flags = 0,
+					  std::basic_string<T> default_value = std::basic_string<T>())
+			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value)
+		{}
 
 		virtual VariableType GetType() const override { return VariableType::String; }
 
@@ -455,15 +455,13 @@ namespace Config
 		std::size_t _currentItem { 0 };
 
 	public:
-		inline Enum(bool visible,
-					const Items::value_type& group, const Items::value_type& key,
-					std::initializer_list<Items::value_type> items)
-			: IVariable(visible, group, key), _items(items)
+		inline Enum(const std::string& group, const std::string& key,
+					std::initializer_list<Items::value_type> items,
+					VariableFlags flags = 0)
+			: IVariable(group, key, flags), _items(items)
 		{
 			// empty item list disallow
 			UTIL_DEBUG_ASSERT(items.size() > 0);
-		
-			RegisterVariable(*this);
 		}
 
 		virtual bool Export(nlohmann::json& value) const override
@@ -502,32 +500,29 @@ namespace Config
 		std::array<std::uint8_t, 4> _defaultColor;
 
 	public:
-		inline Color(bool visible,
-					 const std::string& group, const std::string& key,
-					 std::array<std::uint8_t, 4> colors)
-			: IBaseVariable<std::array<std::uint8_t, 4>>(visible, group, key, colors)
+		inline Color(const std::string& group, const std::string& key,
+					 std::array<std::uint8_t, 4> colors,
+					 VariableFlags flags = 0)
+			: IBaseVariable<std::array<std::uint8_t, 4>>(group, key, flags, colors)
 		{
 			_defaultColor = colors;
-
-			RegisterVariable(*this);
 		}
 
-		inline Color(bool visible,
-					 const std::string& group, const std::string& key,
-					 float r, float g, float b, float a = 1.f)
-			: Color(visible, group, key,
+		inline Color(const std::string& group, const std::string& key,
+					 float r, float g, float b, float a = 1.f,
+					 VariableFlags flags = 0)
+			: Color(group, key,
 					{
 						std::uint8_t(r * 255.f),
 						std::uint8_t(g * 255.f),
 						std::uint8_t(b * 255.f),
 						std::uint8_t(a * 255.f)
-					})
+					}, flags)
 		{}
 
-		inline Color(bool visible,
-					 const std::string& group, const std::string& key,
-					 std::uint32_t hex)
-			: Color(visible, group, key, *reinterpret_cast<std::array<std::uint8_t, 4>*>(&hex))
+		inline Color(const std::string& group, const std::string& key,
+					 std::uint32_t hex, VariableFlags flags = 0)
+			: Color(group, key, *reinterpret_cast<std::array<std::uint8_t, 4>*>(&hex), flags)
 		{}
 
 		virtual VariableType GetType() const override { return VariableType::Color; }
@@ -608,13 +603,11 @@ namespace Config
 		ImGui::Custom::Key _key_value;
 
 	public:
-		inline Key(bool visible,
-				   const std::string& group, const std::string& key,
-				   ImGui::Custom::Key key_value = ImGui::Custom::Keys::INVALID)
-			: IVariable(visible, group, key), _key_value { key_value }
-		{
-			RegisterVariable(*this);
-		}
+		inline Key(const std::string& group, const std::string& key,
+				   ImGui::Custom::Key key_value = ImGui::Custom::Keys::INVALID,
+				   VariableFlags flags = 0)
+			: IVariable(group, key, flags), _key_value { key_value }
+		{}
 
 		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
 		inline auto GetKeyValue() const noexcept { return _key_value; }
@@ -641,5 +634,78 @@ namespace Config
 
 		virtual VariableType GetType() const override { return VariableType::Key; }
 		virtual bool IsLimitedVariable() const override { return false; }
+	};
+
+	class Flags : public IVariable
+	{
+	private:
+		std::uint32_t _flags;
+		std::deque<std::string> _bits_info;
+
+	public:
+		inline Flags(const std::string& group, const std::string& key,
+					 std::initializer_list<std::string> bits_info,
+					 VariableFlags flags = 0)
+			: IVariable(group, key, flags), _bits_info(bits_info)
+		{
+			// empty item list disallow
+			UTIL_DEBUG_ASSERT(bits_info.size() > 0);
+			UTIL_DEBUG_ASSERT(bits_info.size() <= GetMaxBit());
+		}
+
+		template <typename V = int, typename F = int>
+		inline Util::Flags<V, F> GetFlags() const noexcept { return Util::Flags<V, F>(_flags); }
+
+		template <typename V = int, typename F = int>
+		inline void SetFlags(Util::Flags<V, F> flags) noexcept { _flags = flags.flags; }
+
+		inline std::uint32_t GetFlags() noexcept { return _flags; }
+		inline void SetFlags(std::uint32_t flags) noexcept { _flags = flags; }
+
+		inline bool HasBitInfo(std::size_t bit) const noexcept
+		{
+			return bit < _bits_info.size();
+		}
+
+		inline bool BitInfo(std::size_t bit, std::string& info) const noexcept
+		{
+			if (HasBitInfo(bit))
+			{
+				info = _bits_info[bit];
+				return true;
+			}
+			else
+				return false;
+		}
+
+		inline std::size_t GetBitCount() const noexcept
+		{
+			return _bits_info.size();
+		}
+
+		static constexpr inline std::size_t GetMaxBit() noexcept
+		{
+			return sizeof(std::uint32_t) * 8;
+		}
+
+
+		virtual bool Export(nlohmann::json& value) const
+		{
+			value = _flags;
+			return true;
+		}
+
+		virtual bool Import(const nlohmann::json& value)
+		{
+			if (!value.is_number())
+				return false;
+
+			_flags = value;
+			return true;
+		}
+
+		virtual VariableType GetType() const { return VariableType::Flags; }
+
+		virtual bool IsLimitedVariable() const { return false; }
 	};
 }

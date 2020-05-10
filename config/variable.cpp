@@ -26,7 +26,7 @@ static void DrawWindow(ImGui::Custom::Window& window) noexcept
 
 	for (auto& variable : variables)
 	{
-		if (!variable->IsVisible())
+		if (variable->GetFlags().HasFlag(Config::VariableFlags_NotVisible))
 			continue;
 
 		switch (variable->GetType())
@@ -83,6 +83,10 @@ static void DrawWindow(ImGui::Custom::Window& window) noexcept
 				ImGui::Custom::Variable::Key(*(Config::Key*)variable);
 				break;
 
+			case Config::VariableType::Flags:
+				ImGui::Custom::Variable::Flags(*(Config::Flags*)variable);
+				break;
+
 			default:
 				UTIL_DEBUG_ASSERT(false);
 				break;
@@ -97,7 +101,7 @@ void Config::RegisterVariablesInWindowManager() noexcept
 		// dont register window if all variables in this group is not visible
 		if (std::find_if(variables.begin(), variables.end(), [] (const IVariable* var) -> bool
 		{
-			return var->IsVisible();
+			return !var->GetFlags().HasFlag(Config::VariableFlags_NotVisible);
 		}) == variables.end())
 			continue;
 
@@ -138,7 +142,7 @@ bool Config::RegisterVariable(IVariable& variable) noexcept
 	return true;
 }
 
-bool Config::IsVariableRegistered(std::string_view group, std::string_view key) noexcept
+bool Config::IsVariableRegistered(const std::string& group, const std::string& key) noexcept
 {
 	if (const auto& group_iter = GetSortedVariables().find(group.data());
 		group_iter != GetSortedVariables().end())
@@ -174,6 +178,9 @@ void Config::ExportVariables(nlohmann::json& root)
 
 		for (const auto& variable : variables)
 		{
+			if (variable->GetFlags().HasFlag(Config::VariableFlags_DontSave))
+				continue;
+
 			nlohmann::json temp_json_value;
 
 			if (variable->Export(temp_json_value))
