@@ -65,6 +65,7 @@ bool ImGui::Custom::WindowManager::UnregisterWindow(const Window& window) noexce
 	if (!IsRegistered(window))
 	{
 		UTIL_XLOG(L"Window is not registered");
+		UTIL_DEBUG_ASSERT(false);
 
 		return false;
 	}
@@ -87,6 +88,7 @@ bool ImGui::Custom::WindowManager::UnregisterWindow(std::size_t window_id) noexc
 	if (!IsRegistered(window_id))
 	{
 		UTIL_XLOG(L"Window is not registered");
+		UTIL_DEBUG_ASSERT(false);
 
 		return false;
 	}
@@ -109,6 +111,7 @@ bool ImGui::Custom::WindowManager::RegisterWindow(Window window, std::size_t* wi
 	if (IsRegistered(window))
 	{
 		UTIL_XLOG(L"Window already registered");
+		UTIL_DEBUG_ASSERT(false);
 
 		return false;
 	}

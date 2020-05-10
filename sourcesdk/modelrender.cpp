@@ -11,10 +11,6 @@ std::size_t SourceSDK::ModelRender::GetDrawModelExecuteIndex()
 	// "C_BaseAnimating::DrawModel"
 	// C_BaseAnimating::InternalDrawModel
 	// C_BaseAnimating::DoInternalDrawModel
-	//
-	// or
-	//
-	// call    sub_100C11C0    ; #STR: "lod: %d/%d\n", "tris: %d\n", "hardware bones: %d\n", "num batches: %d\n" ...
 	#if SOURCE_SDK_IS_GMOD
 	static const auto offset
 	{
@@ -27,18 +23,6 @@ std::size_t SourceSDK::ModelRender::GetDrawModelExecuteIndex()
 	#endif
 
 	return offset;
-}
-
-void SourceSDK::ModelRender::DrawModelExecute(const SourceSDK::DrawModelState& state,
-											  const SourceSDK::ModelRenderInfo& info,
-											  SourceSDK::Matrix3x4* boneToWorld)
-{
-	if (!Hooks::oldDrawModelExecute)
-		Util::Vmt::CallMethod
-		<void, const SourceSDK::DrawModelState&, const SourceSDK::ModelRenderInfo&, SourceSDK::Matrix3x4*>
-		(this, GetDrawModelExecuteIndex(), state, info, boneToWorld);
-	else
-		Hooks::OldDrawModelExecute(state, info, boneToWorld);
 }
 
 void SourceSDK::ModelRender::ForcedMaterialOverride(Material* material, OverrideType type)

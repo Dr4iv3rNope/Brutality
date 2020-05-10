@@ -20,8 +20,12 @@ void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 		(edx, ecx, state, info, boneToWorld);
 }
 
-void Hooks::OldDrawModelExecute(const SourceSDK::DrawModelState& state, const SourceSDK::ModelRenderInfo& info, SourceSDK::Matrix3x4* boneToWorld)
+void Hooks::OldDrawModelExecute(const SourceSDK::DrawModelState& state,
+								const SourceSDK::ModelRenderInfo& info,
+								SourceSDK::Matrix3x4* boneToWorld)
 {
+	UTIL_ASSERT(oldDrawModelExecute, "Tried to run old dme but it's not hooked");
+
 	reinterpret_cast<void(__thiscall*)(void*, const SourceSDK::DrawModelState&, const SourceSDK::ModelRenderInfo&, SourceSDK::Matrix3x4*)>
 		(oldDrawModelExecute->GetOriginal())
 		(SourceSDK::modelrender, state, info, boneToWorld);
