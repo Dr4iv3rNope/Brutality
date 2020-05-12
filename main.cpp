@@ -13,42 +13,12 @@
 
 #include "steamapi/steamuser.hpp"
 #include "steamapi/steamclient.hpp"
+#include "steamapi/steaminterfaces.hpp"
 
 // helpers
 #include "imgui/custom/windowmanager.hpp"
 #include "sourcesdk/netvars.hpp"
 #include "sourcesdk/clientclassdumper.hpp"
-
-// by getprocaddress
-#include "sourcesdk/cvar.hpp"
-#include "sourcesdk/inputsystem.hpp"
-#include "sourcesdk/hlclient.hpp"
-#include "sourcesdk/engineclient.hpp"
-#include "sourcesdk/enginetraceclient.hpp"
-#include "sourcesdk/entitylist.hpp"
-#include "sourcesdk/gameevents.hpp"
-#include "sourcesdk/modelcache.hpp"
-#include "sourcesdk/surface.hpp"
-#include "sourcesdk/localize.hpp"
-#include "sourcesdk/materialsystem.hpp"
-
-// by patterns
-#include "sourcesdk/viewrender.hpp"
-#include "sourcesdk/render.hpp"
-#include "sourcesdk/clientmode.hpp"
-#include "sourcesdk/hlinput.hpp"
-#include "sourcesdk/hoststate.hpp"
-#include "sourcesdk/clientstate.hpp"
-#include "sourcesdk/globals.hpp"
-#include "sourcesdk/shaderapi.hpp"
-
-#include "hooks/createmove.hpp"
-#include "hooks/endscene.hpp"
-#include "hooks/framestagenotify.hpp"
-#include "hooks/overrideview.hpp"
-#include "hooks/reset.hpp"
-#include "hooks/renderview.hpp"
-#include "hooks/drawmodelexecute.hpp"
 
 #include "features/namechanger.hpp"
 #include "features/playerlist.hpp"
@@ -56,9 +26,8 @@
 #include "features/esp.hpp"
 #include "features/chams.hpp"
 #include "features/chatspam.hpp"
-#include "features/gmod/lualoader.hpp"
-#include "features/gmod/luainterface.hpp"
-#include "features/gmod/antiscreengrab.hpp"
+#include "gmod/features/lualoader.hpp"
+#include "gmod/features/antiscreengrab.hpp"
 
 #include "config/config.hpp"
 #include "config/variable.hpp"
@@ -129,10 +98,6 @@ const std::wstring& Main::GetLocalPath()
 }
 
 
-//
-// initializing logs
-//
-
 namespace
 {
 	__INLINE_RUN_FUNC(InitLogs)
@@ -141,152 +106,117 @@ namespace
 	}
 }
 
-//
-// decl helpers
-//
+#pragma region Declare game classes
 
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::NetvarManager, SourceSDK::netvars);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ClientClassDumper, SourceSDK::clientClassDumper);
-VALVE_SDK_INTERFACE_DECLVAR(ImGui::Custom::WindowManager, ImGui::Custom::windowManager);
+GameInterfaces* interfaces;
+GameHooks* hooks;
+SteamInterfaces* steamInterfaces;
 
-//
-// decl hooks
-//
+#pragma endregion
 
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldCreateMove);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldEndScene);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldFrameStageNotify);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldDrawModelExecute);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldRenderView);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldOverrideView);
-VALVE_SDK_INTERFACE_DECLVAR(Util::Vmt::HookedMethod, Hooks::oldReset);
+#pragma region Initialize helpers
 
-//
-// decl interfaces
-//
+SourceSDK::NetvarManager* SourceSDK::netvars;
+SourceSDK::ClientClassDumper* SourceSDK::clientClassDumper;
 
-VALVE_SDK_INTERFACE_DECLVAR(SteamAPI::SteamClient, SteamAPI::client);
-VALVE_SDK_INTERFACE_DECLVAR(SteamAPI::SteamUser, SteamAPI::user);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::HLClient, SourceSDK::clientDLL);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ClientEntityList, SourceSDK::entitylist);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ViewRender, SourceSDK::view);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ClientModeShared, SourceSDK::clientMode);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::Input, SourceSDK::input);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::GlobalVars, SourceSDK::globals);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::EngineTraceClient, SourceSDK::enginetrace);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::EngineClient, SourceSDK::engine);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::GameEventManager, SourceSDK::gameevents);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::Render, SourceSDK::render);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ClientState, SourceSDK::clientState);
-VALVE_SDK_INTERFACE_DECLVAR(float, SourceSDK::netTime);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::MatSystemSurface, SourceSDK::surface);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::MaterialSystem, SourceSDK::materialSystem);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::LocalizedStringTable, SourceSDK::localize);
-//VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::Panel, SourceSDK::panel);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::CVar, SourceSDK::cvar);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::InputSystem, SourceSDK::inputsystem);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::ModelRender, SourceSDK::modelrender);
-VALVE_SDK_INTERFACE_DECLVAR(SourceSDK::MDLCache, SourceSDK::mdlCache);
-VALVE_SDK_INTERFACE_DECLVAR(IDirect3DDevice9, SourceSDK::device);
-#if SOURCE_SDK_IS_GMOD
-VALVE_SDK_INTERFACE_DECLVAR(Features::GarrysMod::LuaInterface*, Features::GarrysMod::luaInterface);
-#endif
+ImGui::Custom::WindowManager* ImGui::Custom::windowManager;
 
+#pragma endregion
 
-//
-// initializing config variables
-//
-#if SOURCE_SDK_IS_GMOD
+#pragma region Initialize config variables
+
+#if BUILD_GAME_IS_GMOD
 // anti-screengrab
 
-Config::Bool antiScreenGrabEnable(true, UTIL_SXOR("Protection"), UTIL_SXOR("Anti-Screen Grab"), false);
+Config::Bool antiScreenGrabEnable(UTIL_SXOR("Protection"), UTIL_SXOR("Anti-Screen Grab"));
 
 
 // run string
 
-Config::Bool preventRunString(true, UTIL_SXOR("Protection"), UTIL_SXOR("Prevent Run String"), false);
+Config::Bool preventRunString(UTIL_SXOR("Protection"), UTIL_SXOR("Prevent Run String"));
 #endif
 
 #ifdef _DEBUG
 // debug variables
 
-static Config::Bool v_bool(true, "Debug", "Boolean");
-static Config::Int32 v_int32(true, "Debug", "Integer 32");
-static Config::UInt32 v_uint32(true, "Debug", "Unsigned Integer 32");
-static Config::Float v_float(true, "Debug", "Float");
+static Config::Bool v_bool("Debug", "Boolean", Config::VariableFlags_DontSave);
+static Config::Int32 v_int32("Debug", "Integer 32", Config::VariableFlags_DontSave);
+static Config::UInt32 v_uint32("Debug", "Unsigned Integer 32", Config::VariableFlags_DontSave);
+static Config::Float v_float("Debug", "Float", Config::VariableFlags_DontSave);
 
-static Config::LInt32 lv_int32(true, "Debug", "Limited Integer 32", 0, -228, 1337);
-static Config::LUInt32 lv_uint32(true, "Debug", "Limited Unsigned Integer 32", 666, 666, 1234);
-static Config::LFloat lv_float(true, "Debug", "Limited Float", 0, -3.14f, 2.28f);
-static Config::LimitedString<char> lv_string(true, "Debug", "Your Name", "AYE", 64);
+static Config::LInt32 lv_int32("Debug", "Limited Integer 32", 0, -228, 1337, Config::VariableFlags_DontSave);
+static Config::LUInt32 lv_uint32("Debug", "Limited Unsigned Integer 32", 666, 666, 1234, Config::VariableFlags_DontSave);
+static Config::LFloat lv_float("Debug", "Limited Float", 0, -3.14f, 2.28f, Config::VariableFlags_DontSave);
+static Config::LimitedString<char> lv_string("Debug", "Your Name", 64, Config::VariableFlags_DontSave, "AYE");
 
-static Config::String<char> uv_string(true, "Debug", "XYZ", "123");
-static Config::Enum uv_enum(true, "Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" });
-static Config::Color uv_color(true, "Debug", "Pick some color", 0x13372280);
-static Config::Key uv_key(true, "Debug", "Some Key Binding");
+static Config::String<char> uv_string("Debug", "XYZ", Config::VariableFlags_DontSave, "123");
+static Config::Enum uv_enum("Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" }, Config::VariableFlags_DontSave);
+static Config::Color uv_color("Debug", "Pick some color", 0.1f, 0.3f, 0.3f, 0.7f, Config::VariableFlags_DontSave);
+static Config::Key uv_key("Debug", "Some Key Binding", Config::VariableFlags_DontSave);
+static Config::Flags uv_flags("Debug", "Flags", { "flag 1", "flag 2", "pride flag", "flag 3" }, Config::VariableFlags_DontSave);
 #endif
 
-Config::Color playerColorNormal(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Normals Color"), { 255, 255, 255, 255 });
-Config::Color playerColorDangerous(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Dangerouses Color"), { 255, 0, 0, 155 });
-Config::Color playerColorFriends(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Friends Color"), { 55, 255, 55, 255 });
-Config::Color playerColorRages(true, UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Color"), { 255, 100, 0, 255 });
+Config::Color playerColorNormal(UTIL_SXOR("Player Colors"), UTIL_SXOR("Normals Color"), { 255, 255, 255, 255 });
+Config::Color playerColorDangerous(UTIL_SXOR("Player Colors"), UTIL_SXOR("Dangerouses Color"), { 255, 0, 0, 155 });
+Config::Color playerColorFriends(UTIL_SXOR("Player Colors"), UTIL_SXOR("Friends Color"), { 55, 255, 55, 255 });
+Config::Color playerColorRages(UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Color"), { 255, 100, 0, 255 });
 
 
 // esp
 
-Config::Bool espEnabled(true, UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
-Config::LFloat espMaxDistance(true, UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
+Config::Bool espEnabled(UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
+Config::LFloat espMaxDistance(UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool espUpdatePerFrame(true, UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), false);
+Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), false);
 
-Config::Bool espDrawEntities(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false);
-Config::Bool espDrawNormal(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"), false);
-Config::Bool espDrawDangerous(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"), false);
-Config::Bool espDrawFriends(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"), false);
-Config::Bool espDrawRages(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"), false);
-Config::Bool espDrawDeadPlayers(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"), false);
-Config::Bool espDrawDormantPlayers(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"), false);
+Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false);
+Config::Bool espDrawNormal(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"), false);
+Config::Bool espDrawDangerous(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"), false);
+Config::Bool espDrawFriends(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"), false);
+Config::Bool espDrawRages(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"), false);
+Config::Bool espDrawDeadPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"), false);
+Config::Bool espDrawDormantPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"), false);
 
-Config::Bool espHealth(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false);
-Config::Color espHealthColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
+Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false);
+Config::Color espHealthColor(UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
 
-Config::Bool espName(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false);
-Config::Color espNameColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
+Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false);
+Config::Color espNameColor(UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
 
-Config::Bool espSkeleton(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false);
+Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false);
 #ifdef _DEBUG
-Config::Bool dbg_espSkeleton(true, UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"), false);
+Config::Bool dbg_espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"), false);
 #endif
-Config::LFloat espSkeletonThickness(true, UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
+Config::LFloat espSkeletonThickness(UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
 
-Config::Bool espActiveWeapon(true, UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false);
-Config::Color espActiveWeaponColor(true, UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
+Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false);
+Config::Color espActiveWeaponColor(UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
 
 
 // text radar
 
-Config::Bool textRadarEnable(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"), false);
+Config::Bool textRadarEnable(UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"), false);
 
-Config::UInt32 textRadarX(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("X"), 0);
-Config::UInt32 textRadarY(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
+Config::UInt32 textRadarX(UTIL_SXOR("Text Radar"), UTIL_SXOR("X"), 0);
+Config::UInt32 textRadarY(UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
 
-Config::LUInt32 textRadarMaxPlayers(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Players"), 10, 5, 32);
-Config::LFloat textRadarMaxDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
+Config::LUInt32 textRadarMaxPlayers(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Players"), 10, 5, 32);
+Config::LFloat textRadarMaxDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool textRadarDrawDistance(true, UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
+Config::Bool textRadarDrawDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
 
 
 // spectator list
-Config::Bool spectatorListEnable(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Enable"), false);
+Config::Bool spectatorListEnable(UTIL_SXOR("Spectator List"), UTIL_SXOR("Enable"));
 
-Config::UInt32 spectatorListX(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("X"), 0);
-Config::UInt32 spectatorListY(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"), 0);
+Config::UInt32 spectatorListX(UTIL_SXOR("Spectator List"), UTIL_SXOR("X"), 0);
+Config::UInt32 spectatorListY(UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"), 0);
 
-Config::LUInt32 spectatorListMaxPlayers(true, UTIL_SXOR("Spectator List"), UTIL_SXOR("Max Players"), 5, 2, 32);
+Config::LUInt32 spectatorListMaxPlayers(UTIL_SXOR("Spectator List"), UTIL_SXOR("Max Players"), 5, 2, 32);
 
 
 // movement
-Config::Bool fastWalkEnable(true, UTIL_SXOR("Movement"), UTIL_SXOR("Fast Walk"), false);
+Config::Bool fastWalkEnable(UTIL_SXOR("Movement"), UTIL_SXOR("Fast Walk"));
 
 
 // third person
@@ -301,19 +231,19 @@ Config::Bool fastWalkEnable(true, UTIL_SXOR("Movement"), UTIL_SXOR("Fast Walk"),
 
 // crosshair
 
-Config::Bool crosshairEnable(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Enable"), false);
+Config::Bool crosshairEnable(UTIL_SXOR("Crosshair"), UTIL_SXOR("Enable"));
 
-Config::LUInt32 crosshairGap(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Gap"), 0, 0, 50);
-Config::LUInt32 crosshairSize(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Size"), 1, 1, 50);
-Config::LUInt32 crosshairThickness(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Thickness"), 1, 1, 10);
+Config::LUInt32 crosshairGap(UTIL_SXOR("Crosshair"), UTIL_SXOR("Gap"), 0, 0, 150);
+Config::LUInt32 crosshairSize(UTIL_SXOR("Crosshair"), UTIL_SXOR("Size"), 1, 1, 150);
+Config::LUInt32 crosshairThickness(UTIL_SXOR("Crosshair"), UTIL_SXOR("Thickness"), 1, 1, 30);
 
-Config::Color crosshairColor(true, UTIL_SXOR("Crosshair"), UTIL_SXOR("Color"), { 255, 255, 255, 255 });
+Config::Color crosshairColor(UTIL_SXOR("Crosshair"), UTIL_SXOR("Color"), { 255, 255, 255, 255 });
 
 
 // bunny hop
 
-Config::Bool bhopEnable(true, UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Enable"), false);
-Config::Bool bhopAutoStrafe(true, UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Mouse Auto-Strafe"), false);
+Config::Bool bhopEnable(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Enable"));
+Config::Bool bhopAutoStrafe(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Mouse Auto-Strafe"));
 
 /*
 Config::LFloat bhopMinDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Min Jump Delay"), 0.f, 0.f, 1000.f);
@@ -323,385 +253,112 @@ Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"),
 
 // chat spam
 
-Config::Bool chatSpamEnable(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Enable"), false);
-Config::Bool chatSpamTeam(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Team chat mode"), false);
-Config::LFloat chatSpamDelay(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 3.f);
-Config::String<char> chatSpamMessage(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Message"), UTIL_SXOR("\\n\\nBrutality B-)\\n\\n"));
-Config::Enum chatSpamMode(false, UTIL_SXOR("Chat Spammer"), UTIL_SXOR("Mode"), { UTIL_SXOR("Message"), UTIL_SXOR("Animated") });
+Config::Bool chatSpamEnable(
+	UTIL_SXOR("Chat Spammer"),
+	UTIL_SXOR("Enable"),
+	Config::VariableFlags_NotVisible
+);
+
+Config::Bool chatSpamTeam(
+	UTIL_SXOR("Chat Spammer"),
+	UTIL_SXOR("Team chat mode"),
+	Config::VariableFlags_NotVisible
+);
+
+Config::LFloat chatSpamDelay(
+	UTIL_SXOR("Chat Spammer"),
+	UTIL_SXOR("Delay in seconds"),
+	0.f, 0.f, 3.f,
+	Config::VariableFlags_NotVisible
+);
+
+Config::String<char> chatSpamMessage(
+	UTIL_SXOR("Chat Spammer"),
+	UTIL_SXOR("Message"),
+	Config::VariableFlags_NotVisible,
+	UTIL_SXOR("\\n\\nBrutality B-)\\n\\n")
+);
+
+Config::Enum chatSpamMode(
+	UTIL_SXOR("Chat Spammer"),
+	UTIL_SXOR("Mode"),
+	{
+		UTIL_SXOR("Message"),
+		UTIL_SXOR("Animated")
+	},
+	Config::VariableFlags_NotVisible
+);
 
 
 // user interface settings
 
-Config::Bool useTabs(false, UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), true);
+Config::Bool useTabs(UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), Config::VariableFlags_NotVisible, true);
 
 
 // name changer
 
-Config::String<char> nameChangerName(false, UTIL_SXOR("Name Changer"), UTIL_SXOR("Name"), std::string());
-Config::Bool nameChangerAutoSend(false, UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send"), false);
+Config::String<char> nameChangerName(UTIL_SXOR("Name Changer"), UTIL_SXOR("Name"), Config::VariableFlags_NotVisible);
+Config::Bool nameChangerAutoSend(UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send"), Config::VariableFlags_NotVisible);
 
-//
-// initialize hack
-//
 
-#ifdef _DEBUG
-static bool dbg_initialized { false };
-#endif
-static SteamAPI::SteamPipeHandle steamPipeHandle;
-static SteamAPI::SteamUserHandle steamUserHandle;
+// chams
 
-static void GetSteamInterfaces() noexcept
+Config::Bool chamsEnable(UTIL_SXOR("Chams"), UTIL_SXOR("Enable"));
+Config::Bool chamsOnlyVisible(UTIL_SXOR("Chams"), UTIL_SXOR("Only Visible"));
+Config::Bool chamsDrawDormant(UTIL_SXOR("Chams"), UTIL_SXOR("Draw Dormant"));
+
+std::initializer_list chamsTypes =
 {
-	VALVE_SDK_INTERFACE_IMPL(SteamAPI::SteamClient, SteamAPI::client, "steamclient.dll", "SteamClient018");
+	UTIL_SXOR("Disable"),
+	UTIL_SXOR("Normal"),
+	UTIL_SXOR("Flat"),
+	UTIL_SXOR("Shiny"),
+	UTIL_SXOR("Glow"),
+	UTIL_SXOR("Animated Spawn Effect"),
+	UTIL_SXOR("Glass")
+};
 
-	steamPipeHandle = SteamAPI::client->CreateSteamPipe();
-	steamUserHandle = SteamAPI::client->ConnectToGlobalUser(steamPipeHandle);
+Config::Color chamsNormalsVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Normal Players Color"), { 255, 255, 255, 255 });
+Config::Color chamsNormalsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Normal Players Color"), { 255, 255, 155, 255 });
+Config::Enum chamsNormalsType(UTIL_SXOR("Chams"), UTIL_SXOR("Normal Players"), chamsTypes);
 
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		SteamAPI::SteamUser,
-		SteamAPI::user,
-		SteamAPI::client->GetSteamUser(steamUserHandle, steamPipeHandle, UTIL_CXOR("SteamUser020"))
-	);
-}
+Config::Color chamsDangerousVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Dangerous Players Color"), { 255, 0, 0, 155 });
+Config::Color chamsDangerousColor(UTIL_SXOR("Chams"), UTIL_SXOR("Dangerous Players Color"), { 155, 55, 55, 155 });
+Config::Enum chamsDangerousType(UTIL_SXOR("Chams"), UTIL_SXOR("Dangerous Players"), chamsTypes);
 
-static void GetClientInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::HLClient, SourceSDK::clientDLL, "client.dll", "VClient017");
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::ClientEntityList, SourceSDK::entitylist, "client.dll", "VClientEntityList003");
+Config::Color chamsFriendsVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Friend Players Color"), { 55, 255, 55, 255 });
+Config::Color chamsFriendsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Friend Players Color"), { 100, 155, 55, 255 });
+Config::Enum chamsFriendsType(UTIL_SXOR("Chams"), UTIL_SXOR("Friend Players"), chamsTypes);
 
-	// "freezecam_started"
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::ViewRender,
-		SourceSDK::view,
-		"client.dll",
-		"8B 0D ?? ?? ?? ?? F3 0F 10 45 ?? 51 F3 0F 11 04 ?? 8B 01 FF 90 ?? ?? ?? ?? 5F 5E",
-		2, 2
-	);
+Config::Color chamsRagesVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Rage Players Color"), { 255, 100, 0, 255 });
+Config::Color chamsRagesColor(UTIL_SXOR("Chams"), UTIL_SXOR("Rage Players Color"), { 200, 55, 55, 255 });
+Config::Enum chamsRagesType(UTIL_SXOR("Chams"), UTIL_SXOR("Rage Players"), chamsTypes);
 
-	/*
-	call    GetClientModeNormal ; #STR: "CBaseViewport", "CHudViewport"
-	mov     g_pClientMode, eax
-	call    sub_101F6970
-	push    offset aScriptsVguiScr ; "scripts/vgui_screens.txt"
-	mov     ecx, eax
-	mov     edx, [eax]
-	call    dword ptr [edx]
-	retn
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::ClientModeShared,
-		SourceSDK::clientMode,
-		"client.dll",
-		"E8 ?? ?? ?? ?? A3 ?? ?? ?? ?? E8 ?? ?? ?? ?? 68 ?? ?? ?? ?? 8B C8 8B 10",
-		6, 2
-	);
 
-	/* "playername"
+Config::Color chamsArmsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Arms Color"), 1.f, 1.f, 1.f);
+Config::Enum chamsArmsType(UTIL_SXOR("Chams"), UTIL_SXOR("Arms"), chamsTypes);
 
-	push    offset state_m_vecEyeAngles
-	push    offset state_m_vecEyePosition
-	mov     ecx, esi
-	fstp    [ebp+flZFar]
-	call    dword ptr [eax+468h]
-	mov     ecx, engine
-	mov     eax, [ecx]
-	mov     eax, [eax+150h]
-	call    eax
-	test    al, al
-	jnz     loc_101471EC
-	mov     ecx, input
-	mov     eax, [ecx]
-	mov     eax, [eax+7Ch]
-	call    eax
-	test    eax, eax
-	jz      loc_101471EC
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::Input,
-		SourceSDK::input,
-		"client.dll",
-		// uid: 11465127236496068054
-		"8B 0D ?? ?? ?? ?? 8B 01 8B 40 ?? FF D0 85 C0 0F 84 ?? ?? ?? ?? A1",
-		2, 2
-	);
+Config::Color chamsWeaponsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Weapons Color"), 1.f, 1.f, 1.f);
+Config::Enum chamsWeaponsType(UTIL_SXOR("Chams"), UTIL_SXOR("Weapons"), chamsTypes);
 
-	/*
-	mov     eax, gpGlobals
-	shl     esi, 8
-	add     esi, [ebx+218h]
-	movss   xmm0, dword ptr [eax+0Ch]
-	addss   xmm0, ds:dword_104D3E00
-	mov     eax, [edi]
-	lea     ecx, [esi+100h]
-	push    ecx
-	push    offset aHeading ; "heading"
-	mov     ecx, edi
-	movss   dword ptr [ebx+204h], xmm0
-	call    dword ptr [eax+3F0h]
-	mov     eax, [edi]
-	lea     ecx, [esi+2FEh]
-	push    ecx
-	mov     [ebp+var_4], ecx
-	mov     ecx, edi
-	push    offset aTitle   ; "title"
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::GlobalVars,
-		SourceSDK::globals,
-		"client.dll",
-		"A1 ?? ?? ?? ?? C1 E6 ?? 03 B3",
-		1, 2
-	);
-}
+#pragma endregion
 
-static void GetEngineInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::EngineTraceClient, SourceSDK::enginetrace, "engine.dll", "EngineTraceClient003");
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::EngineClient, SourceSDK::engine, "engine.dll", "VEngineClient013");
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::GameEventManager, SourceSDK::gameevents, "engine.dll", "GAMEEVENTSMANAGER002");
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::ModelRender, SourceSDK::modelrender, "engine.dll", "VEngineModel016");
-
-	/* "Displacement_Rendering"
-
-	mov		ecx, g_pRender
-	push		[ebp + arg_C]
-	push		[ebp + arg_8]
-	mov		eax, [ecx]
-	call		dword ptr[eax + 2Ch]
-	movzx	eax, byte ptr[eax + 24h]
-	push		eax
-	mov		eax, [ebp + var_14]
-	push		eax
-	push		ebx
-	push		[ebp + arg_0]
-	call		sub_100D9960
-	mov		edx, ds:g_VProfCurrentProfile
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::Render,
-		SourceSDK::render,
-		"engine.dll",
-		"8B 0D ?? ?? ?? ?? FF 75 ?? FF 75 ?? 8B 01 FF 50 ?? 0F B6 40",
-		2, 2
-	);
-
-	/*
-	push    offset aGuid    ; "guid"
-	call    sub_10257D70
-	mov     ecx, offset g_clientState
-	call    sub_100BD260
-	push    ecx
-	fstp    [esp+0Ch+var_C] ; int
-	push    offset aTime    ; "time"
-	mov     ecx, esi
-	call    sub_10257D40
-	xor     eax, eax
-	mov     ecx, esi
-	cmp     [edi], al
-	setnz   al
-	push    eax             ; int
-	push    offset aStaticsound ; "staticsound"
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		SourceSDK::ClientState,
-		SourceSDK::clientState,
-		"engine.dll",
-		"B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 51 D9 1C 24 68",
-		1, 1
-	);
-
-	// "Auto-disconnect in %.1f seconds" in CL_Move
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		float,
-		SourceSDK::netTime,
-		"engine.dll",
-		"DD 05 ?? ?? ?? ?? DD 05 ?? ?? ?? ?? D8 E9 D9 55",
-		2, 1
-	);
-}
-
-static void GetVguiInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::MatSystemSurface, SourceSDK::surface, "vguimatsurface.dll", "VGUI_Surface030");
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::LocalizedStringTable, SourceSDK::localize, "vgui2.dll", "VguiLocalize004");
-	//VALVE_SDK_INTERFACE_DECL(SourceSDK::Panel, SourceSDK::panel, "vgui2.dll", "VGUI_Panel009");
-}
-
-static void GetVStdLibInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::CVar, SourceSDK::cvar, "vstdlib.dll", "VEngineCvar007");
-}
-
-static void GetInputSystemInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::InputSystem, SourceSDK::inputsystem, "inputsystem.dll", "InputSystemVersion001");
-}
-
-static void GetDataCacheInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::MDLCache, SourceSDK::mdlCache, "datacache.dll", "MDLCache004");
-}
-
-static void GetShaderApiInterfaces() noexcept
-{
-	/* "mat_queue_mode", "-nulldevice"
-
-	push    5E740DE1h
-	mov     ecx, edi
-	mov     g_pDevice, esi
-	call    sub_1004E000
-	and     byte ptr [edi+0A8h], 0FDh
-	mov     esi, [ebp+arg_8]
-	mov     edx, [ebp+arg_0]
-	and     byte ptr [edi+10h], 0FDh
-	mov     cl, [edi+0A8h]
-	mov     [edi+8], edx
-	mov     [edi+24h], ebx
-	mov     [edi+4], ebx
-	mov     dword ptr [edi+0A4h], 0
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		IDirect3DDevice9,
-		SourceSDK::device,
-		"shaderapidx9.dll",
-		"8B 35 ?? ?? ?? ?? 8B CB",
-		2, 2
-	);
-}
-
-static void GetMaterialSystemInterfaces() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL(SourceSDK::MaterialSystem, SourceSDK::materialSystem, "materialsystem.dll", "VMaterialSystem080");
-}
-
-#if SOURCE_SDK_IS_GMOD
-static void GetGmodInterfaces() noexcept
-{
-	/*
-	mov     ecx, luaInterface
-	lea     edx, [ebp+lua_code_str]
-	push    1
-	push    1
-	mov     [ebp+var_4], 0
-	mov     eax, [ecx]
-	push    edx
-	push    offset empty_string
-	push    offset aLuacmd  ; "LuaCmd"
-	*/
-	VALVE_SDK_INTERFACE_IMPL_PATTERN
-	(
-		Features::GarrysMod::LuaInterface*,
-		Features::GarrysMod::luaInterface,
-		"client.dll",
-		"8B 0D ?? ?? ?? ?? 8D 95 ?? ?? ?? ?? 6A 01 6A 01",
-		2, 1
-	);
-}
-#endif
+#pragma region Initialize hack
 
 static void InitializeHelpers() noexcept
 {
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		SourceSDK::NetvarManager,
-		SourceSDK::netvars,
-		new SourceSDK::NetvarManager()
-	);
+	SourceSDK::netvars = new SourceSDK::NetvarManager();
+	SourceSDK::clientClassDumper = new SourceSDK::ClientClassDumper();
 
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		SourceSDK::ClientClassDumper,
-		SourceSDK::clientClassDumper,
-		new SourceSDK::ClientClassDumper()
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		ImGui::Custom::WindowManager,
-		ImGui::Custom::windowManager,
-		new ImGui::Custom::WindowManager()
-	);
-}
-
-static void InstallHooks() noexcept
-{
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldCreateMove,
-		new Util::Vmt::HookedMethod(SourceSDK::clientMode, SourceSDK::clientMode->GetCreateMoveIndex())
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldCreateMove,
-		new Util::Vmt::HookedMethod(SourceSDK::clientMode, SourceSDK::clientMode->GetCreateMoveIndex())
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldEndScene,
-		new Util::Vmt::HookedMethod(SourceSDK::device, 42)
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldFrameStageNotify,
-		new Util::Vmt::HookedMethod(SourceSDK::clientDLL, SourceSDK::clientDLL->GetFrameStageNotifyIndex())
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldOverrideView,
-		new Util::Vmt::HookedMethod(SourceSDK::clientMode, SourceSDK::clientMode->GetOverrideViewIdx())
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldReset,
-		new Util::Vmt::HookedMethod(SourceSDK::device, 16)
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldRenderView,
-		new Util::Vmt::HookedMethod(SourceSDK::view, SourceSDK::view->GetRenderViewIndex())
-	);
-
-	VALVE_SDK_INTERFACE_IMPL_EX(
-		Util::Vmt::HookedMethod,
-		Hooks::oldDrawModelExecute,
-		new Util::Vmt::HookedMethod(SourceSDK::modelrender, SourceSDK::modelrender->GetDrawModelExecuteIndex())
-	);
-
-	/*Util::Vmt::HookedMethod* Hooks::oldPaintTraverse
-	{
-		new Util::Vmt::HookedMethod(SourceSDK::panel, SourceSDK::panel->GetPaintTraverseIndex())
-	};*/
-}
-
-static void InitializeHooks() noexcept
-{
-	Hooks::oldCreateMove->Initialize(Hooks::CreateMove);
-	Hooks::oldEndScene->Initialize(Hooks::EndScene);
-	Hooks::oldFrameStageNotify->Initialize(Hooks::FrameStageNotify);
-	Hooks::oldOverrideView->Initialize(Hooks::OverrideView);
-	Hooks::oldReset->Initialize(Hooks::Reset);
-	Hooks::oldRenderView->Initialize(Hooks::RenderView);
-	//Hooks::oldPaintTraverse->Initialize(Hooks::PaintTraverse);
-	Hooks::oldDrawModelExecute->Initialize(Hooks::DrawModelExecute);
+	ImGui::Custom::windowManager = new ImGui::Custom::WindowManager();
 }
 
 static void InitializeFeatures() noexcept
 {
 	Features::NameChanger::Initialize();
 	Features::Chams::Initialize();
-	#if SOURCE_SDK_IS_GMOD
-	Features::GarrysMod::AntiScreenGrab::Initialize();
+	#if BUILD_GAME_IS_GMOD
+	GarrysMod::Features::AntiScreenGrab::Initialize();
 	#endif
 }
 
@@ -712,39 +369,29 @@ static void RegisterWindows() noexcept
 	Features::PlayerList::RegisterWindow();
 	Features::ChatSpam::RegisterWindow();
 	Features::CustomDisconnect::RegisterWindow();
-	#if SOURCE_SDK_IS_GMOD
-	Features::GarrysMod::LuaLoader::RegisterWindow();
+	#if BUILD_GAME_IS_GMOD
+	GarrysMod::Features::LuaLoader::RegisterWindow();
 	#endif
 
 	Config::RegisterVariablesInWindowManager();
 	Config::RegisterWindow();
 }
 
+#ifdef _DEBUG
+static bool dbg_initialized { false };
+#endif
+
 void Main::Initialize() noexcept
 {
 	UTIL_DEBUG_ASSERT(!dbg_initialized);
 
-	GetSteamInterfaces();
-	GetClientInterfaces();
-	GetEngineInterfaces();
-	GetVguiInterfaces();
-	GetVStdLibInterfaces();
-	GetInputSystemInterfaces();
-	GetDataCacheInterfaces();
-	GetShaderApiInterfaces();
-	GetMaterialSystemInterfaces();
-	#if SOURCE_SDK_IS_GMOD
-	GetGmodInterfaces();
-	#endif
+	::interfaces = new GameInterfaces();
 
 	InitializeHelpers();
-
-	InitializeFeatures();
-	
+	InitializeFeatures();	
 	RegisterWindows();
 
-	InstallHooks();
-	InitializeHooks();
+	::hooks = new GameHooks();
 
 	#ifdef _DEBUG
 	dbg_initialized = true;
@@ -758,6 +405,8 @@ namespace
 		Main::Initialize();
 	}
 }
+
+#pragma endregion
 
 //
 // shutdown
@@ -781,7 +430,6 @@ static inline auto& GetShutdownItems() noexcept
 void Main::AddToShutdown(Shutdown::Element* element) noexcept
 {
 	UTIL_DEBUG_ASSERT(element);
-	UTIL_DEBUG_ASSERT(element->action);
 
 	GetShutdownItemsMutex().lock();
 
@@ -816,7 +464,9 @@ void Main::Shutdown() noexcept
 				{
 					UTIL_LABEL_ENTRY(UTIL_SXOR(L"Shutdown item: ") + element->name);
 
-					element->action();
+					if (element->action)
+						element->action();
+					
 					delete element;
 
 					UTIL_LABEL_OK();

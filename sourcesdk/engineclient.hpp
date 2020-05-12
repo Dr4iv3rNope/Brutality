@@ -1,6 +1,4 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
-
 #include "playerinfo.hpp"
 
 namespace SourceSDK
@@ -12,6 +10,4 @@ namespace SourceSDK
 		bool GetPlayerInfo(int entidx, PlayerInfo& info);
 		void ClientCmdUnrestricted(const char* cmd);
 	};
-
-	VALVE_SDK_INTERFACE_DECL(EngineClient, engine);
 }

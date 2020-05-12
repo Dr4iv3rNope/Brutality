@@ -9,13 +9,13 @@
 #include "../features/namechanger.hpp"
 #include "../features/spectatorlist.hpp"
 #include "../features/chatspam.hpp"
-#include "../features/gmod/luainterface.hpp"
+#include "../gmod/luasdk/luainterface.hpp"
 
 #include "../shutdown.hpp"
 
 void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 {
-	CREATE_SHUTDOWN_HOOK_GUARD(L"FrameStageNotify", oldFrameStageNotify);
+	SHUTDOWN_HOOK_GUARD(L"FrameStageNotify");
 	MAKE_BUSY_SHUTDOWN_GUARD;
 
 	switch (stage)
@@ -24,8 +24,8 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 			break;
 
 		case SourceSDK::ClientFrameStage::Start:
-			#if SOURCE_SDK_IS_GMOD
-			Features::GarrysMod::LuaInterface::TryToInitialize();
+			#if BUILD_GAME_IS_GMOD
+			GarrysMod::LuaInterface::TryToInitialize();
 			#endif
 			Features::NameChanger::Update();
 			Features::ChatSpam::Think();
@@ -59,6 +59,6 @@ void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 	}
 
 	reinterpret_cast<decltype(Hooks::FrameStageNotify)*>
-		(oldFrameStageNotify->GetOriginal())
+		(hooks->oldFrameStageNotify->GetOriginal())
 		(stage);
 }

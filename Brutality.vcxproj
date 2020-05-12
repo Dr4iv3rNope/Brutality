@@ -171,13 +171,14 @@
     <ClCompile Include="features\customdisconnect.cpp" />
     <ClCompile Include="features\esp.cpp" />
     <ClCompile Include="features\fastwalk.cpp" />
-    <ClCompile Include="features\gmod\antiscreengrab.cpp" />
-    <ClCompile Include="features\gmod\luainterface.cpp" />
-    <ClCompile Include="features\gmod\lualoader.cpp" />
     <ClCompile Include="features\namechanger.cpp" />
     <ClCompile Include="features\playerlist.cpp" />
     <ClCompile Include="features\spectatorlist.cpp" />
     <ClCompile Include="features\textradar.cpp" />
+    <ClCompile Include="gmod\features\antiscreengrab.cpp" />
+    <ClCompile Include="gmod\features\lualoader.cpp" />
+    <ClCompile Include="gmod\gmod.cpp" />
+    <ClCompile Include="gmod\luasdk\luainterface.cpp" />
     <ClCompile Include="hooks\createmove.cpp" />
     <ClCompile Include="hooks\drawmodelexecute.cpp" />
     <ClCompile Include="hooks\endscene.cpp" />
@@ -187,6 +188,8 @@
     <ClCompile Include="hooks\reset.cpp" />
     <ClCompile Include="imgui\custom\colors.cpp" />
     <ClCompile Include="imgui\custom\errors.cpp" />
+    <ClCompile Include="imgui\custom\flags.cpp" />
+    <ClCompile Include="imgui\custom\groups.cpp" />
     <ClCompile Include="imgui\custom\keys.cpp" />
     <ClCompile Include="imgui\custom\specialchars.cpp" />
     <ClCompile Include="imgui\custom\text.cpp" />
@@ -227,8 +230,10 @@
     <ClCompile Include="sourcesdk\surface.cpp" />
     <ClCompile Include="sourcesdk\vector.cpp" />
     <ClCompile Include="sourcesdk\viewrender.cpp" />
+    <ClCompile Include="sourcesdk\vrenderview.cpp" />
     <ClCompile Include="sourcesdk\weapon.cpp" />
     <ClCompile Include="sourcesdk\worldtoscreen.cpp" />
+    <ClCompile Include="steamapi\steaminterfaces.cpp" />
     <ClCompile Include="ui\ui.cpp" />
     <ClCompile Include="util\asmhook.cpp" />
     <ClCompile Include="util\debug\logs.cpp" />
@@ -243,6 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="brutality.hpp" />
+    <ClInclude Include="build.hpp" />
     <ClInclude Include="config\config.hpp" />
     <ClInclude Include="config\variable.hpp" />
     <ClInclude Include="features\bhop.hpp" />
@@ -252,13 +258,16 @@
     <ClInclude Include="features\customdisconnect.hpp" />
     <ClInclude Include="features\esp.hpp" />
     <ClInclude Include="features\fastwalk.hpp" />
-    <ClInclude Include="features\gmod\antiscreengrab.hpp" />
-    <ClInclude Include="features\gmod\luainterface.hpp" />
-    <ClInclude Include="features\gmod\lualoader.hpp" />
     <ClInclude Include="features\namechanger.hpp" />
     <ClInclude Include="features\playerlist.hpp" />
     <ClInclude Include="features\spectatorlist.hpp" />
     <ClInclude Include="features\textradar.hpp" />
+    <ClInclude Include="gmod\features\antiscreengrab.hpp" />
+    <ClInclude Include="gmod\features\lualoader.hpp" />
+    <ClInclude Include="gmod\gmod.hpp" />
+    <ClInclude Include="gmod\luasdk\luainterface.hpp" />
+    <ClInclude Include="gmod\sourcesdk\gmodentity.hpp" />
+    <ClInclude Include="gmod\sourcesdk\gmodplayer.hpp" />
     <ClInclude Include="hooks\createmove.hpp" />
     <ClInclude Include="hooks\drawmodelexecute.hpp" />
     <ClInclude Include="hooks\endscene.hpp" />
@@ -268,6 +277,8 @@
     <ClInclude Include="hooks\reset.hpp" />
     <ClInclude Include="imgui\custom\colors.hpp" />
     <ClInclude Include="imgui\custom\errors.hpp" />
+    <ClInclude Include="imgui\custom\flags.h" />
+    <ClInclude Include="imgui\custom\groups.hpp" />
     <ClInclude Include="imgui\custom\keys.hpp" />
     <ClInclude Include="imgui\custom\numeric.hpp" />
     <ClInclude Include="imgui\custom\specialchars.hpp" />
@@ -298,6 +309,7 @@
     <ClInclude Include="sourcesdk\keyvalues.hpp" />
     <ClInclude Include="sourcesdk\localize.hpp" />
     <ClInclude Include="sourcesdk\materialsystem.hpp" />
+    <ClInclude Include="sourcesdk\materialvar.hpp" />
     <ClInclude Include="sourcesdk\math.hpp" />
     <ClInclude Include="sourcesdk\modelcache.hpp" />
     <ClInclude Include="sourcesdk\modelrender.hpp" />
@@ -342,14 +354,14 @@
     <ClInclude Include="sourcesdk\recv.hpp" />
     <ClInclude Include="sourcesdk\render.hpp" />
     <ClInclude Include="sourcesdk\rendermode.hpp" />
-    <ClInclude Include="sourcesdk\sdk.hpp" />
-    <ClInclude Include="sourcesdk\shaderapi.hpp" />
+    <ClInclude Include="sourcesdk\vrenderview.hpp" />
     <ClInclude Include="sourcesdk\studio.hpp" />
     <ClInclude Include="sourcesdk\surface.hpp" />
     <ClInclude Include="sourcesdk\usercmd.hpp" />
     <ClInclude Include="sourcesdk\utlmemory.hpp" />
     <ClInclude Include="sourcesdk\utlvector.hpp" />
     <ClInclude Include="sourcesdk\vector.hpp" />
+    <ClInclude Include="sourcesdk\viewmodel.hpp" />
     <ClInclude Include="sourcesdk\viewrender.hpp" />
     <ClInclude Include="sourcesdk\viewsetup.hpp" />
     <ClInclude Include="sourcesdk\waterlevel.hpp" />
@@ -358,6 +370,7 @@
     <ClInclude Include="sourcesdk\worldtoscreen.hpp" />
     <ClInclude Include="steamapi\steamclient.hpp" />
     <ClInclude Include="steamapi\steamid.hpp" />
+    <ClInclude Include="steamapi\steaminterfaces.hpp" />
     <ClInclude Include="steamapi\steamuser.hpp" />
     <ClInclude Include="ui\onmenurender.hpp" />
     <ClInclude Include="ui\onoverlayrender.hpp" />

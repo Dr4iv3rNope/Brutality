@@ -1,12 +1,12 @@
 #include "inputsystem.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
 void SourceSDK::InputSystem::EnableInput(bool enable)
 {
 	// "Unable to create game window" in CGame::CreateGameWindow
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -23,7 +23,7 @@ void SourceSDK::InputSystem::EnableInput(bool enable)
 bool SourceSDK::InputSystem::IsButtonDown(ButtonCode code)
 {
 	// "scores" in CClientScoreBoardDialog::OnThink
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -40,7 +40,7 @@ bool SourceSDK::InputSystem::IsButtonDown(ButtonCode code)
 void SourceSDK::InputSystem::ResetInputState()
 {
 	// in CInputSystem::DetachFromWindow
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(

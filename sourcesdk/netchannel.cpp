@@ -1,5 +1,5 @@
 #include "netchannel.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
@@ -10,7 +10,7 @@ void SourceSDK::NetChannel::Shutdown(const char* reason)
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown net channel"));
 
 	// "Disconnect by server.\n"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(
@@ -31,7 +31,7 @@ void SourceSDK::NetChannel::SendNetMsg(INetMessage* message, bool force_reliable
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Sending net message"));
 
 	// "Custom user info value"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(

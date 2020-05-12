@@ -1,5 +1,5 @@
 #include "hlclient.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
@@ -7,7 +7,7 @@ std::size_t SourceSDK::HLClient::GetFrameStageNotifyIndex()
 {
 	// find "CL_ProcessPacketEntities: frame window too big (>%i)\n"
 	// in CL_ProcessPacketEntities
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		VMT_XFIND_METHOD("A3 ?? ?? ?? ?? 83 F8 ?? 0F 87", 2)
@@ -19,7 +19,7 @@ std::size_t SourceSDK::HLClient::GetFrameStageNotifyIndex()
 
 std::size_t SourceSDK::HLClient::GetCreateMoveIndex()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(

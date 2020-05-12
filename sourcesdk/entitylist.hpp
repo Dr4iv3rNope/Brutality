@@ -1,6 +1,4 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
-
 #include "entity.hpp"
 
 namespace SourceSDK
@@ -18,6 +16,4 @@ namespace SourceSDK
 
 		int GetMaxEntities();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(ClientEntityList, entitylist);
 }

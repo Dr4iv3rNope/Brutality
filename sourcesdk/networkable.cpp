@@ -1,5 +1,7 @@
 #include "networkable.hpp"
 
+#include "../build.hpp"
+
 #include "../util/vmt.hpp"
 #include "../util/pattern.hpp"
 #include "../util/xorstr.hpp"
@@ -7,7 +9,7 @@
 // "(%i) %s" in CEntityReportPanel_Paint
 bool SourceSDK::Networkable::IsDormant()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/* "(%i) %s"
 	
 	mov     edx, [edi]
@@ -40,20 +42,14 @@ bool SourceSDK::Networkable::IsDormant()
 
 const SourceSDK::ClientClass* SourceSDK::Networkable::GetClientClass()
 {
-	#if SOURCE_SDK_IS_GMOD
-	/* "mod_studio: MOVETYPE_FOLLOW with no model."
-
-	mov     edx, [edi+8]
-	lea     ecx, [edi+8]
-	mov     edx, [edx+20h] ; 20h - offset
-	call    edx
-	test    al, al
-	*/
+	#if BUILD_GAME_IS_GMOD
+	// "'%s'"
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
-			"client.dll",
-			"8B 57 08 8D 4F 08 8B 52 ?? FF D2 84 C0", 8
+			"engine.dll",
+			"85 C0 74 ?? C6 85 ?? ?? ?? ?? 00 8B C8 8B 10 FF 52",
+			17
 		)) / 4
 	};
 	#endif

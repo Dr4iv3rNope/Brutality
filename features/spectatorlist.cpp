@@ -1,6 +1,8 @@
 #include "spectatorlist.hpp"
 #include "playerlist.hpp"
 
+#include "../main.hpp"
+
 #include "../util/strings.hpp"
 
 #include "../sourcesdk/globals.hpp"
@@ -63,7 +65,7 @@ static bool PushPlayer(ObserverMode obs_mode, const PlayerInfo& engine_info, con
 
 void Features::SpectatorList::Update() noexcept
 {
-	if (!IsInGame() || !spectatorListEnable)
+	if (!interfaces->clientstate->IsInGame() || !spectatorListEnable)
 		return;
 
 	auto localPlayer = BasePlayer::GetLocalPlayer();
@@ -77,7 +79,7 @@ void Features::SpectatorList::Update() noexcept
 	//
 	// add players to order
 	//
-	for (auto i = 1; i <= globals->maxClients; i++)
+	for (auto i = 1; i <= interfaces->globals->maxClients; i++)
 	{
 		auto* player = (BasePlayer*)BaseEntity::GetByIndex(i);
 
@@ -100,7 +102,7 @@ void Features::SpectatorList::Update() noexcept
 
 		static PlayerInfo playerInfo;
 
-		if (!engine->GetPlayerInfo(i, playerInfo))
+		if (!interfaces->engine->GetPlayerInfo(i, playerInfo))
 			continue;
 
 		PlayerList::PlayerType type;
@@ -174,7 +176,7 @@ static inline const std::string& ObserverModeToString(ObserverMode obs_mode) noe
 
 void Features::SpectatorList::Draw(ImDrawList* list)
 {
-	if (!IsInGame() || !spectatorListEnable)
+	if (!interfaces->clientstate->IsInGame() || !spectatorListEnable)
 		return;
 
 	spectatorListMutex.lock();

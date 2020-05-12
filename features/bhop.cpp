@@ -1,5 +1,7 @@
 #include "bhop.hpp"
 
+#include "../main.hpp"
+
 #include "../sourcesdk/usercmd.hpp"
 #include "../sourcesdk/inputsystem.hpp"
 
@@ -30,7 +32,7 @@ void Features::BunnyHop::Think(SourceSDK::UserCmd* cmd) noexcept
 	if (!bhopEnable)
 		return;
 
-	if (!SourceSDK::inputsystem->IsButtonDown(SourceSDK::ButtonCode::KeySpace))
+	if (!interfaces->inputsystem->IsButtonDown(SourceSDK::ButtonCode::KeySpace))
 		return;
 
 	auto localPlayer = SourceSDK::BasePlayer::GetLocalPlayer();

@@ -1,7 +1,7 @@
 #pragma once
 #include "../valvesdk/interfaces.hpp"
 
-#include "sdk.hpp"
+#include "../build.hpp"
 #include "vector.hpp"
 
 #include "../util/pad.hpp"
@@ -15,7 +15,7 @@ namespace SourceSDK
 	public:
 		UserCmd* GetUserCmd(int sequence_number);
 
-		#if SOURCE_SDK_IS_GMOD
+		#if BUILD_GAME_IS_GMOD
 		UTIL_PAD(0, 140);
 		bool cameraInterceptingMouse;
 		bool cameraInThirdPerson;
@@ -25,6 +25,4 @@ namespace SourceSDK
 		Angle cameraAngle;
 		#endif
 	};
-
-	VALVE_SDK_INTERFACE_DECL(Input, input);
 }

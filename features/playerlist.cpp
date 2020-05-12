@@ -5,10 +5,11 @@
 
 #include "../sourcesdk/globals.hpp"
 #include "../sourcesdk/player.hpp"
-#include "../sourcesdk/gmodplayer.hpp"
 #include "../sourcesdk/networkable.hpp"
 #include "../sourcesdk/engineclient.hpp"
 #include "../sourcesdk/clientstate.hpp"
+
+#include "../gmod/sourcesdk/gmodplayer.hpp"
 
 #include "../util/xorstr.hpp"
 #include "../util/strings.hpp"
@@ -105,7 +106,7 @@ struct PlayerListCachedInfo
 	inline void Update(const PlayerListInfo& info)
 	{
 		this->lastName = info.engineInfo.GetName();
-		this->lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
+		this->lastServerIp = interfaces->clientstate->GetRetryAddress();
 	}
 
 	inline PlayerListInfo* GetInfo() const noexcept
@@ -141,15 +142,18 @@ enum class CacheStatus
 };
 
 
-static constexpr int CACHE_ERR_NOERROR { -1 };
-static constexpr int CACHE_ERR_THIS_OUTDATED { 0 };
-static constexpr int CACHE_ERR_FILE_OUTDATED { 1 };
-static constexpr int CACHE_ERR_NOT_OPENED { 2 };
-static constexpr int CACHE_ERR_LOAD_NOT_COMPATIBLE { 4 };
-static constexpr int CACHE_ERR_LOAD_CORRUPTED { 5 };
-static constexpr int CACHE_ERR_LOAD_UNKNOWN { 6 };
+enum Err_
+{
+	Err_None = -1,
+	Err_ThisOutdated,
+	Err_FileOutdated,
+	Err_NotOpened,
+	Err_LoadNotCompatible,
+	Err_LoadCorrupted,
+	Err_Unknown,
+};
 
-static int cacheCurrentError { CACHE_ERR_THIS_OUTDATED };
+static Err_ cacheCurrentError { Err_ThisOutdated };
 static ImGui::Custom::ErrorList cacheErrors =
 {
 	//
@@ -317,13 +321,13 @@ void Features::PlayerList::LoadCache()
 				auto& version = root[UTIL_SXOR("version")];
 
 				if (!version.is_number_unsigned())
-					cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
+					cacheCurrentError = Err_LoadCorrupted;
 				else
 					if (std::uint32_t int_version = version; int_version > PLAYER_LIST_VERSION)
-						cacheCurrentError = CACHE_ERR_LOAD_NOT_COMPATIBLE;
+						cacheCurrentError = Err_LoadNotCompatible;
 			}
 			else
-				cacheCurrentError = CACHE_ERR_LOAD_NOT_COMPATIBLE;
+				cacheCurrentError = Err_LoadNotCompatible;
 
 			if (root.contains(UTIL_SXOR("player_list")))
 			{
@@ -354,13 +358,13 @@ void Features::PlayerList::LoadCache()
 						cachedPlayerList.push_back(cached_info);
 					}
 
-					cacheCurrentError = CACHE_ERR_NOERROR;
+					cacheCurrentError = Err_None;
 				}
 				else
-					cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
+					cacheCurrentError = Err_LoadNotCompatible;
 			}
 			else
-				cacheCurrentError = CACHE_ERR_LOAD_CORRUPTED;
+				cacheCurrentError = Err_LoadNotCompatible;
 		}
 		catch (const std::exception& ex)
 		{
@@ -371,7 +375,7 @@ void Features::PlayerList::LoadCache()
 	}
 	else
 	{
-		cacheCurrentError = CACHE_ERR_LOAD_UNKNOWN;
+		cacheCurrentError = Err_Unknown;
 
 		UTIL_LOG(UTIL_SXOR(L"Failed to open player list stream ") + GetCachedPlayerListPath());
 	}
@@ -410,11 +414,11 @@ void Features::PlayerList::SaveCache()
 		file << root.dump();
 		file.close();
 
-		cacheCurrentError = CACHE_ERR_NOERROR;
+		cacheCurrentError = Err_None;
 	}
 	else
 	{
-		cacheCurrentError = CACHE_ERR_NOT_OPENED;
+		cacheCurrentError = Err_NotOpened;
 
 		UTIL_LOG(UTIL_SXOR(L"Failed to open and save cached player list ") + GetCachedPlayerListPath());
 	}
@@ -422,9 +426,9 @@ void Features::PlayerList::SaveCache()
 
 void Features::PlayerList::Update()
 {
-	playerList.resize(globals->maxClients + 1);
+	playerList.resize(interfaces->globals->maxClients + 1);
 
-	for (auto i = 1; i <= globals->maxClients; i++)
+	for (auto i = 1; i <= interfaces->globals->maxClients; i++)
 	{
 		auto* player = (BasePlayer*)BaseEntity::GetByIndex(i);
 
@@ -437,7 +441,7 @@ void Features::PlayerList::Update()
 
 		static PlayerInfo enginePlayerInfo;
 
-		if (!engine->GetPlayerInfo(i, enginePlayerInfo))
+		if (!interfaces->engine->GetPlayerInfo(i, enginePlayerInfo))
 			continue;
 
 		ImplementPlayer(i - 1, &enginePlayerInfo, player == BasePlayer::GetLocalPlayer());
@@ -457,14 +461,14 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 {
 	if (ImGui::BeginTabBar(UTIL_CXOR("TABS##PLAYER_LIST")))
 	{
-		if (IsInGame())
+		if (interfaces->clientstate->IsInGame())
 		{
 			ImGui::PushID(UTIL_CXOR("##SERVER_PLAYER_SECT"));
 			if (ImGui::BeginTabItem(UTIL_CXOR("Server")))
 			{
 				ImGui::Columns(2);
 
-				ImGui::Text(UTIL_CXOR("Clients: %i"), globals->maxClients);
+				ImGui::Text(UTIL_CXOR("Clients: %i"), interfaces->globals->maxClients);
 
 				ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
 				ImGui::PushItemWidth(-1.f);
@@ -477,7 +481,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 						: no_player.c_str();
 
 					return true;
-				}, nullptr, globals->maxClients, 8);
+				}, nullptr, interfaces->globals->maxClients, 8);
 				ImGui::PopID(); // ##PLAYER_LIST
 
 				if (selectedPlayer != -1)
@@ -514,7 +518,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 										PlayerListCachedInfo cached_info;
 										cached_info.steamid = playerListInfo.steamid;
 										cached_info.lastName = playerListInfo.engineInfo.GetName();
-										cached_info.lastServerIp = std::string(clientState->retryAddress, sizeof(clientState->retryAddress));
+										cached_info.lastServerIp = interfaces->clientstate->GetRetryAddress();
 										cached_info.type = playerListInfo.type;
 										playerListInfo.isCached = true;
 
@@ -552,7 +556,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 								}
 
 								if (is_updated)
-									cacheCurrentError = CACHE_ERR_FILE_OUTDATED;
+									cacheCurrentError = Err_FileOutdated;
 							}
 
 							ImGui::PopID(); // ##PLAYER_TYPE_COMBO
@@ -601,7 +605,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 									player->GetMaxHealth()
 								);
 
-								#if SOURCE_SDK_IS_GMOD
+								#if BUILD_GAME_IS_GMOD
 								ImGui::Custom::CopiableText(
 									UTIL_CXOR("Team: %i"),
 									reinterpret_cast<GmodPlayer*>(player)->GetTeam()
@@ -629,7 +633,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 		{
 			ImGui::Columns(2);
 
-			ImGui::Custom::StatusError(cacheCurrentError, cacheErrors);
+			ImGui::Custom::StatusError((int&)cacheCurrentError, cacheErrors);
 
 			if (ImGui::Button(UTIL_CXOR("Save cache")))
 				Features::PlayerList::SaveCache();
@@ -676,7 +680,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 						cachedPlayerList.erase(cachedPlayerList.begin() + cachedSelectedPlayer);
 
 						cachedSelectedPlayer = -1;
-						cacheCurrentError = CACHE_ERR_FILE_OUTDATED;
+						cacheCurrentError = Err_FileOutdated;
 
 						// dont draw invalid info below
 						ImGui::PopID(); // ##PLAYERTYPE_COMBO
@@ -695,7 +699,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::SameLine();
 
 				if (ImGui::Button(UTIL_CXOR("Join last server")))
-					engine->ClientCmdUnrestricted((UTIL_SXOR("connect ") + ply.lastServerIp).c_str());
+					interfaces->engine->ClientCmdUnrestricted((UTIL_SXOR("connect ") + ply.lastServerIp).c_str());
 
 				ImGui::NextColumn();
 

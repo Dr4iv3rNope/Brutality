@@ -1,5 +1,7 @@
 #include "crosshair.hpp"
 
+#include "../main.hpp"
+
 #include "../sourcesdk/clientstate.hpp"
 
 #include "../imgui/imgui.h"
@@ -118,7 +120,7 @@ void Features::Crosshair::DrawPreview(ImDrawList* list) noexcept
 
 void Features::Crosshair::Draw(ImDrawList* list, bool isMenuOpen) noexcept
 {
-	if (!IsInGame() || !*crosshairEnable || isMenuOpen)
+	if (!interfaces->clientstate->IsInGame() || !*crosshairEnable || isMenuOpen)
 		return;
 
 	::Draw(GetDisplayCenter(), list);

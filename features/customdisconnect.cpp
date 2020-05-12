@@ -1,5 +1,7 @@
 #include "customdisconnect.hpp"
 
+#include "../main.hpp"
+
 #include "../sourcesdk/clientstate.hpp"
 #include "../sourcesdk/netchannel.hpp"
 #include "../sourcesdk/globals.hpp"
@@ -64,7 +66,7 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 		"Client overflowed channel",
 		UTIL_FORMAT(
 			UTIL_XOR("Client ") <<
-			(rand() % SourceSDK::globals->maxClients) <<
+			(rand() % interfaces->globals->maxClients) <<
 			UTIL_XOR(" overflowed reliable channel")
 		)
 	),
@@ -72,7 +74,7 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 		"Couldn't CRC map",
 		UTIL_FORMAT(
 			UTIL_XOR("Couldn't CRC map ") <<
-			std::string(SourceSDK::clientState->currentMap, sizeof(SourceSDK::clientState->currentMap)) <<
+			interfaces->clientstate->GetShortCurrentMap() <<
 			UTIL_XOR(", disconnecting\n")
 		)
 	),
@@ -80,7 +82,7 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 		"Missing map",
 		UTIL_FORMAT(
 			UTIL_XOR("Missing map ") <<
-			std::string(SourceSDK::clientState->currentMap, sizeof(SourceSDK::clientState->currentMap)) <<
+			interfaces->clientstate->GetShortCurrentMap() <<
 			UTIL_XOR(", disconnecting\n")
 		)
 	),
@@ -88,7 +90,7 @@ static std::deque<std::pair<std::string, std::function<std::string()>>> reason_l
 		"Map is differs from the server's",
 		UTIL_FORMAT(
 			UTIL_XOR("Your map [") <<
-			std::string(SourceSDK::clientState->currentMap, sizeof(SourceSDK::clientState->currentMap)) <<
+			interfaces->clientstate->GetShortCurrentMap() <<
 			UTIL_XOR("] differs from the server's.\n")
 		)
 	),
@@ -159,9 +161,9 @@ void Features::CustomDisconnect::RegisterWindow() noexcept
 
 void Features::CustomDisconnect::Think() noexcept
 {
-	if (waitForDisconnect && SourceSDK::clientState->netChannel)
+	if (waitForDisconnect && interfaces->clientstate->netChannel)
 	{
-		SourceSDK::clientState->netChannel->Shutdown(disconnectReason.c_str());
+		interfaces->clientstate->netChannel->Shutdown(disconnectReason.c_str());
 
 		waitForDisconnect = false;
 	}
@@ -169,7 +171,7 @@ void Features::CustomDisconnect::Think() noexcept
 
 void Features::CustomDisconnect::Disconnect(const std::string& reason) noexcept
 {
-	if (SourceSDK::IsConnected() && !waitForDisconnect)
+	if (interfaces->clientstate->IsConnected() && !waitForDisconnect)
 	{
 		disconnectReason = reason;
 		waitForDisconnect = true;

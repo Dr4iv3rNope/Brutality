@@ -11,7 +11,6 @@
 #include "../sourcesdk/globals.hpp"
 #include "../sourcesdk/weapon.hpp"
 #include "../sourcesdk/player.hpp"
-#include "../sourcesdk/gmodplayer.hpp"
 #include "../sourcesdk/entitylist.hpp"
 #include "../sourcesdk/clientstate.hpp"
 #include "../sourcesdk/engineclient.hpp"
@@ -19,6 +18,8 @@
 #include "../sourcesdk/renderable.hpp"
 #include "../sourcesdk/worldtoscreen.hpp"
 #include "../sourcesdk/localize.hpp"
+
+#include "../gmod/sourcesdk/gmodplayer.hpp"
 
 #include "../config/variable.hpp"
 
@@ -231,20 +232,19 @@ static void PushPlayer(
 		info.GetPlayerInfo()->healthText = UTIL_FORMAT(UTIL_XOR("Health: ") << player->GetHealth() << '%');
 
 	if (espName)
-		if (static PlayerInfo engineInfo; espName && engine->GetPlayerInfo(idx, engineInfo))
+		if (static PlayerInfo engineInfo; interfaces->engine->GetPlayerInfo(idx, engineInfo))
 			info.GetPlayerInfo()->nameText = std::string(engineInfo.name, MAX_PLAYER_NAME_LENGTH);
 
 	if (espActiveWeapon)
 		if (auto weapon = player->GetActiveWeapon())
 		{
-			if (auto text = localize->Find(weapon->GetWeaponInfo().printname); text)
+			if (auto text = interfaces->localize->Find(weapon->GetWeaponInfo().printname); text)
 				info.GetPlayerInfo()->activeWeaponText = Util::ToMultiByte(text);
 			else
 				info.GetPlayerInfo()->activeWeaponText = weapon->GetClassname();
 		}
 
 	if (espSkeleton)
-	{
 		player->ToRenderable()->EnumerateBones([&player, &info] (int idx, const Studio::Bone* bone) -> bool
 		{
 			if (bone->parentIndex != -1 && bone->flags & BoneMask_Hitbox)
@@ -254,7 +254,6 @@ static void PushPlayer(
 
 			return false;
 		});
-	}
 
 	drawInfo.push_back(info);
 }
@@ -285,7 +284,7 @@ static void UpdateESP() noexcept
 
 	drawInfo.clear();
 
-	for (auto i = 1; i < entitylist->GetMaxEntities(); i++)
+	for (auto i = 1; i < interfaces->entitylist->GetMaxEntities(); i++)
 	{
 		auto* entity = BaseEntity::GetByIndex(i);
 
@@ -297,13 +296,13 @@ static void UpdateESP() noexcept
 			continue;
 
 		// players
-		if (i <= globals->maxClients)
+		if (i <= interfaces->globals->maxClients)
 		{
 			// if we dont want to render players
 			// then skip enumerating players
 			if (!ShouldDrawPlayers())
 			{
-				i = globals->maxClients;
+				i = interfaces->globals->maxClients;
 				continue;
 			}
 
@@ -357,7 +356,7 @@ static void UpdateESP() noexcept
 
 void Features::Esp::Update() noexcept
 {
-	if (espUpdatePerFrame || !IsInGame() || !IsEspEnabled())
+	if (espUpdatePerFrame || !interfaces->clientstate->IsInGame() || !IsEspEnabled())
 		return;
 
 	auto localPlayer = BasePlayer::GetLocalPlayer();
@@ -366,16 +365,16 @@ void Features::Esp::Update() noexcept
 		return;
 
 	#ifdef _DEBUG
-	static int dbg_lastTickUpdated { globals->tickCount };
+	static int dbg_lastTickUpdated { interfaces->globals->tickCount };
 
-	if (dbg_lastTickUpdated + 1 < globals->tickCount)
+	if (dbg_lastTickUpdated + 1 < interfaces->globals->tickCount)
 	{
 		UTIL_DEBUG_LOG(UTIL_WFORMAT(
 			UTIL_XOR(L"Esp Update tick desync! ") <<
-			dbg_lastTickUpdated + 1 << ' ' << globals->tickCount
+			dbg_lastTickUpdated + 1 << ' ' << interfaces->globals->tickCount
 		));
 
-		dbg_lastTickUpdated = globals->tickCount;
+		dbg_lastTickUpdated = interfaces->globals->tickCount;
 	}
 	#endif
 
@@ -538,7 +537,7 @@ void Features::Esp::Draw(ImDrawList* list)
 {
 	UTIL_DEBUG_ASSERT(list);
 
-	if (!IsInGame() || !IsEspEnabled())
+	if (!interfaces->clientstate->IsInGame() || !IsEspEnabled())
 		return;
 
 	drawInfoMutex.lock();
@@ -562,10 +561,10 @@ static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
 {
 	if (ImGui::Button(UTIL_CXOR("Dump class names")))
 		// make sure we're in game
-		if (IsInGame())
+		if (interfaces->clientstate->IsInGame())
 			// setting i to maxClients because
 			// we dont need capture C_World and Players
-			for (auto i = globals->maxClients; i < entitylist->GetMaxEntities(); i++)
+			for (auto i = interfaces->globals->maxClients; i < interfaces->entitylist->GetMaxEntities(); i++)
 				if (auto entity = BaseEntity::GetByIndex(i); entity)
 					if (auto classname = entity->GetClassname(); classname &&
 						// if entity's class name is not registered then ...

@@ -19,7 +19,7 @@ SourceSDK::ConCommand* SourceSDK::CreateConCommand(const char* name, ConCommand:
 	//ConCommand* command = (ConCommand*)new char[ConCommand::SIZE]{};
 	ConCommand* command { nullptr };
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/*
 	push    0
 	push    0

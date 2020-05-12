@@ -1,12 +1,12 @@
 #include "render.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
 const SourceSDK::VMatrix& SourceSDK::Render::WorldToScreenMatrix()
 {
 	// we need find yourself
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/*
 	push    ebp
 	mov     ebp, esp

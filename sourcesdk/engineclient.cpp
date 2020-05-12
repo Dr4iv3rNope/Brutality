@@ -1,4 +1,4 @@
-#include "sdk.hpp"
+#include "../build.hpp"
 #include "engineclient.hpp"
 
 #include "../util/xorstr.hpp"
@@ -7,7 +7,7 @@
 void SourceSDK::EngineClient::ServerCmd(const char* cmd, bool reliable)
 {
 	// "vehicleRole %i\n"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -25,7 +25,7 @@ bool SourceSDK::EngineClient::GetPlayerInfo(int entidx, PlayerInfo& info)
 {
 	// "UpdatePlayerName with bogus slot %d\n"
 	// "unconnected"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -42,7 +42,7 @@ bool SourceSDK::EngineClient::GetPlayerInfo(int entidx, PlayerInfo& info)
 void SourceSDK::EngineClient::ClientCmdUnrestricted(const char* cmd)
 {
 	// "gameui_preventescapetoshow\n"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(

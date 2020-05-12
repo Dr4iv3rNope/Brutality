@@ -1,5 +1,5 @@
 #include "convar.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/pattern.hpp"
 #include "../util/xorstr.hpp"
@@ -23,7 +23,7 @@ SourceSDK::ConVar* SourceSDK::CreateConVar(const char* name, const char* default
 		bool, float, bool, float,
 		ConVar::ChangeCallbackFn);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/*
 	fldz
 	push    offset con_logfile_callback ; int
@@ -59,7 +59,7 @@ SourceSDK::ConVar* SourceSDK::CreateConVar(const char* name, const char* default
 
 void SourceSDK::ConVar::SetStringValue(const char* value)
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		//VMT_XFIND_METHOD("8B 04 B0 53 FF D0 46 83 C4")

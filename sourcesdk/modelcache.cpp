@@ -1,12 +1,12 @@
 #include "modelcache.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 #include "../util/pattern.hpp"
 
 const SourceSDK::StudioHDR* SourceSDK::MDLCache::GetStudioHDR(MDLHandle handle)
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/*
 	"C_BaseAnimating::DrawModel"
 	C_BaseAnimating::InternalDrawModel

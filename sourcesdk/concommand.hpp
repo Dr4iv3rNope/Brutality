@@ -1,5 +1,5 @@
 #pragma once
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include <cstddef>
 
@@ -34,7 +34,7 @@ namespace SourceSDK
 	class ConCommand final : public IConCommand
 	{
 	public:
-		#if SOURCE_SDK_IS_GMOD
+		#if BUILD_GAME_IS_GMOD
 		static constexpr std::size_t SIZE = 72;
 		#endif
 

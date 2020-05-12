@@ -1,6 +1,8 @@
 #include "clientclassdumper.hpp"
 #include "hlclient.hpp"
 
+#include "../main.hpp"
+
 #include "../util/debug/errors.hpp"
 
 #include "../util/strings.hpp"
@@ -9,7 +11,7 @@
 
 SourceSDK::ClientClassDumper::ClientClassDumper()
 {
-	for (auto cclass = clientDLL->GetHeadClientClass(); cclass; cclass = cclass->next)
+	for (auto cclass = interfaces->clientDLL->GetHeadClientClass(); cclass; cclass = cclass->next)
 		this->_clientclasses.insert(std::make_pair(cclass->networkName, cclass));
 }
 

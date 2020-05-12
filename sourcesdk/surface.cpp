@@ -1,5 +1,5 @@
 #include "surface.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/memory.hpp"
 #include "../util/vmt.hpp"
@@ -7,7 +7,7 @@
 
 bool SourceSDK::MatSystemSurface::IsCursorLocked()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/* "VGUI Layout" "CEngineVGui::Simulate"
 	
 	call    sub_10202FE0    ; #STR: "%3i:  %s\n"
@@ -44,7 +44,7 @@ bool SourceSDK::MatSystemSurface::IsCursorLocked()
 
 std::size_t SourceSDK::MatSystemSurface::GetLockCursorIndex()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(
@@ -58,7 +58,7 @@ std::size_t SourceSDK::MatSystemSurface::GetLockCursorIndex()
 
 std::size_t SourceSDK::MatSystemSurface::GetSetCursorIndex()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(
@@ -72,7 +72,7 @@ std::size_t SourceSDK::MatSystemSurface::GetSetCursorIndex()
 
 /*std::size_t SourceSDK::MatSystemSurface::GetPaintTraverseExIndex()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		VMT_XFIND_METHOD("8B 06 8B CE 6A 01 6A 01 6A 00 FF 50 ?? F3 0F")
@@ -84,7 +84,7 @@ std::size_t SourceSDK::MatSystemSurface::GetSetCursorIndex()
 
 void SourceSDK::MatSystemSurface::UnlockCursor()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(

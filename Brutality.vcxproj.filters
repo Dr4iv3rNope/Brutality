@@ -128,35 +128,32 @@
     <ClCompile Include="util\asmhook.cpp">
       <Filter>Utilities\AsmHook</Filter>
     </ClCompile>
-    <ClCompile Include="features\gmod\luainterface.cpp">
-      <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
-    </ClCompile>
     <ClCompile Include="features\esp.cpp">
-      <Filter>Features\Shared\Esp</Filter>
+      <Filter>Shared Features\Esp</Filter>
     </ClCompile>
     <ClCompile Include="features\playerlist.cpp">
-      <Filter>Features\Shared\Player List</Filter>
+      <Filter>Shared Features\Player List</Filter>
     </ClCompile>
     <ClCompile Include="features\textradar.cpp">
-      <Filter>Features\Shared\Text Radar</Filter>
+      <Filter>Shared Features\Text Radar</Filter>
     </ClCompile>
     <ClCompile Include="features\crosshair.cpp">
-      <Filter>Features\Shared\Crosshair</Filter>
+      <Filter>Shared Features\Crosshair</Filter>
     </ClCompile>
     <ClCompile Include="sourcesdk\hlinput.cpp">
       <Filter>Source SDK\Interfaces\CInput</Filter>
     </ClCompile>
     <ClCompile Include="features\bhop.cpp">
-      <Filter>Features\Shared\Bunny Hop</Filter>
+      <Filter>Shared Features\Bunny Hop</Filter>
     </ClCompile>
     <ClCompile Include="features\namechanger.cpp">
-      <Filter>Features\Shared\Name Changer</Filter>
+      <Filter>Shared Features\Name Changer</Filter>
     </ClCompile>
     <ClCompile Include="sourcesdk\netchannel.cpp">
       <Filter>Source SDK\Structures</Filter>
     </ClCompile>
     <ClCompile Include="features\customdisconnect.cpp">
-      <Filter>Features\Shared\Custom Disconnect</Filter>
+      <Filter>Shared Features\Custom Disconnect</Filter>
     </ClCompile>
     <ClCompile Include="util\shellcodebuilder.cpp">
       <Filter>Utilities\Shellcode Builder</Filter>
@@ -176,12 +173,6 @@
     <ClCompile Include="sourcesdk\viewrender.cpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
     </ClCompile>
-    <ClCompile Include="features\gmod\antiscreengrab.cpp">
-      <Filter>Features\Garry%27s Mod\Anti Screengrab</Filter>
-    </ClCompile>
-    <ClCompile Include="features\gmod\lualoader.cpp">
-      <Filter>Features\Garry%27s Mod\Lua loader</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\custom\specialchars.cpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
@@ -195,7 +186,7 @@
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
     <ClCompile Include="features\chatspam.cpp">
-      <Filter>Features\Shared\Chat Spammer</Filter>
+      <Filter>Shared Features\Chat Spammer</Filter>
     </ClCompile>
     <ClCompile Include="imgui\custom\windowmanager.cpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
@@ -210,10 +201,10 @@
       <Filter>Utilities\HTTP</Filter>
     </ClCompile>
     <ClCompile Include="features\spectatorlist.cpp">
-      <Filter>Features\Shared\Spectator List</Filter>
+      <Filter>Shared Features\Spectator List</Filter>
     </ClCompile>
     <ClCompile Include="features\fastwalk.cpp">
-      <Filter>Features\Shared\Fast Walk</Filter>
+      <Filter>Shared Features\Fast Walk</Filter>
     </ClCompile>
     <ClCompile Include="sourcesdk\modelrender.cpp">
       <Filter>Source SDK\Interfaces\CModelRender</Filter>
@@ -230,7 +221,31 @@
     <ClCompile Include="sourcesdk\keyvalues.cpp">
       <Filter>Source SDK\Structures</Filter>
     </ClCompile>
-    <ClCompile Include="features\chams.cpp" />
+    <ClCompile Include="features\chams.cpp">
+      <Filter>Shared Features\Chams</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\flags.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\groups.cpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClCompile>
+    <ClCompile Include="gmod\features\antiscreengrab.cpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="gmod\features\lualoader.cpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="gmod\luasdk\luainterface.cpp">
+      <Filter>Games\Garry%27s Mod\Lua SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="steamapi\steaminterfaces.cpp" />
+    <ClCompile Include="gmod\gmod.cpp">
+      <Filter>Games\Garry%27s Mod</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\vrenderview.cpp">
+      <Filter>Source SDK\Interfaces\CVRenderView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -347,9 +362,6 @@
     <Filter Include="Source SDK\Structures\Enums">
       <UniqueIdentifier>{95e38da0-f8d1-44ae-97d8-8a48f7865f42}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source SDK\Interfaces\CShaderAPIBase">
-      <UniqueIdentifier>{ef70931f-303e-4666-93c1-c2f13b2a8b0d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source SDK\Interfaces\CGameEventManager">
       <UniqueIdentifier>{6ecb8ab4-77ea-4127-9d02-5cebf78d241f}</UniqueIdentifier>
     </Filter>
@@ -358,21 +370,6 @@
     </Filter>
     <Filter Include="Hooks\Reset">
       <UniqueIdentifier>{75b37391-bd77-4d92-82d8-772fa8be5324}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features">
-      <UniqueIdentifier>{ffda5b5d-e06b-4154-91d0-c325500b1a15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared">
-      <UniqueIdentifier>{9b6c6cd3-30f8-4a52-87a4-7fef117242c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Garry%27s Mod">
-      <UniqueIdentifier>{131fe58f-22c2-42f9-ad98-90e249e0056c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Counter-Strike: Source">
-      <UniqueIdentifier>{ea197131-0bef-4d99-9ea5-428bc07afd35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Counter-Strike: Global Offensive">
-      <UniqueIdentifier>{96316ec7-16ef-4da2-8187-72fedd666b8c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source SDK\Interfaces\CMDLCache">
       <UniqueIdentifier>{17247e4c-f976-47da-a513-afc6b9c9619c}</UniqueIdentifier>
@@ -395,32 +392,8 @@
     <Filter Include="Utilities\AsmHook">
       <UniqueIdentifier>{9066a831-344a-4223-9dbc-4e875ceebfa4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Features\Garry%27s Mod\Lua SDK">
-      <UniqueIdentifier>{35f7de26-ed80-44df-90d2-bdeca2b658bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Esp">
-      <UniqueIdentifier>{927f2974-e0f5-44ce-8a77-10d8ba88c0f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Player List">
-      <UniqueIdentifier>{1ab17551-4c69-4732-8bd6-9bfc6204488c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Text Radar">
-      <UniqueIdentifier>{853459bd-8c58-45e1-89ff-cdf50a26e84d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Crosshair">
-      <UniqueIdentifier>{6dae71a0-7e32-4a49-91e6-c95df28df323}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Bunny Hop">
-      <UniqueIdentifier>{319f4d49-44b0-4cb5-a9cd-cac15f655447}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Custom Disconnect">
-      <UniqueIdentifier>{232dd98b-7b54-40cf-8677-bcfd98a0a694}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utilities\Shellcode Builder">
       <UniqueIdentifier>{6c5f3a0b-33be-4b3f-87bd-9fc03a65a7d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Name Changer">
-      <UniqueIdentifier>{a2ad7914-6be9-43da-9307-882aeb0ac440}</UniqueIdentifier>
     </Filter>
     <Filter Include="Hooks\RenderView">
       <UniqueIdentifier>{58085261-ea2d-4a75-b8be-05eb4537012b}</UniqueIdentifier>
@@ -431,32 +404,14 @@
     <Filter Include="Source SDK\Garry%27s Mod Entities">
       <UniqueIdentifier>{77c103e4-e0fe-4d39-81ef-8729b43bf506}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Features\Garry%27s Mod\Anti Screengrab">
-      <UniqueIdentifier>{101ad4bf-8beb-412d-a873-04e8fda4674c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Garry%27s Mod\Lua loader">
-      <UniqueIdentifier>{953f7391-8a18-46c7-8c1a-3066e0903d01}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Hooks\CreateMove">
       <UniqueIdentifier>{ee37cf75-eddc-4296-9b66-6d8d7a6df923}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Chat Spammer">
-      <UniqueIdentifier>{7550cfce-fff6-4b4e-b74f-14ade3218c3e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Steam API">
       <UniqueIdentifier>{c5e7b8f6-ca38-4064-8889-260fc3bb0ce5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utilities\HTTP">
       <UniqueIdentifier>{11ba6495-1486-4ad0-9d06-52fe1b64ac62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Spectator List">
-      <UniqueIdentifier>{e1c2873b-565c-47a3-8230-08e107160691}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Fast Walk">
-      <UniqueIdentifier>{16d7af6e-361c-4cde-921d-142982958306}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Features\Shared\Third Person">
-      <UniqueIdentifier>{31f4a48b-c235-48ec-9dcd-ac2e0ea46b8f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source SDK\Interfaces\CModelRender">
       <UniqueIdentifier>{ea5fe14f-4aa4-4f2a-a1ab-12f6822d32fa}</UniqueIdentifier>
@@ -470,14 +425,74 @@
     <Filter Include="Source SDK\Interfaces\CMaterialSystem">
       <UniqueIdentifier>{703ddc45-21b7-4dbf-88b7-e6660a4fcf5c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Features\Shared\Chams">
+    <Filter Include="Source SDK\Entities\CBaseViewModel">
+      <UniqueIdentifier>{b8b6faf3-5ddd-4435-9f42-17c40926e91d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features">
+      <UniqueIdentifier>{ffda5b5d-e06b-4154-91d0-c325500b1a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Bunny Hop">
+      <UniqueIdentifier>{319f4d49-44b0-4cb5-a9cd-cac15f655447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Crosshair">
+      <UniqueIdentifier>{6dae71a0-7e32-4a49-91e6-c95df28df323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Custom Disconnect">
+      <UniqueIdentifier>{232dd98b-7b54-40cf-8677-bcfd98a0a694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Esp">
+      <UniqueIdentifier>{927f2974-e0f5-44ce-8a77-10d8ba88c0f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Name Changer">
+      <UniqueIdentifier>{a2ad7914-6be9-43da-9307-882aeb0ac440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Chat Spammer">
+      <UniqueIdentifier>{7550cfce-fff6-4b4e-b74f-14ade3218c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Fast Walk">
+      <UniqueIdentifier>{16d7af6e-361c-4cde-921d-142982958306}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Chams">
       <UniqueIdentifier>{33f8c173-34c1-41a9-9ada-70518393ce86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Third Person">
+      <UniqueIdentifier>{31f4a48b-c235-48ec-9dcd-ac2e0ea46b8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Spectator List">
+      <UniqueIdentifier>{e1c2873b-565c-47a3-8230-08e107160691}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Player List">
+      <UniqueIdentifier>{1ab17551-4c69-4732-8bd6-9bfc6204488c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Text Radar">
+      <UniqueIdentifier>{853459bd-8c58-45e1-89ff-cdf50a26e84d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games">
+      <UniqueIdentifier>{98fafbaa-a6fd-4f53-b291-a70e42e2e932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Garry%27s Mod">
+      <UniqueIdentifier>{fa9e14ab-2ed4-4501-b21a-1f0c0ef0001a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Garry%27s Mod\Features">
+      <UniqueIdentifier>{f2b0fd63-a8da-465a-8fb6-6a914d8a5c43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Garry%27s Mod\Source SDK">
+      <UniqueIdentifier>{95b9356c-be94-466f-9105-b460fb9e0000}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Garry%27s Mod\Lua SDK">
+      <UniqueIdentifier>{0367068b-2c2d-49c4-85fe-ccda036c01fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Counter-Strike: Source">
+      <UniqueIdentifier>{2c07ff78-b7d6-4622-91ff-9958a46cb713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Games\Counter-Strike: Global Offensive">
+      <UniqueIdentifier>{af4dfd8b-1824-404d-b62f-12f2f27f98c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CVRenderView">
+      <UniqueIdentifier>{23815df0-0d41-4c96-acea-adfac0ac144e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sourcesdk\sdk.hpp">
-      <Filter>Source SDK</Filter>
-    </ClInclude>
     <ClInclude Include="util\xorstr.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
@@ -659,9 +674,6 @@
     <ClInclude Include="sourcesdk\model.hpp">
       <Filter>Source SDK\Structures</Filter>
     </ClInclude>
-    <ClInclude Include="sourcesdk\shaderapi.hpp">
-      <Filter>Source SDK\Interfaces\CShaderAPIBase</Filter>
-    </ClInclude>
     <ClInclude Include="config\variable.hpp">
       <Filter>Config System</Filter>
     </ClInclude>
@@ -738,20 +750,17 @@
     <ClInclude Include="util\asmhook.hpp">
       <Filter>Utilities\AsmHook</Filter>
     </ClInclude>
-    <ClInclude Include="features\gmod\luainterface.hpp">
-      <Filter>Features\Garry%27s Mod\Lua SDK</Filter>
-    </ClInclude>
     <ClInclude Include="features\esp.hpp">
-      <Filter>Features\Shared\Esp</Filter>
+      <Filter>Shared Features\Esp</Filter>
     </ClInclude>
     <ClInclude Include="features\playerlist.hpp">
-      <Filter>Features\Shared\Player List</Filter>
+      <Filter>Shared Features\Player List</Filter>
     </ClInclude>
     <ClInclude Include="features\textradar.hpp">
-      <Filter>Features\Shared\Text Radar</Filter>
+      <Filter>Shared Features\Text Radar</Filter>
     </ClInclude>
     <ClInclude Include="features\crosshair.hpp">
-      <Filter>Features\Shared\Crosshair</Filter>
+      <Filter>Shared Features\Crosshair</Filter>
     </ClInclude>
     <ClInclude Include="util\compiletime.hpp">
       <Filter>Utilities</Filter>
@@ -760,16 +769,16 @@
       <Filter>Source SDK\Structures\Enums</Filter>
     </ClInclude>
     <ClInclude Include="features\bhop.hpp">
-      <Filter>Features\Shared\Bunny Hop</Filter>
+      <Filter>Shared Features\Bunny Hop</Filter>
     </ClInclude>
     <ClInclude Include="features\namechanger.hpp">
-      <Filter>Features\Shared\Name Changer</Filter>
+      <Filter>Shared Features\Name Changer</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\concmdflags.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
     </ClInclude>
     <ClInclude Include="features\customdisconnect.hpp">
-      <Filter>Features\Shared\Custom Disconnect</Filter>
+      <Filter>Shared Features\Custom Disconnect</Filter>
     </ClInclude>
     <ClInclude Include="util\shellcodebuilder.hpp">
       <Filter>Utilities\Shellcode Builder</Filter>
@@ -796,12 +805,6 @@
     <ClInclude Include="sourcesdk\viewrender.hpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
     </ClInclude>
-    <ClInclude Include="features\gmod\antiscreengrab.hpp">
-      <Filter>Features\Garry%27s Mod\Anti Screengrab</Filter>
-    </ClInclude>
-    <ClInclude Include="features\gmod\lualoader.hpp">
-      <Filter>Features\Garry%27s Mod\Lua loader</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\custom\keys.hpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
@@ -821,7 +824,7 @@
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
     <ClInclude Include="features\chatspam.hpp">
-      <Filter>Features\Shared\Chat Spammer</Filter>
+      <Filter>Shared Features\Chat Spammer</Filter>
     </ClInclude>
     <ClInclude Include="imgui\custom\variableui.hpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
@@ -842,10 +845,10 @@
       <Filter>Steam API</Filter>
     </ClInclude>
     <ClInclude Include="features\spectatorlist.hpp">
-      <Filter>Features\Shared\Spectator List</Filter>
+      <Filter>Shared Features\Spectator List</Filter>
     </ClInclude>
     <ClInclude Include="features\fastwalk.hpp">
-      <Filter>Features\Shared\Fast Walk</Filter>
+      <Filter>Shared Features\Fast Walk</Filter>
     </ClInclude>
     <ClInclude Include="sourcesdk\hoststate.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
@@ -881,7 +884,44 @@
       <Filter>Source SDK\Interfaces\CMaterialSystem</Filter>
     </ClInclude>
     <ClInclude Include="features\chams.hpp">
-      <Filter>Features\Shared\Chams</Filter>
+      <Filter>Shared Features\Chams</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\materialvar.hpp">
+      <Filter>Source SDK\Structures\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\flags.h">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\viewmodel.hpp">
+      <Filter>Source SDK\Entities\CBaseViewModel</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\groups.hpp">
+      <Filter>ImGui\Custom GUI%27s</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\features\antiscreengrab.hpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\features\lualoader.hpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\sourcesdk\gmodplayer.hpp">
+      <Filter>Games\Garry%27s Mod\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\sourcesdk\gmodentity.hpp">
+      <Filter>Games\Garry%27s Mod\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\luasdk\luainterface.hpp">
+      <Filter>Games\Garry%27s Mod\Lua SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="build.hpp" />
+    <ClInclude Include="steamapi\steaminterfaces.hpp">
+      <Filter>Steam API</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\gmod.hpp">
+      <Filter>Games\Garry%27s Mod</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\vrenderview.hpp">
+      <Filter>Source SDK\Interfaces\CVRenderView</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
+#include <cstddef>
 
 namespace SourceSDK
 {
@@ -21,6 +21,4 @@ namespace SourceSDK
 		std::size_t GetSetCursorIndex();
 		std::size_t GetPaintTraverseExIndex();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(MatSystemSurface, surface);
 }

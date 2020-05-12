@@ -45,6 +45,4 @@ namespace SourceSDK
 	public:
 		void TraceRay(const Ray& ray, Mask mask, const ITraceFilter& filter, GameTrace& trace);
 	};
-
-	VALVE_SDK_INTERFACE_DECL(EngineTraceClient, enginetrace);
 }

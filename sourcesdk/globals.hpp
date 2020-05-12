@@ -1,5 +1,4 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
 
 namespace SourceSDK
 {
@@ -26,6 +25,4 @@ namespace SourceSDK
 			return 1 / this->frameTime;
 		}
 	};
-
-	VALVE_SDK_INTERFACE_DECL(GlobalVars, globals);
 }

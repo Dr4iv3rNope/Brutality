@@ -1,5 +1,6 @@
 #pragma once
-#include "sdk.hpp"
+#include "../build.hpp"
+
 #include "const.hpp"
 
 #include "../util/pad.hpp"
@@ -43,7 +44,7 @@ namespace SourceSDK
 		int weight;
 		int rumbleEffect;
 		
-		#if SOURCE_SDK_IS_GMOD
+		#if BUILD_GAME_IS_GMOD
 		UTIL_PAD(0, 2);
 		#endif
 

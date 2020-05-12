@@ -1,6 +1,4 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
-
 #include "buttoncode.hpp"
 
 namespace SourceSDK
@@ -12,6 +10,4 @@ namespace SourceSDK
 		bool IsButtonDown(ButtonCode code);
 		void ResetInputState();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(InputSystem, inputsystem);
 }

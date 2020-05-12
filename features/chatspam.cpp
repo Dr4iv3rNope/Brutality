@@ -27,8 +27,12 @@ extern Config::String<char> chatSpamMessage;
 extern Config::LFloat chatSpamDelay;
 extern Config::Bool chatSpamTeam;
 
-constexpr int MODE_DEAFULT { 0 };
-constexpr int MODE_ANIMATION { 1 };
+enum Mode_
+{
+	Mode_Default,
+	Mode_Animation,
+};
+
 extern Config::Enum chatSpamMode;
 
 struct Animation
@@ -45,17 +49,17 @@ static float lastSay { 0.f };
 
 static inline bool TryToSay(const std::string& message) noexcept
 {
-	if (lastSay < SourceSDK::globals->curTime)
+	if (lastSay < interfaces->globals->curTime)
 	{
 		const auto msg = (*chatSpamTeam ? UTIL_SXOR("say_team \"") : UTIL_SXOR("say \""))
 			+ ImGui::Custom::FormatSpecialChars(message) + '\"';
 
-		SourceSDK::engine->ServerCmd(msg.c_str());
+		interfaces->engine->ServerCmd(msg.c_str());
 
 		if (*chatSpamDelay == 0.f)
-			lastSay = SourceSDK::globals->curTime + SourceSDK::TALK_INTERVAL;
+			lastSay = interfaces->globals->curTime + SourceSDK::TALK_INTERVAL /* add some delay */ + 0.05f;
 		else
-			lastSay = SourceSDK::globals->curTime + *chatSpamDelay;
+			lastSay = interfaces->globals->curTime + *chatSpamDelay;
 
 		return true;
 	}
@@ -65,18 +69,18 @@ static inline bool TryToSay(const std::string& message) noexcept
 
 void Features::ChatSpam::Think() noexcept
 {
-	if (*chatSpamEnable && SourceSDK::IsInGame())
+	if (*chatSpamEnable && interfaces->clientstate->IsInGame())
 	{
 		switch (chatSpamMode.GetCurrentItem())
 		{
-			case MODE_DEAFULT:
+			case Mode_Default:
 			{
 				TryToSay(*chatSpamMessage);
 
 				break;
 			}
 
-			case MODE_ANIMATION:
+			case Mode_Animation:
 			{
 				if (currentAnimation != -1 && !animationList[currentAnimation].sequences.empty())
 				{
@@ -273,7 +277,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 
 	switch (chatSpamMode.GetCurrentItem())
 	{
-		case MODE_DEAFULT: // Default mode
+		case Mode_Default:
 		{
 			ImGui::Custom::Variable::String(chatSpamMessage);
 
@@ -283,7 +287,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			break;
 		}
 
-		case MODE_ANIMATION: // Animation mode
+		case Mode_Animation:
 		{
 			ImGui::Custom::StatusError(currentError, errorList);
 

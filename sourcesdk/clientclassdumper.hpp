@@ -19,5 +19,5 @@ namespace SourceSDK
 		const ClientClass* FindClientClass(const std::string& cs_name);
 	};
 
-	VALVE_SDK_INTERFACE_DECL(ClientClassDumper, clientClassDumper);
+	extern ClientClassDumper* clientClassDumper;
 }

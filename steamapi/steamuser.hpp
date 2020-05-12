@@ -1,6 +1,4 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
-
 #include "steamid.hpp"
 
 namespace SteamAPI
@@ -83,6 +81,4 @@ namespace SteamAPI
 		// gets whether the users phone number is awaiting (re)verification
 		virtual bool IsPhoneRequiringVerification() = 0;
 	};
-
-	VALVE_SDK_INTERFACE_DECL(SteamUser, user);
 }

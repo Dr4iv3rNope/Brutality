@@ -1,5 +1,4 @@
 #pragma once
-#include "sdk.hpp"
 
 namespace SourceSDK
 {

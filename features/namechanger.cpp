@@ -74,13 +74,13 @@ void Features::NameChanger::Update() noexcept
 	{
 		static auto lastUpdate = 0.f;
 
-		if (!SourceSDK::IsInGame())
+		if (!interfaces->clientstate->IsInGame())
 			lastUpdate = 0.f;
 		else
 		{
-			if (lastUpdate < SourceSDK::globals->curTime)
+			if (lastUpdate < interfaces->globals->curTime)
 			{
-				lastUpdate = SourceSDK::globals->curTime + 15.f;
+				lastUpdate = interfaces->globals->curTime + 15.f;
 
 				if (spam.nameSwitch)
 				{
@@ -105,12 +105,12 @@ void Features::NameChanger::Update() noexcept
 			isSent = false;
 		else
 		{
-			if (!isSent && SourceSDK::IsInGame())
+			if (!isSent && interfaces->clientstate->IsInGame())
 			{
 				SendName();
 				isSent = true;
 			}
-			else if (isSent && !SourceSDK::IsInGame())
+			else if (isSent && !interfaces->clientstate->IsInGame())
 				isSent = false;
 		}
 	}
@@ -120,7 +120,7 @@ void Features::NameChanger::Initialize() noexcept
 {
 	UTIL_XLOG(L"Initializing name changer");
 
-	auto name = SourceSDK::cvar->FindVar(UTIL_CXOR("name"));	
+	auto name = interfaces->cvar->FindVar(UTIL_CXOR("name"));
 	UTIL_ASSERT(name, "failed to find 'name' convar");
 
 	formatedName = oldName = std::string(name->GetRaw()->stringValue, name->GetRaw()->stringValueLength);

@@ -1,6 +1,8 @@
 #include "textradar.hpp"
 #include "playerlist.hpp"
 
+#include "../main.hpp"
+
 #include "../util/strings.hpp"
 
 #include "../sourcesdk/globals.hpp"
@@ -77,7 +79,7 @@ static bool PushPlayer(float distance, const PlayerInfo& engine_info, const Conf
 
 void Features::TextRadar::Update() noexcept
 {
-	if (!IsInGame() || !textRadarEnable)
+	if (!interfaces->clientstate->IsInGame() || !textRadarEnable)
 		return;
 
 	auto localPlayer = BasePlayer::GetLocalPlayer();
@@ -91,7 +93,7 @@ void Features::TextRadar::Update() noexcept
 	//
 	// add players to order
 	//
-	for (auto i = 1; i <= globals->maxClients; i++)
+	for (auto i = 1; i <= interfaces->globals->maxClients; i++)
 	{
 		auto* player = (BasePlayer*)BaseEntity::GetByIndex(i);
 
@@ -106,7 +108,7 @@ void Features::TextRadar::Update() noexcept
 
 		static PlayerInfo playerInfo;
 
-		if (!engine->GetPlayerInfo(i, playerInfo))
+		if (!interfaces->engine->GetPlayerInfo(i, playerInfo))
 			continue;
 
 		const auto distance = player->GetOrigin().DistanceTo(localPlayer->GetOrigin());
@@ -166,7 +168,7 @@ void Features::TextRadar::DrawPreview(ImDrawList* list)
 
 void Features::TextRadar::Draw(ImDrawList* list)
 {	
-	if (!IsInGame() || !textRadarEnable)
+	if (!interfaces->clientstate->IsInGame() || !textRadarEnable)
 		return;
 
 	playerOrderMutex.lock();

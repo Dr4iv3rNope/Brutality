@@ -1,5 +1,5 @@
 #include "weapon.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/pattern.hpp"
 #include "../util/vmt.hpp"
@@ -9,7 +9,7 @@ const SourceSDK::FileWeaponInfo& SourceSDK::BaseWeapon::GetWeaponInfo()
 {
 	using GetWeaponInfoFn = FileWeaponInfo&(__thiscall*)(void*);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/* "CHudCrosshair"
 	
 	mov     byte ptr [ebp+var_8+3], 0FFh

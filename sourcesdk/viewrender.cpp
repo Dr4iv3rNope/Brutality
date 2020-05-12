@@ -1,12 +1,12 @@
 #include "viewrender.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
 std::size_t SourceSDK::ViewRender::GetRenderViewIndex()
 {
 	// "Couldn't write bitmap data snapshot.\n"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(

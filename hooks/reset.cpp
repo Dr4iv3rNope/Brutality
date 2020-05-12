@@ -6,14 +6,12 @@
 
 HRESULT __stdcall Hooks::Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* params)
 {
-	CREATE_SHUTDOWN_HOOK_GUARD(L"Reset", oldReset);
+	SHUTDOWN_HOOK_GUARD(L"Reset");
 	MAKE_BUSY_SHUTDOWN_GUARD;
 
 	UI::Reset();
 
-	auto result = reinterpret_cast<decltype(Hooks::Reset)*>
-		(oldReset->GetOriginal())
+	return reinterpret_cast<decltype(Hooks::Reset)*>
+		(hooks->oldReset->GetOriginal())
 		(device, params);
-
-	return result;
 }

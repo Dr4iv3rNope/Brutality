@@ -1,5 +1,5 @@
 #include "cvar.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 #include "../util/xorstr.hpp"
@@ -17,7 +17,7 @@ SourceSDK::ConVar* SourceSDK::CVar::FindVar(const char* name)
 	call    qword ptr [rax+88h]
 	test    rax, rax
 	*/
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(

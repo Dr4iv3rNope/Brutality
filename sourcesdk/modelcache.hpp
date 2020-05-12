@@ -20,6 +20,4 @@ namespace SourceSDK
 				: nullptr;
 		}
 	};
-
-	VALVE_SDK_INTERFACE_DECL(MDLCache, mdlCache);
 }

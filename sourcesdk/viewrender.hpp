@@ -1,5 +1,5 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
+#include <cstddef>
 
 namespace SourceSDK
 {
@@ -8,6 +8,4 @@ namespace SourceSDK
 	public:
 		std::size_t GetRenderViewIndex();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(ViewRender, view);
 }

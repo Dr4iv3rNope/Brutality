@@ -15,11 +15,11 @@ using namespace SourceSDK;
 
 bool __fastcall Hooks::CreateMove(SourceSDK::ClientModeShared* clientMode, void* edx, float input_sample_frametime, SourceSDK::UserCmd* cmd) noexcept
 {
-	CREATE_SHUTDOWN_HOOK_GUARD(L"CreateMove", oldCreateMove);
+	SHUTDOWN_HOOK_GUARD(L"CreateMove");
 	MAKE_BUSY_SHUTDOWN_GUARD;
 
 	reinterpret_cast<decltype(Hooks::CreateMove)*>
-		(oldCreateMove->GetOriginal())
+		(hooks->oldCreateMove->GetOriginal())
 		(clientMode, edx, input_sample_frametime, cmd);
 
 	Features::BunnyHop::Think(cmd);

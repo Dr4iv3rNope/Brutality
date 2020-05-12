@@ -1,5 +1,5 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
+#include <cstddef>
 
 #include "clientclass.hpp"
 
@@ -13,6 +13,4 @@ namespace SourceSDK
 
 		const ClientClass* GetHeadClientClass();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(HLClient, clientDLL);
 }

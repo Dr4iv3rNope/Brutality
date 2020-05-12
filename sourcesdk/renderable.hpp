@@ -1,4 +1,6 @@
 #pragma once
+#include "../main.hpp"
+
 #include "matrix.hpp"
 #include "bonemasks.hpp"
 #include "entity.hpp"
@@ -38,15 +40,15 @@ namespace SourceSDK
 		// can be null!
 		const Model* GetModel() noexcept;
 
-		bool SetupBones(Matrix3x4* matrices, int max_bones, BoneMask bone_mask, float current_time = globals->curTime);
+		bool SetupBones(Matrix3x4* matrices, int max_bones, BoneMask bone_mask, float current_time = interfaces->globals->curTime);
 
 		bool EnumerateBones(std::function<bool(int, const Studio::Bone*)>) noexcept;
 
 		bool GetBoneIndex(const std::string& bone_name, int& bone_idx) noexcept;
 		bool FindBoneIndex(const std::string& bone_name, int& bone_idx) noexcept;
-		bool GetBonePosition(int bone_idx, Vector3& bone_pos, float time = globals->curTime) noexcept;
+		bool GetBonePosition(int bone_idx, Vector3& bone_pos, float time = interfaces->globals->curTime) noexcept;
 
-		inline bool GetBonePosition(const std::string& bone_name, Vector3& bone_pos, float time = globals->curTime) noexcept
+		inline bool GetBonePosition(const std::string& bone_name, Vector3& bone_pos, float time = interfaces->globals->curTime) noexcept
 		{
 			if (int bone; GetBoneIndex(bone_name, bone))
 				if (GetBonePosition(bone, bone_pos, time))

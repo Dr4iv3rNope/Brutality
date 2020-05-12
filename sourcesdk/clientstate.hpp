@@ -1,7 +1,6 @@
 #pragma once
-#include "../valvesdk/interfaces.hpp"
+#include "../build.hpp"
 
-#include "sdk.hpp"
 #include "networkstringtable.hpp"
 #include "playerinfo.hpp"
 #include "vector.hpp"
@@ -37,7 +36,7 @@ namespace SourceSDK
 
 	class ClientState
 	{
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	private:
 		char __pad0[12]; // vmt
 
@@ -77,18 +76,30 @@ namespace SourceSDK
 	public:
 		INetworkStringTable* networkStringTables[10];
 	#endif
-	};
 
-	VALVE_SDK_INTERFACE_DECL(ClientState, clientState);
-	VALVE_SDK_INTERFACE_DECL(float, netTime);
+		inline std::string GetShortCurrentMap() const noexcept
+		{
+			return std::string(shortCurrentMap, sizeof(shortCurrentMap));
+		}
 
-	inline auto IsInGame() noexcept
-	{
-		return clientState->signonState == SignonState::Full;
-	}
+		inline std::string GetCurrentMap() const noexcept
+		{
+			return std::string(currentMap, sizeof(currentMap));
+		}
 
-	inline auto IsConnected() noexcept
-	{
-		return clientState->signonState > SignonState::Connected;
-	}
+		inline bool IsInGame() const noexcept
+		{
+			return signonState == SignonState::Full;
+		}
+
+		inline bool IsConnected() const noexcept
+		{
+			return signonState > SignonState::Connected;
+		}
+
+		inline std::string GetRetryAddress() const noexcept
+		{
+			return std::string(retryAddress, sizeof(retryAddress));
+		}
+	};	
 }

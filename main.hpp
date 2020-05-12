@@ -1,4 +1,6 @@
 #pragma once
+#include "gmod/gmod.hpp"
+
 #include <string>
 
 namespace Shutdown
@@ -18,3 +20,6 @@ namespace Main
 	extern void Shutdown() noexcept;
 	extern bool IsInShutdown() noexcept;
 }
+
+extern GameInterfaces* interfaces;
+extern GameHooks* hooks;

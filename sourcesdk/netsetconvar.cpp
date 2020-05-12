@@ -1,5 +1,7 @@
 #include "netsetconvar.hpp"
-#include "sdk.hpp"
+
+#include "../build.hpp"
+#include "../main.hpp"
 
 #include "clientstate.hpp"
 #include "netchannel.hpp"
@@ -20,7 +22,7 @@ SourceSDK::NetSetConVar* SourceSDK::NetSetConVar::Create(const char* name, const
 		(NetSetConVar*, const char*, const char*);
 
 	// "Custom user info value"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto constructor
 	{
 		Util::GetAbsAddress<ConstructorFn>(UTIL_XFIND_PATTERN(
@@ -46,7 +48,7 @@ bool SourceSDK::SendConVarValue(const char* name, const char* value)
 		Util::ToWideChar(value)
 	));
 
-	if (!clientState->netChannel)
+	if (!interfaces->clientstate->netChannel)
 	{
 		UTIL_XLOG(L"No channel!");
 		UTIL_LABEL_OK();
@@ -56,7 +58,7 @@ bool SourceSDK::SendConVarValue(const char* name, const char* value)
 	auto msg = NetSetConVar::Create(name, value);
 
 	UTIL_XLOG(L"Sending message");
-	clientState->netChannel->SendNetMsg(msg);
+	interfaces->clientstate->netChannel->SendNetMsg(msg);
 
 	delete msg;
 	UTIL_LABEL_OK();

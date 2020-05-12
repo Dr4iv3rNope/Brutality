@@ -1,6 +1,8 @@
 #include "netvars.hpp"
 #include "hlclient.hpp"
 
+#include "../main.hpp"
+
 #include "../util/debug/assert.hpp"
 #include "../util/debug/labels.hpp"
 
@@ -99,7 +101,7 @@ void SourceSDK::NetvarManager::Parse(const char* client_class_name, const RecvPr
 
 				break;
 
-			#if SOURCE_SDK_IS_GMOD
+			#if BUILD_GAME_IS_GMOD
 			case RecvProp::Type(7): break; // unknown
 			#endif
 
@@ -118,7 +120,7 @@ SourceSDK::NetvarManager::NetvarManager()
 	UTIL_DEBUG_ASSERT(dumpFile->bad());
 #endif
 
-	for (auto cclass = SourceSDK::clientDLL->GetHeadClientClass(); cclass; cclass = cclass->next)
+	for (auto cclass = interfaces->clientDLL->GetHeadClientClass(); cclass; cclass = cclass->next)
 	{
 		#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
 		*dumpFile

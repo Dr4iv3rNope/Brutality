@@ -1,7 +1,8 @@
 #pragma once
 #include "../valvesdk/interfaces.hpp"
 
-#include "sdk.hpp"
+#include "../build.hpp"
+
 #include "viewsetup.hpp"
 #include "renderable.hpp"
 
@@ -15,6 +16,4 @@ namespace SourceSDK
 	public:
 		const VMatrix& WorldToScreenMatrix();
 	};
-
-	VALVE_SDK_INTERFACE_DECL(Render, render);
 }

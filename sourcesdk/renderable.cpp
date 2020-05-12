@@ -1,5 +1,5 @@
 #include "renderable.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 #include "modelcache.hpp"
 
 #include "../util/vmt.hpp"
@@ -12,7 +12,7 @@
 const SourceSDK::Model* SourceSDK::Renderable::GetModel() noexcept
 {
 	// "mod_studio: MOVETYPE_FOLLOW with no model."
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -31,7 +31,7 @@ bool SourceSDK::Renderable::SetupBones(Matrix3x4* matrices, int max_bones, BoneM
 	UTIL_DEBUG_ASSERT(matrices);
 
 	// "C_BaseAnimating::SetupBones"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		VMT_XFIND_METHOD("50 FF 73 ?? 68 ?? ?? ?? ?? E8 ?? ?? ?? ?? A1", 2)
@@ -46,7 +46,7 @@ bool SourceSDK::Renderable::EnumerateBones(std::function<bool(int, const Studio:
 {
 	UTIL_DEBUG_ASSERT(callback);
 
-	if (auto studio = mdlCache->GetStudioHDR(ToEntity()->ToRenderable()->GetModel()))
+	if (auto studio = interfaces->modelcache->GetStudioHDR(ToEntity()->ToRenderable()->GetModel()))
 	{
 		for (auto bone_idx = 0; bone_idx < studio->GetBoneCount(); bone_idx++)
 			if (auto bone = studio->GetBone(bone_idx))

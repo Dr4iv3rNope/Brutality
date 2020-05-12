@@ -6,7 +6,7 @@
 void SourceSDK::EngineTraceClient::TraceRay(const Ray& ray, Mask mask, const ITraceFilter& filter, GameTrace& trace)
 {
 	// "TraceRay"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		VMT_XFIND_METHOD("56 8B F1 89 75 FC 57 A8 01 75 2D 8B 0D", 3)

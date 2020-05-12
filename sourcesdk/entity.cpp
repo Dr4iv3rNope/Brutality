@@ -1,18 +1,21 @@
 #include "entity.hpp"
 #include "entitylist.hpp"
 #include "networkable.hpp"
-#include "sdk.hpp"
+
+#include "../build.hpp"
+#include "../main.hpp"
 
 #include "../util/vmt.hpp"
+#include "../util/memory.hpp"
 
 SourceSDK::BaseEntity* SourceSDK::BaseEntity::GetByIndex(int idx) noexcept
 {
-	return entitylist->GetEntity(idx);
+	return interfaces->entitylist->GetEntity(idx);
 }
 
 SourceSDK::BaseEntity* SourceSDK::BaseEntity::GetByHandle(EntityHandle handle) noexcept
 {
-	const auto networkable { entitylist->GetNetworkable(handle) };
+	const auto networkable { interfaces->entitylist->GetNetworkable(handle) };
 
 	return networkable ? networkable->ToEntity() : nullptr;
 }
@@ -21,7 +24,7 @@ const char* SourceSDK::BaseEntity::GetClassname()
 {
 	using GetClassnameFn = const char*(__thiscall*)(void*);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	/*
 	push    offset aClass   ; "class "
 	push    eax             ; char *
@@ -40,9 +43,9 @@ const char* SourceSDK::BaseEntity::GetClassname()
 	*/
 	static const auto getClassname
 	{
-		Util::GetAbsAddress<GetClassnameFn>(UTIL_XFIND_PATTERN(
+		Util::GetAbsAddress<GetClassnameFn> UTIL_XFIND_PATTERN(
 			"client.dll", "E8 ?? ?? ?? ?? 89 45 ?? 80 38 00 75", 0
-		))
+		)
 	};
 	#endif
 

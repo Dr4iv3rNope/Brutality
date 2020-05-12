@@ -16,7 +16,7 @@ SourceSDK::BasePlayer* SourceSDK::BasePlayer::GetLocalPlayer()
 	mov esi, eax
 	test esi, esi
 	*/
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto getLocalPlayer
 	{
 		Util::GetAbsAddress<GetLocalPlayerFn>(
@@ -34,7 +34,7 @@ SourceSDK::BasePlayer* SourceSDK::BasePlayer::GetLocalPlayer()
 
 SourceSDK::BaseWeapon* SourceSDK::BasePlayer::GetActiveWeapon()
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		VMT_XFIND_METHOD("3B 35 ?? ?? ?? ?? 75 ?? 8B 06")
@@ -47,7 +47,7 @@ SourceSDK::BaseWeapon* SourceSDK::BasePlayer::GetActiveWeapon()
 bool SourceSDK::BasePlayer::GetEyePosition(SourceSDK::Vector3& eye_pos) const noexcept
 {
 	if (auto model = ToRenderable()->GetModel())
-		if (auto studio = mdlCache->GetStudioHDR(model))
+		if (auto studio = interfaces->modelcache->GetStudioHDR(model))
 		{
 			eye_pos = GetOrigin() + studio->eyePos;
 			return true;

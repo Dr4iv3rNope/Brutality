@@ -6,14 +6,12 @@
 
 #include <Windows.h>
 #include <ShlObj.h>
-
+#include <d3d9.h>
 #include <stdexcept>
 #include <filesystem>
-#include <cassert>
 
 #include "../sourcesdk/inputsystem.hpp"
 #include "../sourcesdk/surface.hpp"
-#include "../sourcesdk/shaderapi.hpp"
 
 #include "../util/strings.hpp"
 #include "../util/vmt.hpp"
@@ -45,10 +43,10 @@ static LRESULT __stdcall WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
 	if (isMenuOpen)
 	{
-		SourceSDK::surface->UnlockCursor();
+		interfaces->surface->UnlockCursor();
 	}
 
-	SourceSDK::inputsystem->EnableInput(!isMenuOpen);
+	interfaces->inputsystem->EnableInput(!isMenuOpen);
 
 
 	return CallWindowProcA(oldWindowProc, hWnd, msg, wParam, lParam);
@@ -81,11 +79,11 @@ void UI::Initialize()
 
 	ImGui::CreateContext();
 
-	UTIL_ASSERT(ImGui_ImplDX9_Init(SourceSDK::device), "failed to initialize dx9 ui");
+	UTIL_ASSERT(ImGui_ImplDX9_Init(interfaces->device), "failed to initialize dx9 ui");
 	UTIL_ASSERT(ImGui_ImplWin32_Init(gameWindow), "failed to initialize win32 ui");
 
 	UTIL_CHECK_ALLOC(oldLockCursor = new Util::Vmt::HookedMethod(
-		SourceSDK::surface, SourceSDK::surface->GetLockCursorIndex()
+		interfaces->surface, interfaces->surface->GetLockCursorIndex()
 	));
 
 	oldLockCursor->Initialize(SurfaceLockCursor);
@@ -104,9 +102,6 @@ void UI::Initialize()
 		{
 			0x0020, 0x00FF, // Basic Latin + Latin Supplement
 			0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
-			0x2500, 0x257F, // Frames
-			0x2580, 0x259F, // Filling symbols
-			0x25A0, 0x25FF,	// Geometry figures
 			0x2DE0, 0x2DFF, // Cyrillic Extended-A
 			0xA640, 0xA69F, // Cyrillic Extended-B
 			0,
@@ -131,8 +126,8 @@ void UI::Initialize()
 		colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
 		colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.15f, 0.14f, 1.00f);
-		colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-		colors[ImGuiCol_PopupBg] = ImVec4(0.15f, 0.15f, 0.15f, 0.78f);
+		colors[ImGuiCol_ChildBg] = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
+		colors[ImGuiCol_PopupBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
 		colors[ImGuiCol_Border] = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
 		colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		colors[ImGuiCol_FrameBg] = ImVec4(0.24f, 0.24f, 0.24f, 1.00f);
@@ -545,8 +540,8 @@ inline void StyleEditor()
 void UI::Draw()
 {
 	DWORD srgb_default_value;
-	SourceSDK::device->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgb_default_value);
-	SourceSDK::device->SetRenderState(D3DRS_SRGBWRITEENABLE, 0);
+	interfaces->device->GetRenderState(D3DRS_SRGBWRITEENABLE, &srgb_default_value);
+	interfaces->device->SetRenderState(D3DRS_SRGBWRITEENABLE, 0);
 
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -572,7 +567,7 @@ void UI::Draw()
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
-	SourceSDK::device->SetRenderState(D3DRS_SRGBWRITEENABLE, srgb_default_value);
+	interfaces->device->SetRenderState(D3DRS_SRGBWRITEENABLE, srgb_default_value);
 }
 
 void UI::Reset()
