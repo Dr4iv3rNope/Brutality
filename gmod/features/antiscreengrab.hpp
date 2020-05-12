@@ -1,10 +1,10 @@
 #pragma once
-#include "../../sourcesdk/sdk.hpp"
+#include "../../build.hpp"
 
-#if SOURCE_SDK_IS_GMOD
-namespace Features
+#if BUILD_GAME_IS_GMOD
+namespace GarrysMod
 {
-	namespace GarrysMod
+	namespace Features
 	{
 		namespace AntiScreenGrab
 		{

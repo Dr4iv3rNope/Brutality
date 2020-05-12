@@ -1,6 +1,6 @@
 #include "luainterface.hpp"
 
-#if SOURCE_SDK_IS_GMOD
+#if BUILD_GAME_IS_GMOD
 #include "../../shutdown.hpp"
 
 #include "../../config/variable.hpp"
@@ -12,7 +12,7 @@
 #include "../../util/debug/logs.hpp"
 #include "../../util/debug/labels.hpp"
 
-std::size_t Features::GarrysMod::LuaInterface::GetRunStringIndex()
+std::size_t GarrysMod::LuaInterface::GetRunStringIndex()
 {
 	/*
 	push    0
@@ -63,18 +63,19 @@ static bool __fastcall RunString(void* ecx, void* edx,
 
 static Shutdown::Element* shutdownElement;
 
-bool Features::GarrysMod::LuaInterface::IsInitialized() noexcept { return oldRunString; }
-bool Features::GarrysMod::LuaInterface::TryToInitialize()
+bool GarrysMod::LuaInterface::IsInitialized() noexcept { return oldRunString; }
+
+bool GarrysMod::LuaInterface::TryToInitialize()
 {
 	if (oldRunString)
 		return false;
 
-	if (!*luaInterface)
+	if (!*interfaces->luainterface)
 		return false;
 
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Initializing RunString hook"));
 
-	UTIL_CHECK_ALLOC(oldRunString = new Util::Vmt::HookedMethod(*luaInterface, GetRunStringIndex()));
+	UTIL_CHECK_ALLOC(oldRunString = new Util::Vmt::HookedMethod(*interfaces->luainterface, GetRunStringIndex()));
 	oldRunString->Initialize(::RunString);
 
 	UTIL_CHECK_ALLOC(shutdownElement = new Shutdown::Element(UTIL_XOR(L"LuaInterface"), [] ()
@@ -86,7 +87,7 @@ bool Features::GarrysMod::LuaInterface::TryToInitialize()
 	return true;
 }
 
-void Features::GarrysMod::LuaInterface::Shutdown()
+void GarrysMod::LuaInterface::Shutdown()
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Initializing RunString hook"));
 	UTIL_DEBUG_ASSERT(oldRunString);
@@ -95,7 +96,7 @@ void Features::GarrysMod::LuaInterface::Shutdown()
 	UTIL_LABEL_OK();
 }
 
-bool Features::GarrysMod::LuaInterface::RunString(const char* id, const char* code) noexcept
+bool GarrysMod::LuaInterface::RunString(const char* id, const char* code) noexcept
 {
 	static bool(__thiscall* function)(void*, const char*, const char*, const char*, bool, bool) = nullptr;
 

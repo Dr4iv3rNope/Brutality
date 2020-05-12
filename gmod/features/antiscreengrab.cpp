@@ -1,6 +1,6 @@
 #include "antiscreengrab.hpp"
 
-#if SOURCE_SDK_IS_GMOD
+#if BUILD_GAME_IS_GMOD
 #include "../../shutdown.hpp"
 
 #include "../../util/asmhook.hpp"
@@ -69,7 +69,7 @@ static UTIL_NAKED_FUNC(renderCapturePixels)
 
 static Shutdown::Element* shutdownElement;
 
-void Features::GarrysMod::AntiScreenGrab::Initialize()
+void GarrysMod::Features::AntiScreenGrab::Initialize()
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Anti-Screengrab initialize"));
 
@@ -121,7 +121,7 @@ void Features::GarrysMod::AntiScreenGrab::Initialize()
 	UTIL_LABEL_OK();
 }
 
-void Features::GarrysMod::AntiScreenGrab::Shutdown()
+void GarrysMod::Features::AntiScreenGrab::Shutdown()
 {
 	UTIL_LABEL_ENTRY(L"Anti-Screengrab shutdown");
 

@@ -1,7 +1,8 @@
 #include "lualoader.hpp"
-#include "luainterface.hpp"
 
-#if SOURCE_SDK_IS_GMOD
+#if BUILD_GAME_IS_GMOD
+#include "../luasdk/luainterface.hpp"
+
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_stdlib.h"
 #include "../../imgui/custom/windowmanager.hpp"
@@ -99,10 +100,10 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 			ImGui::InputTextMultiline("", &luaBuffer, ImVec2(-1.f, 200), ImGuiInputTextFlags_AllowTabInput);
 			ImGui::PopID();
 
-			if (*Features::GarrysMod::luaInterface)
+			if (*interfaces->luainterface)
 			{
 				if (ImGui::Button(UTIL_CXOR("Run code")))
-					(*Features::GarrysMod::luaInterface)->RunString(luaId.c_str(), luaBuffer.c_str());
+					(*interfaces->luainterface)->RunString(luaId.c_str(), luaBuffer.c_str());
 			}
 			else
 				ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
@@ -136,13 +137,13 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				return true;
 			}, nullptr, luaList.size(), 6);
 
-			if (*Features::GarrysMod::luaInterface)
+			if (*interfaces->luainterface)
 			{
 				ImGui::Custom::StatusError(currentError, errorList);
 
 				if (ImGui::Button(UTIL_CXOR("Run file")))
 					if (std::string content; GetLuaScript(luaList[currentLuaScript], content))
-						(*Features::GarrysMod::luaInterface)->RunString(luaId.c_str(), content.c_str());
+						(*interfaces->luainterface)->RunString(luaId.c_str(), content.c_str());
 			}
 			else
 				ImGui::TextUnformatted(UTIL_CXOR("Lua Interface not available"));
@@ -154,7 +155,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 	ImGui::EndTabBar();
 }
 
-void Features::GarrysMod::LuaLoader::RegisterWindow() noexcept
+void GarrysMod::Features::LuaLoader::RegisterWindow() noexcept
 {
 	ImGui::Custom::windowManager->RegisterWindow(
 		ImGui::Custom::Window(
