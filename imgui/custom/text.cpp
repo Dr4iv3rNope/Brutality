@@ -39,5 +39,8 @@ bool ImGui::Custom::CopiableText(const char* format, ...) noexcept
 
 std::string ImGui::Custom::ToTextBoolean(bool condition) noexcept
 {
-	return condition ? UTIL_SXOR("true") : UTIL_SXOR("false");
+	static auto str_true = UTIL_SXOR("true");
+	static auto str_false = UTIL_SXOR("false");
+
+	return condition ? str_true : str_false;
 }
