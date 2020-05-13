@@ -1,5 +1,6 @@
 #include "esp.hpp"
 #include "playerlist.hpp"
+#include "entlist.hpp"
 
 #include "../util/strings.hpp"
 
@@ -163,30 +164,6 @@ static std::mutex drawInfoMutex;
 static DrawInfoList drawInfo;
 
 
-struct EntityEspSettings
-{
-	std::string classname;
-
-	bool draw { false };
-	ImVec4 color { ImVec4(1.f, 1.f, 1.f, 1.f) };
-
-	inline EntityEspSettings(const char* classname) noexcept
-	{
-		this->classname = classname;
-	}
-};
-
-static std::deque<EntityEspSettings> entityClassnames;
-
-static inline auto FindEntityEspSettings(const char* classname) noexcept
-{
-	return std::find_if(entityClassnames.begin(), entityClassnames.end(), [classname] (const EntityEspSettings& item) -> bool
-	{
-		return item.classname == classname;
-	});
-}
-
-
 static void EspGetCenter(BasePlayer* player, Vector3& center)
 {
 	UTIL_DEBUG_ASSERT(player);
@@ -262,8 +239,8 @@ static void PushEntity(BaseEntity* entity)
 {
 	UTIL_DEBUG_ASSERT(entity);
 
-	if (auto settings = FindEntityEspSettings(entity->GetClassname());
-		settings != entityClassnames.end() && settings->draw)
+	if (auto settings = Features::EntityList::GetEntitySettings(entity->GetClassname());
+		settings && settings->espDraw)
 	{
 		DrawInfo info(false);
 		#if _DEBUG
@@ -271,7 +248,7 @@ static void PushEntity(BaseEntity* entity)
 		#endif
 		info.isDormant = entity->ToNetworkable()->IsDormant();
 		info.center = entity->GetOrigin();
-		info.GetEntityInfo()->color = ImGui::ColorConvertFloat4ToU32(settings->color);
+		info.GetEntityInfo()->color = settings->espColor;
 		info.GetEntityInfo()->classname = settings->classname;
 
 		drawInfo.push_back(info);
@@ -556,47 +533,3 @@ void Features::Esp::Draw(ImDrawList* list)
 	drawInfoMutex.unlock();
 }
 
-
-static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
-{
-	if (ImGui::Button(UTIL_CXOR("Dump class names")))
-		// make sure we're in game
-		if (interfaces->clientstate->IsInGame())
-			// setting i to maxClients because
-			// we dont need capture C_World and Players
-			for (auto i = interfaces->globals->maxClients; i < interfaces->entitylist->GetMaxEntities(); i++)
-				if (auto entity = BaseEntity::GetByIndex(i); entity)
-					if (auto classname = entity->GetClassname(); classname &&
-						// if entity's class name is not registered then ...
-						FindEntityEspSettings(classname) == entityClassnames.end())
-						// ... we will register entity's class name
-						entityClassnames.push_back(EntityEspSettings(classname));
-
-	static int currentItem { -1 };
-
-	ImGui::PushItemWidth(-1.f);
-	ImGui::Combo("", &currentItem, [] (void* data, int idx, const char** out_text) -> bool
-	{
-		*out_text = entityClassnames[idx].classname.c_str();
-		return true;
-	}, nullptr, entityClassnames.size());
-
-	if (currentItem != -1)
-	{
-		ImGui::Checkbox(UTIL_CXOR("Draw in ESP"), &entityClassnames[currentItem].draw);
-		ImGui::Custom::ColorPicker(UTIL_CXOR("Draw Color"), entityClassnames[currentItem].color);
-	}
-	else
-		ImGui::TextUnformatted(UTIL_CXOR("Choose item from list above"));
-}
-
-void Features::Esp::RegisterEntityListWindow() noexcept
-{
-	ImGui::Custom::windowManager->RegisterWindow(
-		ImGui::Custom::Window(
-			UTIL_SXOR("Entity List"),
-			ImGuiWindowFlags_AlwaysAutoResize,
-			DrawEntityListMenu
-		)
-	);
-}

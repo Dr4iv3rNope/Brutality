@@ -7,7 +7,5 @@ namespace Features
 	{
 		void Update() noexcept;
 		void Draw(ImDrawList* list);
-
-		void RegisterEntityListWindow() noexcept;
 	}
 }
