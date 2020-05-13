@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 #include "../build.hpp"
 
 #include "../util/pad.hpp"
