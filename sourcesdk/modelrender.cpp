@@ -1,5 +1,5 @@
 #include "modelrender.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 #include "../util/pattern.hpp"
@@ -11,7 +11,7 @@ std::size_t SourceSDK::ModelRender::GetDrawModelExecuteIndex()
 	// "C_BaseAnimating::DrawModel"
 	// C_BaseAnimating::InternalDrawModel
 	// C_BaseAnimating::DoInternalDrawModel
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -28,7 +28,7 @@ std::size_t SourceSDK::ModelRender::GetDrawModelExecuteIndex()
 void SourceSDK::ModelRender::ForcedMaterialOverride(Material* material, OverrideType type)
 {
 	// "CShadowDepthView::Draw"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(

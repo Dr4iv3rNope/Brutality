@@ -1,9 +1,13 @@
 #pragma once
 #include "../valvesdk/interfaces.hpp"
 
+#include "../build.hpp"
+
 #include "matrix.hpp"
 #include "vector.hpp"
 #include "overridetype.hpp"
+
+#include "../util/pad.hpp"
 
 namespace SourceSDK
 {
@@ -35,9 +39,27 @@ namespace SourceSDK
 		Renderable* renderable;
 		const Model* model;
 		const Matrix3x4* modelToWorld;
+		#if BUILD_GAME_IS_GMOD
+		UTIL_PAD(0, 12);
+		int entityIndex, skin, body, hitboxSet;
+		#else
 		const Matrix3x4* lightingOffset;
 		int flags, entityIndex, skin, body, hitboxSet;
+		#endif
 		ModelInstanceHandle instance;
+	};
+
+	struct DrawModelExecuteArgs final
+	{
+		const SourceSDK::DrawModelState* state;
+		const SourceSDK::ModelRenderInfo* info;
+		SourceSDK::Matrix3x4* boneToWorld;
+
+		inline DrawModelExecuteArgs(const SourceSDK::DrawModelState& state,
+									const SourceSDK::ModelRenderInfo& info,
+									SourceSDK::Matrix3x4* boneToWorld) noexcept
+			: state { &state }, info { &info }, boneToWorld { boneToWorld }
+		{}
 	};
 
 	class ModelRender final
@@ -45,12 +67,6 @@ namespace SourceSDK
 	public:
 		std::size_t GetDrawModelExecuteIndex();
 
-		void DrawModelExecute(const SourceSDK::DrawModelState& state,
-							  const SourceSDK::ModelRenderInfo& info,
-							  SourceSDK::Matrix3x4* boneToWorld);
-
 		void ForcedMaterialOverride(Material* material, OverrideType type = OverrideType::Normal);
 	};
-
-	VALVE_SDK_INTERFACE_DECL(ModelRender, modelrender);
 }
