@@ -12,6 +12,7 @@
 
 #include "../sourcesdk/inputsystem.hpp"
 #include "../sourcesdk/surface.hpp"
+#include "../sourcesdk/clientstate.hpp"
 
 #include "../util/strings.hpp"
 #include "../util/vmt.hpp"
@@ -37,17 +38,40 @@ static Util::Vmt::HookedMethod* oldLockCursor { nullptr };
 static LRESULT __stdcall WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	if (auto result = ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
-		result != 0)
-		return result;
+	ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+
+	// credits to penek
+	static bool* showCursor = *(bool**) UTIL_XFIND_PATTERN(
+		"vguimatsurface.dll",
+		"C6 05 ?? ?? ?? ?? 01 83 FA ?? 77",
+		2
+	);
+
+	enum class CursorState
+	{
+		None, Show, Hide
+	};
+	static CursorState state { CursorState::None };
 
 	if (isMenuOpen)
 	{
+		if (state == CursorState::None)
+			state = *showCursor ? CursorState::Show : CursorState::Hide;
+
+		*showCursor = true;
 		interfaces->surface->UnlockCursor();
+	}
+	else
+	{
+		if (state != CursorState::None)
+		{
+			*showCursor = state == CursorState::Show;
+			
+			state = CursorState::None;
+		}
 	}
 
 	interfaces->inputsystem->EnableInput(!isMenuOpen);
-
 
 	return CallWindowProcA(oldWindowProc, hWnd, msg, wParam, lParam);
 }
