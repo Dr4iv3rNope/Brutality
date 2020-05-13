@@ -30,7 +30,7 @@ bool ImGui::Custom::FlagInput(
 			std::string desc = UTIL_SXOR("*NO DESCRIPTION*");
 
 			if (callback(bit, desc))
-				if (ImGui::Selectable(desc.c_str(), &flags))
+				if (ImGui::Selectable(desc.c_str(), flags & (1 << bit)))
 				{
 					if (flags & (1 << bit))
 						flags |= (1 << bit);

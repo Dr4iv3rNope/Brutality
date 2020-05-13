@@ -11,6 +11,9 @@ namespace ImGui
 
 		namespace Keys
 		{
+			// functional key (F*)
+			// 0-23
+
 			constexpr Key F1 = 0;
 			constexpr Key F2 = 1;
 			constexpr Key F3 = 2;
@@ -36,6 +39,11 @@ namespace ImGui
 			constexpr Key F23 = 22;
 			constexpr Key F24 = 23;
 
+			constexpr bool IsFunctionalKey(Key key) noexcept
+			{
+				return key <= 23;
+			}
+
 			// Number keys (24-33)
 
 			constexpr Key _1 = 24;
@@ -48,6 +56,11 @@ namespace ImGui
 			constexpr Key _8 = 31;
 			constexpr Key _9 = 32;
 			constexpr Key _0 = 33;
+
+			constexpr bool IsNumberKey(Key key) noexcept
+			{
+				return key >= 24 && key <= 33;
+			}
 
 			// Letters (34-59)
 
@@ -78,7 +91,12 @@ namespace ImGui
 			constexpr Key N = 58;
 			constexpr Key M = 59;
 
-			// Symbols (60-)
+			constexpr bool IsLetterKey(Key key) noexcept
+			{
+				return key >= 34 && key <= 59;
+			}
+
+			// Symbols (60-70)
 
 			constexpr Key GRAVE = 60;
 			constexpr Key LEFT_SQUARE_BRACKET = 61;
@@ -91,6 +109,11 @@ namespace ImGui
 			constexpr Key SLASH = 68;
 			constexpr Key MINUS = 69;
 			constexpr Key EQUAL = 70;
+
+			constexpr bool IsSymbolKey(Key key) noexcept
+			{
+				return key >= 60 && key <= 70;
+			}
 
 			// Control keys (71-89)
 
@@ -114,6 +137,11 @@ namespace ImGui
 			constexpr Key LEFTARROW = 88;
 			constexpr Key RIGHTARROW = 89;
 
+			constexpr bool IsControlKey(Key key) noexcept
+			{
+				return key >= 71 && key <= 89;
+			}
+
 			// Numpad (90-104)
 
 			constexpr Key NUMPAD_SLASH = 90;
@@ -132,6 +160,11 @@ namespace ImGui
 			constexpr Key NUMPAD_9 = 103;
 			constexpr Key NUMPAD_0 = 104;
 
+			constexpr bool IsNumpadKey(Key key) noexcept
+			{
+				return key >= 90 && key <= 104;
+			}
+
 			// Mouse (105-109)
 
 			constexpr Key MOUSE_LEFT = 105;
@@ -139,6 +172,11 @@ namespace ImGui
 			constexpr Key MOUSE_MIDDLE = 107;
 			constexpr Key MOUSE_4 = 108;
 			constexpr Key MOUSE_5 = 109;
+
+			constexpr bool IsMouseKey(Key key) noexcept
+			{
+				return key >= 105 && key <= 109;
+			}
 
 
 			constexpr Key INVALID = -1;

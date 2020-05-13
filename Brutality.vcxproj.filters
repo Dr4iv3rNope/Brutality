@@ -246,6 +246,13 @@
     <ClCompile Include="sourcesdk\vrenderview.cpp">
       <Filter>Source SDK\Interfaces\CVRenderView</Filter>
     </ClCompile>
+    <ClCompile Include="features\entlist.cpp">
+      <Filter>Shared Features\Entity List</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\achievementmgr.cpp" />
+    <ClCompile Include="features\achmgr.cpp">
+      <Filter>Shared Features\Achievement Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -490,6 +497,12 @@
     </Filter>
     <Filter Include="Source SDK\Interfaces\CVRenderView">
       <UniqueIdentifier>{23815df0-0d41-4c96-acea-adfac0ac144e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Entity List">
+      <UniqueIdentifier>{bc398484-1234-46e8-b3a5-4ca830a1aa52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Achievement Manager">
+      <UniqueIdentifier>{89d72c7f-e582-4866-8710-663203803367}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -922,6 +935,15 @@
     </ClInclude>
     <ClInclude Include="sourcesdk\vrenderview.hpp">
       <Filter>Source SDK\Interfaces\CVRenderView</Filter>
+    </ClInclude>
+    <ClInclude Include="features\entlist.hpp">
+      <Filter>Shared Features\Entity List</Filter>
+    </ClInclude>
+    <ClInclude Include="sourcesdk\achievementmgr.hpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="features\achmgr.hpp">
+      <Filter>Shared Features\Achievement Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

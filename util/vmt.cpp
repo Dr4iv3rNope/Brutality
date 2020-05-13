@@ -14,36 +14,24 @@ Util::Vmt::HookedMethod::HookedMethod(void* object, std::size_t idx)
 
 	this->_region = GetVmt(object) + idx;
 	this->_original = *this->_region;
+
+	UTIL_LOG(UTIL_WFORMAT(
+		UTIL_XOR(L"Preparing to Hook Method ") << std::hex <<
+		int(object) << L' ' <<
+		int(this->_region) << L' ' <<
+		int(this->_original) << L' '
+	));
 }
 
 Util::Vmt::HookedMethod::~HookedMethod()
 {
-	UTIL_LOG(UTIL_WFORMAT(
-		UTIL_XOR(L"Releasing Hooked Method ") << std::hex <<
-		int(this->_region) << L' ' <<
-		int(this->_original)
-	));
-
-	UTIL_DEBUG_ASSERT(dbg_initialized);
-
-	{
-		DWORD temp, old_prot;
-
-		UTIL_ASSERT(
-			VirtualProtect(this->_region, sizeof(void*), PAGE_EXECUTE_READWRITE, &old_prot),
-			"Failed to change memory protection"
-		);
-
-		UTIL_XLOG(L"Setting old pointer");
-		memcpy(this->_region, &this->_original, sizeof(void*));
-
-		VirtualProtect(this->_region, sizeof(void*), old_prot, &temp);
-	}
+	if (initialized)
+		Shutdown();
 }
 
 void Util::Vmt::HookedMethod::Initialize(const void* new_func)
 {
-	UTIL_DEBUG_ASSERT(!dbg_initialized);
+	UTIL_DEBUG_ASSERT(!initialized);
 	UTIL_DEBUG_ASSERT(new_func);
 
 	UTIL_LOG(UTIL_WFORMAT(
@@ -65,15 +53,38 @@ void Util::Vmt::HookedMethod::Initialize(const void* new_func)
 
 		VirtualProtect(this->_region, sizeof(void*), old_prot, &temp);
 
-		#ifdef _DEBUG
-		dbg_initialized = true;
-		#endif
+		initialized = true;
+	}
+}
+
+void Util::Vmt::HookedMethod::Shutdown() noexcept
+{
+	UTIL_LOG(UTIL_WFORMAT(
+		UTIL_XOR(L"Shutdown Hooked Method ") << std::hex <<
+		int(this->_region) << L' ' <<
+		int(this->_original)
+	));
+
+	UTIL_DEBUG_ASSERT(initialized);
+
+	{
+		DWORD temp, old_prot;
+
+		UTIL_ASSERT(
+			VirtualProtect(this->_region, sizeof(void*), PAGE_EXECUTE_READWRITE, &old_prot),
+			"Failed to change memory protection"
+		);
+
+		UTIL_XLOG(L"Setting old pointer");
+		memcpy(this->_region, &this->_original, sizeof(void*));
+
+		VirtualProtect(this->_region, sizeof(void*), old_prot, &temp);
 	}
 }
 
 const void* Util::Vmt::HookedMethod::GetOriginal() const
 {
-	UTIL_DEBUG_ASSERT(dbg_initialized);
+	UTIL_DEBUG_ASSERT(initialized);
 
 	return this->_original;
 }

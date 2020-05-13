@@ -253,7 +253,10 @@ GmodHooks::GmodHooks()
 		interfaces->modelrender,
 		interfaces->modelrender->GetDrawModelExecuteIndex()
 	);
+}
 
+void GmodHooks::Initialize() noexcept
+{
 	oldCreateMove->Initialize(Hooks::CreateMove);
 	oldEndScene->Initialize(Hooks::EndScene);
 	oldFrameStageNotify->Initialize(Hooks::FrameStageNotify);

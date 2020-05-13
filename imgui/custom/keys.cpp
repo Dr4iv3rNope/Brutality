@@ -360,7 +360,7 @@ bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 
 	if (ImGui::BeginPopup(UTIL_CXOR("CUSTOM##INPUTKEY")))
 	{
-		static Key newKey { 0xFFFF };
+		static Key newKey { Keys::INVALID };
 
 		showKey(UTIL_CXOR("Current Key"), key);
 
@@ -386,17 +386,14 @@ bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 		{
 			key = newKey;
 			is_changed = true;
-
-			newKey = -1;
 		}
 
 		ImGui::SameLine();
 
-		if (ImGui::Button(UTIL_CXOR("Close")))
+		if (ImGui::Button(UTIL_CXOR("Reset")))
 		{
-			newKey = -1;
-
-			ImGui::CloseCurrentPopup();
+			key = newKey = Keys::INVALID;
+			is_changed = true;
 		}
 
 		ImGui::EndPopup();

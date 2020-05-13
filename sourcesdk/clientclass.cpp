@@ -1,4 +1,4 @@
-#include "sdk.hpp"
+#include "../build.hpp"
 #include "clientclass.hpp"
 #include "clientclassdumper.hpp"
 
@@ -8,7 +8,7 @@
 
 bool SourceSDK::ClientClass::IsPlayer() const
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static auto playerClass = clientClassDumper->FindClientClass(UTIL_XOR("CGMOD_Player"));
 
 	UTIL_ASSERT(playerClass, "Failed to find Player ClientClass");

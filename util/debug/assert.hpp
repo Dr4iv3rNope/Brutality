@@ -15,14 +15,20 @@
 		UTIL_XLOG(L"[ASSERTATION FAULT] operation: { "#operation##" }"); \
 		__asm { int 3 }; \
 		std::abort(); }
+
+#define UTIL_ASSERT(operation, what) \
+	if (!(operation)) { \
+		UTIL_XLOG(L"[ASSERTATION FAULT] what: "##what); \
+		__asm { int 3 }; \
+		std::abort(); }
 #else
 #define UTIL_DEBUG_ASSERT(operation)
-#endif
 
 #define UTIL_ASSERT(operation, what) \
 	if (!(operation)) { \
 		UTIL_XLOG(L"[ASSERTATION FAULT] what: "##what); \
 		std::abort(); }
+#endif
 
 #else
 #define UTIL_ASSERT(operation, what)

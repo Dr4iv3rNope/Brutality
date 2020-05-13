@@ -32,16 +32,14 @@ namespace Util
 		private:
 			void** _region; // address where pointer has been replaced
 			void* _original; // pointer to original function
-			
-			#ifdef _DEBUG
-			bool dbg_initialized { false };
-			#endif
+			bool initialized { false };
 
 		public:
 			HookedMethod(void* object, std::size_t idx);
 			~HookedMethod();
 
 			void Initialize(const void* new_func);
+			void Shutdown() noexcept;
 
 			// returns original function
 			const void* GetOriginal() const;

@@ -17,7 +17,7 @@ namespace Shutdown
 		ActionFn action;
 		std::wstring name;
 
-		inline Element(const std::wstring& name, ActionFn action) noexcept
+		inline Element(const std::wstring& name, ActionFn action = nullptr) noexcept
 			: action { action }, name { name }
 		{
 			Main::AddToShutdown(this);
@@ -44,11 +44,16 @@ namespace Shutdown
 	};
 }
 
-#define CREATE_SHUTDOWN_HOOK_GUARD(name, hookPtr) \
+#define SHUTDOWN_HOOK_GUARD_CALLBACK(name, ...) \
 	static Shutdown::Element* __shutdown_element; \
 	if (!__shutdown_element) { \
 		UTIL_CHECK_ALLOC(__shutdown_element = new Shutdown::Element(UTIL_XOR(name), [] () \
-			{ delete hookPtr; })) }
+			{ __VA_ARGS__ })) }
+
+#define SHUTDOWN_HOOK_GUARD(name) \
+	static Shutdown::Element* __shutdown_element; \
+	if (!__shutdown_element) { \
+		UTIL_CHECK_ALLOC(__shutdown_element = new Shutdown::Element(UTIL_XOR(name))) }
 
 #define MAKE_BUSY_SHUTDOWN_GUARD \
 	auto __shutdown_guard = Shutdown::Guard(__shutdown_element);

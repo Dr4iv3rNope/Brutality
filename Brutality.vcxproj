@@ -164,11 +164,13 @@
   <ItemGroup>
     <ClCompile Include="config\config.cpp" />
     <ClCompile Include="config\variable.cpp" />
+    <ClCompile Include="features\achmgr.cpp" />
     <ClCompile Include="features\bhop.cpp" />
     <ClCompile Include="features\chams.cpp" />
     <ClCompile Include="features\chatspam.cpp" />
     <ClCompile Include="features\crosshair.cpp" />
     <ClCompile Include="features\customdisconnect.cpp" />
+    <ClCompile Include="features\entlist.cpp" />
     <ClCompile Include="features\esp.cpp" />
     <ClCompile Include="features\fastwalk.cpp" />
     <ClCompile Include="features\namechanger.cpp" />
@@ -202,6 +204,7 @@
     <ClCompile Include="imgui\imgui_stdlib.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="sourcesdk\achievementmgr.cpp" />
     <ClCompile Include="sourcesdk\clientclassdumper.cpp" />
     <ClCompile Include="sourcesdk\entity.cpp" />
     <ClCompile Include="sourcesdk\hlinput.cpp" />
@@ -251,11 +254,13 @@
     <ClInclude Include="build.hpp" />
     <ClInclude Include="config\config.hpp" />
     <ClInclude Include="config\variable.hpp" />
+    <ClInclude Include="features\achmgr.hpp" />
     <ClInclude Include="features\bhop.hpp" />
     <ClInclude Include="features\chams.hpp" />
     <ClInclude Include="features\chatspam.hpp" />
     <ClInclude Include="features\crosshair.hpp" />
     <ClInclude Include="features\customdisconnect.hpp" />
+    <ClInclude Include="features\entlist.hpp" />
     <ClInclude Include="features\esp.hpp" />
     <ClInclude Include="features\fastwalk.hpp" />
     <ClInclude Include="features\namechanger.hpp" />
@@ -297,6 +302,7 @@
     <ClInclude Include="main.hpp" />
     <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="shutdown.hpp" />
+    <ClInclude Include="sourcesdk\achievementmgr.hpp" />
     <ClInclude Include="sourcesdk\bspflags.hpp" />
     <ClInclude Include="sourcesdk\clientclassdumper.hpp" />
     <ClInclude Include="sourcesdk\concmdflags.hpp" />

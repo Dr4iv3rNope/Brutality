@@ -497,7 +497,7 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 							ImGui::PushID(UTIL_CXOR("##PLAYER_TYPE_COMBO"));
 							if (ImGui::Combo
 							(
-								UTIL_CXOR("Type"),
+								"",
 								(int*)&playerListInfo.type,
 								UTIL_CXOR("Normal\0Dangerous\0Friend\0Rage\0")
 							))

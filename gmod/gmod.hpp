@@ -84,6 +84,9 @@ public:
 	Util::Vmt::HookedMethod* oldReset;
 
 	GmodHooks();
+
+	void Initialize() noexcept;
+
 	~GmodHooks();
 };
 using GameHooks = GmodHooks;

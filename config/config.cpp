@@ -93,11 +93,14 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 {
 	static std::string configName;
 
-	static constexpr int ERR_NONE { -1 };
-	static constexpr int ERR_FAILED_LOAD { 0 };
-	static constexpr int ERR_FAILED_SAVE { 1 };
+	enum Err_
+	{
+		Err_None = -1,
+		Err_FailedLoad,
+		Err_FailedSave
+	};
 
-	static int currentError { ERR_NONE };
+	static Err_ currentError { Err_None };
 	static ImGui::Custom::ErrorList errorList =
 	{
 		ImGui::Custom::Error(
@@ -111,7 +114,7 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 		)
 	};
 
-	ImGui::Custom::StatusError(currentError, errorList);
+	ImGui::Custom::StatusError((int&)currentError, errorList);
 
 	ImGui::PushItemWidth(-1.f);
 	ImGui::InputText("", &configName);
@@ -121,11 +124,11 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 		try
 		{
 			Config::Save(Util::ToWideChar(configName));
-			currentError = ERR_NONE;
+			currentError = Err_None;
 		}
 		catch (...)
 		{
-			currentError = ERR_FAILED_SAVE;
+			currentError = Err_FailedSave;
 		}
 	}
 
@@ -136,11 +139,11 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 		try
 		{
 			Config::Load(Util::ToWideChar(configName));
-			currentError = ERR_NONE;
+			currentError = Err_None;
 		}
 		catch (...)
 		{
-			currentError = ERR_FAILED_LOAD;
+			currentError = Err_FailedLoad;
 		}
 	}
 }
