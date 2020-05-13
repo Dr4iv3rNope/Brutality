@@ -1,4 +1,6 @@
 #pragma once
+#include "flags.h"
+
 #include "../../config/variable.hpp"
 
 namespace ImGui
@@ -23,6 +25,7 @@ namespace ImGui
 			extern bool Enum(Config::Enum& value) noexcept;
 			extern bool Color(Config::Color& value) noexcept;
 			extern bool Key(Config::Key& value) noexcept;
+			extern bool Flags(Config::Flags& flags) noexcept;
 		}
 	}
 }
