@@ -55,3 +55,20 @@ void SourceSDK::EngineClient::ClientCmdUnrestricted(const char* cmd)
 
 	Util::Vmt::CallMethod<void, const char*>(this, offset, cmd);
 }
+
+SourceSDK::AchievementMgr* SourceSDK::EngineClient::GetAchievementMgr() noexcept
+{
+	// "achievement_earned" in ClientModeShared::FireGameEvent
+	#if BUILD_GAME_IS_GMOD
+	static const auto offset
+	{
+		(*(int*)UTIL_XFIND_PATTERN(
+			"client.dll",
+			"84 C0 0F 85 ?? ?? ?? ?? 8B 0D ?? ?? ?? ?? 8B 01 FF 90 ?? ?? ?? ?? 85 C0",
+			18
+		)) / 4
+	};
+	#endif
+
+	return Util::Vmt::CallMethod<AchievementMgr*>(this, offset);
+}
