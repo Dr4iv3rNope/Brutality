@@ -1,5 +1,5 @@
 #include "keyvalues.hpp"
-#include "sdk.hpp"
+#include "../build.hpp"
 
 #include <cstddef>
 
@@ -12,7 +12,7 @@ void* SourceSDK::KeyValues::Allocate() noexcept
 {
 	using InitFn = void*(__cdecl*)(std::size_t);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto init
 	{
 		Util::GetAbsAddress<InitFn> UTIL_XFIND_PATTERN(
@@ -37,7 +37,7 @@ SourceSDK::KeyValues* SourceSDK::KeyValues::Create(void* allocated, const char* 
 
 	using ConstructorFn = KeyValues*(__thiscall*)(void*, const char*);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto constructor
 	{
 		Util::GetAbsAddress<ConstructorFn> UTIL_XFIND_PATTERN(
@@ -56,11 +56,20 @@ SourceSDK::KeyValues* SourceSDK::KeyValues::Create(const char* name) noexcept
 	return Create(Allocate(), name);
 }
 
+SourceSDK::KeyValues* SourceSDK::KeyValues::FromBuffer(const char* resource_name, const char* buffer) noexcept
+{
+	auto keys = Create("");
+
+	UTIL_ASSERT(keys->LoadFromBuffer(resource_name, buffer), "Failed to load keyvalues from buffer!");
+	
+	return keys;
+}
+
 void SourceSDK::KeyValues::SetInt(const char* name, int value)
 {
 	using SetIntFn = void(__thiscall*)(void*, const char*, int);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto setInt
 	{
 		Util::GetAbsAddress<SetIntFn> UTIL_XFIND_PATTERN(
@@ -78,7 +87,7 @@ void SourceSDK::KeyValues::SetString(const char* name, const char* value)
 {
 	using SetStringFn = void(__thiscall*)(void*, const char*, const char*);
 
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto setString
 	{
 		Util::GetAbsAddress<SetStringFn> UTIL_XFIND_PATTERN(
@@ -90,4 +99,23 @@ void SourceSDK::KeyValues::SetString(const char* name, const char* value)
 	#endif
 
 	return setString(this, name, value);
+}
+
+bool SourceSDK::KeyValues::LoadFromBuffer(const char* resource_name, const char* buffer, void** filesystem, const char* path)
+{
+	using LoadFromBufferFn = bool(__thiscall*)(void*, const char*, const char*, void**, const char*, int);
+
+	// "#include is NULL"
+	#if BUILD_GAME_IS_GMOD
+	static const auto loadFromBuffer
+	{
+		LoadFromBufferFn UTIL_XFIND_PATTERN(
+			"engine.dll",
+			"85 DB 75 ?? B0 01 5B 8B E5 5D C2 14 00 56 53 E8",
+			-0xD
+		)
+	};
+	#endif
+
+	return loadFromBuffer(this, resource_name, buffer, filesystem, path, 0 /* unk */);
 }
