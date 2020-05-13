@@ -232,6 +232,7 @@ void Features::Chams::Initialize() noexcept
 	BuildShinyChams();
 	BuildGlowChams();
 	BuildSpawnEffectChams();
+	BuildAnimShieldChams();
 
 	#ifdef _DEBUG
 	dbg_initialized = true;
