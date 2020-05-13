@@ -1,11 +1,12 @@
 #include "materialsystem.hpp"
-#include "sdk.hpp"
+
+#include "../build.hpp"
 
 #include "../util/vmt.hpp"
 
-SourceSDK::Material* SourceSDK::MaterialSystem::CreateMaterial(const char* material_name, KeyValues* key_values)
+SourceSDK::QueueFriendlyMaterial* SourceSDK::MaterialSystem::CreateQFriendlyMaterial(const char* material_name, KeyValues* key_values)
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint32_t*)UTIL_XFIND_PATTERN(
@@ -16,13 +17,13 @@ SourceSDK::Material* SourceSDK::MaterialSystem::CreateMaterial(const char* mater
 	};
 	#endif
 
-	return Util::Vmt::CallMethod<Material*, const char*, KeyValues*>(this, offset, material_name, key_values);
+	return Util::Vmt::CallMethod<QueueFriendlyMaterial*, const char*, KeyValues*>(this, offset, material_name, key_values);
 }
 
-void SourceSDK::Material::ColorModulate(VecColor3 color) noexcept
+void SourceSDK::Material::ColorModulate(float r, float g, float b) noexcept
 {
 	// "ViewDrawFade"
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -33,14 +34,13 @@ void SourceSDK::Material::ColorModulate(VecColor3 color) noexcept
 	};
 	#endif
 
-	return Util::Vmt::CallMethod<void, float, float, float>
-		(this, offset, color.Red(), color.Green(), color.Blue());
+	return Util::Vmt::CallMethod<void, float, float, float>(this, offset, r, g, b);
 }
 
 void SourceSDK::Material::AlphaModulate(float alpha) noexcept
 {
 	// "ViewDrawFade"
-	#if	SOURCE_SDK_IS_GMOD
+	#if	BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
@@ -56,13 +56,13 @@ void SourceSDK::Material::AlphaModulate(float alpha) noexcept
 
 void SourceSDK::Material::SetMaterialVarFlag(MaterialVar var, bool on)
 {
-	#if SOURCE_SDK_IS_GMOD
+	#if BUILD_GAME_IS_GMOD
 	static const auto offset
 	{
 		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
 			"engine.dll",
 			"6A 01 68 00 80 00 00 8B 01 FF 50",
-			10
+			11
 		)) / 4
 	};
 	#endif
