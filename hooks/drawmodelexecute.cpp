@@ -12,7 +12,7 @@ void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 	SHUTDOWN_HOOK_GUARD(L"DrawModelExecute");
 	MAKE_BUSY_SHUTDOWN_GUARD;
 
-	if (Features::Chams::Render(state, info, boneToWorld))
+	if (Features::Chams::Render(SourceSDK::DrawModelExecuteArgs(state, info, boneToWorld)))
 	{
 		interfaces->modelrender->ForcedMaterialOverride(nullptr);
 		return;
@@ -23,13 +23,11 @@ void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 		(edx, ecx, state, info, boneToWorld);
 }
 
-void Hooks::OldDrawModelExecute(const SourceSDK::DrawModelState& state,
-								const SourceSDK::ModelRenderInfo& info,
-								SourceSDK::Matrix3x4* boneToWorld)
+void Hooks::OldDrawModelExecute(const SourceSDK::DrawModelExecuteArgs& args)
 {
 	UTIL_ASSERT(hooks->oldDrawModelExecute, "Tried to run old dme but it's not hooked");
 
 	reinterpret_cast<void(__thiscall*)(void*, const SourceSDK::DrawModelState&, const SourceSDK::ModelRenderInfo&, SourceSDK::Matrix3x4*)>
 		(hooks->oldDrawModelExecute->GetOriginal())
-		(interfaces->modelrender, state, info, boneToWorld);
+		(interfaces->modelrender, *args.state, *args.info, args.boneToWorld);
 }

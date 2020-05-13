@@ -12,7 +12,5 @@ namespace Hooks
 											const SourceSDK::ModelRenderInfo& info,
 											SourceSDK::Matrix3x4* boneToWorld);
 
-	extern void OldDrawModelExecute(const SourceSDK::DrawModelState& state,
-									const SourceSDK::ModelRenderInfo& info,
-									SourceSDK::Matrix3x4* boneToWorld);
+	extern void OldDrawModelExecute(const SourceSDK::DrawModelExecuteArgs& args);
 }

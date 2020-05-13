@@ -23,9 +23,10 @@
 #include "features/namechanger.hpp"
 #include "features/playerlist.hpp"
 #include "features/customdisconnect.hpp"
-#include "features/esp.hpp"
+#include "features/entlist.hpp"
 #include "features/chams.hpp"
 #include "features/chatspam.hpp"
+#include "features/achmgr.hpp"
 #include "gmod/features/lualoader.hpp"
 #include "gmod/features/antiscreengrab.hpp"
 
@@ -151,7 +152,7 @@ static Config::LimitedString<char> lv_string("Debug", "Your Name", 64, Config::V
 
 static Config::String<char> uv_string("Debug", "XYZ", Config::VariableFlags_DontSave, "123");
 static Config::Enum uv_enum("Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" }, Config::VariableFlags_DontSave);
-static Config::Color uv_color("Debug", "Pick some color", 0.1f, 0.3f, 0.3f, 0.7f, Config::VariableFlags_DontSave);
+static Config::Color uv_color("Debug", "Pick some color", { 1, 3, 3, 7 }, Config::VariableFlags_DontSave);
 static Config::Key uv_key("Debug", "Some Key Binding", Config::VariableFlags_DontSave);
 static Config::Flags uv_flags("Debug", "Flags", { "flag 1", "flag 2", "pride flag", "flag 3" }, Config::VariableFlags_DontSave);
 #endif
@@ -167,35 +168,35 @@ Config::Color playerColorRages(UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Colo
 Config::Bool espEnabled(UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
 Config::LFloat espMaxDistance(UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), false);
+Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), Config::VariableFlags_AtNewLine);
 
-Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false);
-Config::Bool espDrawNormal(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"), false);
-Config::Bool espDrawDangerous(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"), false);
-Config::Bool espDrawFriends(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"), false);
-Config::Bool espDrawRages(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"), false);
-Config::Bool espDrawDeadPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"), false);
-Config::Bool espDrawDormantPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"), false);
+Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), Config::VariableFlags_AtNewLine);
+Config::Bool espDrawNormal(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"));
+Config::Bool espDrawDangerous(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"));
+Config::Bool espDrawFriends(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"));
+Config::Bool espDrawRages(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"));
+Config::Bool espDrawDeadPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"));
+Config::Bool espDrawDormantPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"));
 
-Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false);
+Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), Config::VariableFlags_AtNewLine);
 Config::Color espHealthColor(UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
 
-Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false);
+Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), Config::VariableFlags_AtNewLine);
 Config::Color espNameColor(UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
 
-Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false);
+Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), Config::VariableFlags_AtNewLine);
 #ifdef _DEBUG
-Config::Bool dbg_espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"), false);
+Config::Bool dbg_espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"));
 #endif
 Config::LFloat espSkeletonThickness(UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
 
-Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false);
+Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), Config::VariableFlags_AtNewLine);
 Config::Color espActiveWeaponColor(UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
 
 
 // text radar
 
-Config::Bool textRadarEnable(UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"), false);
+Config::Bool textRadarEnable(UTIL_SXOR("Text Radar"), UTIL_SXOR("Enable"));
 
 Config::UInt32 textRadarX(UTIL_SXOR("Text Radar"), UTIL_SXOR("X"), 0);
 Config::UInt32 textRadarY(UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
@@ -203,14 +204,14 @@ Config::UInt32 textRadarY(UTIL_SXOR("Text Radar"), UTIL_SXOR("Y"), 0);
 Config::LUInt32 textRadarMaxPlayers(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Players"), 10, 5, 32);
 Config::LFloat textRadarMaxDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool textRadarDrawDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"), false);
+Config::Bool textRadarDrawDistance(UTIL_SXOR("Text Radar"), UTIL_SXOR("Draw Distance"));
 
 
 // spectator list
 Config::Bool spectatorListEnable(UTIL_SXOR("Spectator List"), UTIL_SXOR("Enable"));
 
-Config::UInt32 spectatorListX(UTIL_SXOR("Spectator List"), UTIL_SXOR("X"), 0);
-Config::UInt32 spectatorListY(UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"), 0);
+Config::UInt32 spectatorListX(UTIL_SXOR("Spectator List"), UTIL_SXOR("X"));
+Config::UInt32 spectatorListY(UTIL_SXOR("Spectator List"), UTIL_SXOR("Y"));
 
 Config::LUInt32 spectatorListMaxPlayers(UTIL_SXOR("Spectator List"), UTIL_SXOR("Max Players"), 5, 2, 32);
 
@@ -304,7 +305,6 @@ Config::Bool nameChangerAutoSend(UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send
 // chams
 
 Config::Bool chamsEnable(UTIL_SXOR("Chams"), UTIL_SXOR("Enable"));
-Config::Bool chamsOnlyVisible(UTIL_SXOR("Chams"), UTIL_SXOR("Only Visible"));
 Config::Bool chamsDrawDormant(UTIL_SXOR("Chams"), UTIL_SXOR("Draw Dormant"));
 
 std::initializer_list chamsTypes =
@@ -315,31 +315,104 @@ std::initializer_list chamsTypes =
 	UTIL_SXOR("Shiny"),
 	UTIL_SXOR("Glow"),
 	UTIL_SXOR("Animated Spawn Effect"),
-	UTIL_SXOR("Glass")
+	UTIL_SXOR("Animated Shield")
 };
 
-Config::Color chamsNormalsVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Normal Players Color"), { 255, 255, 255, 255 });
-Config::Color chamsNormalsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Normal Players Color"), { 255, 255, 155, 255 });
-Config::Enum chamsNormalsType(UTIL_SXOR("Chams"), UTIL_SXOR("Normal Players"), chamsTypes);
+Config::Color chamsNormalsVisÑolor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Normal Players"),
+	{ 155, 155, 155, 255 },
+	Config::VariableFlags_AtNewLine
+);
+Config::Enum chamsNormalsVisType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Normal Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
+Config::Color chamsNormalsOccColor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Normal Players"),
+	{ 100, 100, 100, 255 }
+);
+Config::Enum chamsNormalsOccType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Normal Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
 
-Config::Color chamsDangerousVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Dangerous Players Color"), { 255, 0, 0, 155 });
-Config::Color chamsDangerousColor(UTIL_SXOR("Chams"), UTIL_SXOR("Dangerous Players Color"), { 155, 55, 55, 155 });
-Config::Enum chamsDangerousType(UTIL_SXOR("Chams"), UTIL_SXOR("Dangerous Players"), chamsTypes);
+Config::Color chamsDangerousVisÑolor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Dangerous Players"),
+	{ 155, 0, 0, 255 },
+	Config::VariableFlags_AtNewLine
+);
+Config::Enum chamsDangerousVisType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Dangerous Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
+Config::Color chamsDangerousOccColor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Dangerous Players"),
+	{ 100, 0, 0, 255 }
+);
+Config::Enum chamsDangerousOccType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Dangerous Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
 
-Config::Color chamsFriendsVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Friend Players Color"), { 55, 255, 55, 255 });
-Config::Color chamsFriendsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Friend Players Color"), { 100, 155, 55, 255 });
-Config::Enum chamsFriendsType(UTIL_SXOR("Chams"), UTIL_SXOR("Friend Players"), chamsTypes);
+Config::Color chamsFriendsVisÑolor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Friends Players"),
+	{ 0, 200, 0, 255 },
+	Config::VariableFlags_AtNewLine
+);
+Config::Enum chamsFriendsVisType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Visible Friends Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
+Config::Color chamsFriendsOccColor(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Friends Players"),
+	{ 0, 100, 0, 255 }
+);
+Config::Enum chamsFriendsOccType(
+	UTIL_SXOR("Chams"),
+	UTIL_SXOR("Occluded Friends Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
 
-Config::Color chamsRagesVisibleColor(UTIL_SXOR("Chams"), UTIL_SXOR("Visible Rage Players Color"), { 255, 100, 0, 255 });
-Config::Color chamsRagesColor(UTIL_SXOR("Chams"), UTIL_SXOR("Rage Players Color"), { 200, 55, 55, 255 });
-Config::Enum chamsRagesType(UTIL_SXOR("Chams"), UTIL_SXOR("Rage Players"), chamsTypes);
-
-
-Config::Color chamsArmsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Arms Color"), 1.f, 1.f, 1.f);
-Config::Enum chamsArmsType(UTIL_SXOR("Chams"), UTIL_SXOR("Arms"), chamsTypes);
-
-Config::Color chamsWeaponsColor(UTIL_SXOR("Chams"), UTIL_SXOR("Weapons Color"), 1.f, 1.f, 1.f);
-Config::Enum chamsWeaponsType(UTIL_SXOR("Chams"), UTIL_SXOR("Weapons"), chamsTypes);
+Config::Color chamsRagesVisÑolor(
+	UTIL_SXOR("Chams"), 
+	UTIL_SXOR("Visible Rages Players"),
+	{ 255, 100, 0, 255 },
+	Config::VariableFlags_AtNewLine
+);
+Config::Enum chamsRagesVisType(
+	UTIL_SXOR("Chams"), 
+	UTIL_SXOR("Visible Rages Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
+Config::Color chamsRagesOccColor(
+	UTIL_SXOR("Chams"), 
+	UTIL_SXOR("Occluded Rages Players"),
+	{ 155, 55, 0, 255 }
+);
+Config::Enum chamsRagesOccType(
+	UTIL_SXOR("Chams"), 
+	UTIL_SXOR("Occluded Rages Players Type"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
 
 #pragma endregion
 
@@ -365,10 +438,11 @@ static void InitializeFeatures() noexcept
 static void RegisterWindows() noexcept
 {
 	Features::NameChanger::RegisterWindow();
-	Features::Esp::RegisterEntityListWindow();
+	Features::EntityList::RegisterEntityListWindow();
 	Features::PlayerList::RegisterWindow();
 	Features::ChatSpam::RegisterWindow();
 	Features::CustomDisconnect::RegisterWindow();
+	Features::AchievementMgr::RegisterWindow();
 	#if BUILD_GAME_IS_GMOD
 	GarrysMod::Features::LuaLoader::RegisterWindow();
 	#endif
@@ -388,10 +462,12 @@ void Main::Initialize() noexcept
 	::interfaces = new GameInterfaces();
 
 	InitializeHelpers();
-	InitializeFeatures();	
-	RegisterWindows();
+	InitializeFeatures();
 
 	::hooks = new GameHooks();
+	::hooks->Initialize();
+
+	RegisterWindows();
 
 	#ifdef _DEBUG
 	dbg_initialized = true;
