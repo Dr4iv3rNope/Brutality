@@ -30,6 +30,11 @@ namespace Config
 	// return false if variable with same group and key already presented
 	extern bool RegisterVariable(IVariable& variable) noexcept;
 
+	// unregisters variable
+	//
+	// return false if variable not registered
+	extern bool UnregisterVariable(IVariable& variable) noexcept;
+
 	// return true if variable with this group and key already presented
 	extern bool IsVariableRegistered(const std::string& group, const std::string& key) noexcept;
 
@@ -49,7 +54,10 @@ namespace Config
 	{
 		UTIL_MAKE_BIT_FLAG(VariableFlags, DontRegister, 0),		// dont register variable when created
 		UTIL_MAKE_BIT_FLAG(VariableFlags, NotVisible, 1),		// prevent render element in menu
-		UTIL_MAKE_BIT_FLAG(VariableFlags, DontSave, 2)			// prevent save variable in config
+		UTIL_MAKE_BIT_FLAG(VariableFlags, DontSave, 2),			// prevent save variable in config
+		UTIL_MAKE_BIT_FLAG(VariableFlags, AtNewLine, 3),		// will place variable at new line
+		UTIL_MAKE_BIT_FLAG(VariableFlags, AtSameLine, 4),		// will place variable at same line
+		UTIL_MAKE_BIT_FLAG(VariableFlags, AlignToRight, 5)		// align variable to rhe right
 	};
 
 	enum class VariableType
@@ -58,18 +66,11 @@ namespace Config
 		
 		// basic types
 		
-		Signed,
-		Unsigned,
-		Float,
-		Boolean,
+		Signed, Unsigned, Float, Boolean,
 
 		// custom types
 
-		String,
-		Enum,
-		Color,
-		Key,
-		Flags
+		String, Enum, Color, Key, Flags
 	};
 
 	// basic variable that used to create unique variable
@@ -79,7 +80,7 @@ namespace Config
 		std::string _group, _key;
 		VariableFlags _flags;
 
-	public:
+	protected:
 		inline IVariable(const std::string& group, const std::string& key, VariableFlags flags = 0)
 			: _group { group }, _key { key }, _flags { flags }
 		{
@@ -87,8 +88,7 @@ namespace Config
 				RegisterVariable(*this);
 		}
 
-		// disallow copying setting
-		IVariable(const IVariable&) = delete;
+	public:
 
 		inline auto GetGroup() const noexcept { return _group; }
 		inline auto GetKey() const noexcept { return _key; }
@@ -99,6 +99,8 @@ namespace Config
 
 		virtual VariableType GetType() const = 0;
 		virtual bool IsLimitedVariable() const = 0;
+
+		virtual void OnUnregister() {}
 	};
 
 	// return true if variable with same group and key already presented
@@ -125,6 +127,9 @@ namespace Config
 			: IVariable(group, key, flags), _value { default_value } {}
 
 	public:
+		IBaseVariable(const IBaseVariable&) = delete;
+		IBaseVariable(const IBaseVariable&&) = delete;
+		
 		using Type = T;
 				
 		virtual VariableType GetType() const override
@@ -174,8 +179,7 @@ namespace Config
 	public:
 		inline Variable(const std::string& group, const std::string& key,
 						VariableFlags flags = 0, T default_value = T {})
-			: IBaseVariable<T>(group, key, flags, default_value)
-		{}
+			: IBaseVariable<T>(group, key, flags, default_value) {}
 
 		virtual void SetValue(T value) override { this->_value = value; }
 
@@ -412,8 +416,7 @@ namespace Config
 		inline String(const std::string& group, const std::string& key,
 					  VariableFlags flags = 0,
 					  std::basic_string<T> default_value = std::basic_string<T>())
-			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value)
-		{}
+			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value) {}
 
 		virtual VariableType GetType() const override { return VariableType::String; }
 
@@ -464,6 +467,9 @@ namespace Config
 			UTIL_DEBUG_ASSERT(items.size() > 0);
 		}
 
+		Enum(const Enum&) = delete;
+		Enum(const Enum&&) = delete;
+
 		virtual bool Export(nlohmann::json& value) const override
 		{
 			value = _currentItem;
@@ -507,23 +513,6 @@ namespace Config
 		{
 			_defaultColor = colors;
 		}
-
-		inline Color(const std::string& group, const std::string& key,
-					 float r, float g, float b, float a = 1.f,
-					 VariableFlags flags = 0)
-			: Color(group, key,
-					{
-						std::uint8_t(r * 255.f),
-						std::uint8_t(g * 255.f),
-						std::uint8_t(b * 255.f),
-						std::uint8_t(a * 255.f)
-					}, flags)
-		{}
-
-		inline Color(const std::string& group, const std::string& key,
-					 std::uint32_t hex, VariableFlags flags = 0)
-			: Color(group, key, *reinterpret_cast<std::array<std::uint8_t, 4>*>(&hex), flags)
-		{}
 
 		virtual VariableType GetType() const override { return VariableType::Color; }
 
@@ -609,6 +598,9 @@ namespace Config
 			: IVariable(group, key, flags), _key_value { key_value }
 		{}
 
+		Key(const Key&) = delete;
+		Key(const Key&&) = delete;
+
 		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
 		inline auto GetKeyValue() const noexcept { return _key_value; }
 
@@ -652,6 +644,10 @@ namespace Config
 			UTIL_DEBUG_ASSERT(bits_info.size() > 0);
 			UTIL_DEBUG_ASSERT(bits_info.size() <= GetMaxBit());
 		}
+
+		Flags(const Flags&) = delete;
+		Flags(const Flags&&) = delete;
+
 
 		template <typename V = int, typename F = int>
 		inline Util::Flags<V, F> GetFlags() const noexcept { return Util::Flags<V, F>(_flags); }

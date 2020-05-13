@@ -29,6 +29,15 @@ static void DrawWindow(ImGui::Custom::Window& window) noexcept
 		if (variable->GetFlags().HasFlag(Config::VariableFlags_NotVisible))
 			continue;
 
+		if (variable->GetFlags().HasFlag(Config::VariableFlags_AtNewLine))
+			ImGui::NewLine();
+
+		if (variable->GetFlags().HasFlag(Config::VariableFlags_AtSameLine))
+			ImGui::SameLine();
+
+		if (variable->GetFlags().HasFlag(Config::VariableFlags_AlignToRight))
+			ImGui::SetNextItemWidth(-1.f);
+
 		switch (variable->GetType())
 		{
 			case Config::VariableType::Invalid:
@@ -140,6 +149,18 @@ bool Config::RegisterVariable(IVariable& variable) noexcept
 	}
 
 	return true;
+}
+
+bool Config::UnregisterVariable(IVariable& variable) noexcept
+{
+	if (auto iter = GetSortedVariables().find(variable.GetKey());
+		iter != GetSortedVariables().end())
+	{
+		GetSortedVariables().erase(iter);
+		return true;
+	}
+	else
+		return false;
 }
 
 bool Config::IsVariableRegistered(const std::string& group, const std::string& key) noexcept
