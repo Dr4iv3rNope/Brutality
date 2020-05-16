@@ -1,4 +1,5 @@
 #pragma once
+#include "../build.hpp"
 
 namespace SourceSDK
 {
@@ -14,7 +15,10 @@ namespace SourceSDK
 			String,
 			Array,
 			DataTable,
-			NumSendPropTypes
+			NumSendPropTypes,
+			#if BUILD_GAME_IS_GMOD
+			GmodDataTable
+			#endif
 		};
 
 		const char* name;
