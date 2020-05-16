@@ -35,7 +35,6 @@ enum Chams_
 	Chams_Shiny,
 	Chams_Glow,
 	Chams_SpawnEffect,
-	Chams_AnimShield,
 
 	Chams__Count
 };
@@ -179,45 +178,6 @@ static void BuildSpawnEffectChams() noexcept
 		UTIL_LABEL_FAIL();
 }
 
-static void BuildAnimShieldChams() noexcept
-{
-	UTIL_LABEL_ENTRY(UTIL_XOR(L"Building animated shield chams material"));
-
-	auto keys = SourceSDK::KeyValues::FromBuffer(
-		UTIL_CXOR("*Anim Shield Chams*"),
-
-		UTIL_CXOR("\"Unlittwotexture\"\n"
-				  "{\n"
-				  "\"$basetexture\" \"Effects/com_shield002a\"\n"
-				  "\"$texture2\" \"Effects/com_shield004b\"\n"
-				  "\"$translucent\" 1\n"
-				  "\"$additive\" 1\n"
-				  "\"$nodecal\" 1\n"
-				  "\"Proxies\"\n"
-				  "{\n"
-				  "\"TextureScroll\""
-				  "{\n"
-				  "\"texturescrollvar\" \"$basetexturetransform\"\n"
-				  "\"texturescrollrate\" .02\n"
-				  "\"texturescrollangle\" 90\n"
-				  "}\n"
-				  "\"TextureScroll\""
-				  "{\n"
-				  "\"texturescrollvar\" \"$texture2transform\"\n"
-				  "\"texturescrollrate\" .04\n"
-				  "\"texturescrollangle\" 20\n"
-				  "}\n"
-				  "}\n"
-				  "}"
-		)
-	);
-
-	if (GetMaterial(Chams_AnimShield) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_animshield"), keys))
-		UTIL_LABEL_OK();
-	else
-		UTIL_LABEL_FAIL();
-}
-
 #ifdef _DEBUG
 static bool dbg_initialized = false;
 #endif
@@ -232,7 +192,6 @@ void Features::Chams::Initialize() noexcept
 	BuildShinyChams();
 	BuildGlowChams();
 	BuildSpawnEffectChams();
-	BuildAnimShieldChams();
 
 	#ifdef _DEBUG
 	dbg_initialized = true;
@@ -243,6 +202,11 @@ void Features::Chams::Initialize() noexcept
 void Features::Chams::Shutdown() noexcept
 {
 	UTIL_DEBUG_ASSERT(dbg_initialized);
+
+	for (auto& chams : chamsMaterials)
+		chams->DecrementReferenceCount();
+
+	chamsMaterials.fill(nullptr);
 
 	#ifdef _DEBUG
 	dbg_initialized = false;
