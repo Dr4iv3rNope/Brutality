@@ -53,5 +53,6 @@ namespace SourceSDK
 	public:
 		Achievement* GetAchievementByIndex(int idx);
 		int GetAchievementCount();
+		void AwardAchievement(int idx);
 	};
 }

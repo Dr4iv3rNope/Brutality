@@ -37,3 +37,16 @@ int SourceSDK::AchievementMgr::GetAchievementCount()
 
 	return Util::Vmt::CallMethod<int>(this, offset);
 }
+
+void SourceSDK::AchievementMgr::AwardAchievement(int idx)
+{
+	// "Steam not running, achievements disabled. Cannot reset achievements.\n"
+	#if BUILD_GAME_IS_GMOD
+	static const auto offset
+	{
+		VMT_XFIND_METHOD("8B 16 8B CE 8B 52 ?? FF D2 84 C0 75 ?? 8D 4B ?? E8", 2)
+	};
+	#endif
+
+	Util::Vmt::CallMethod<void, int>(this, offset, idx);
+}
