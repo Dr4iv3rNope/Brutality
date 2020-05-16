@@ -2,6 +2,7 @@
 
 #include "../features/bhop.hpp"
 #include "../features/fastwalk.hpp"
+#include "../features/triggerbot.hpp"
 
 #include "../sourcesdk/hlinput.hpp"
 #include "../sourcesdk/usercmd.hpp"
@@ -15,8 +16,7 @@ using namespace SourceSDK;
 
 bool __fastcall Hooks::CreateMove(SourceSDK::ClientModeShared* clientMode, void* edx, float input_sample_frametime, SourceSDK::UserCmd* cmd) noexcept
 {
-	SHUTDOWN_HOOK_GUARD(L"CreateMove");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
 	reinterpret_cast<decltype(Hooks::CreateMove)*>
 		(hooks->oldCreateMove->GetOriginal())
@@ -24,5 +24,7 @@ bool __fastcall Hooks::CreateMove(SourceSDK::ClientModeShared* clientMode, void*
 
 	Features::BunnyHop::Think(cmd);
 	Features::FastWalk::Think(cmd);
+	Features::TriggerBot::Think(cmd);
+
 	return false;
 }
