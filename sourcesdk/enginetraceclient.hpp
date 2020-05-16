@@ -31,7 +31,7 @@ namespace SourceSDK
 
 		virtual bool ShouldHitEntity(BaseEntity* entity, Mask) const override
 		{
-			return entity == _ignore;
+			return entity != _ignore;
 		}
 
 		virtual TraceType GetTraceType() const override
