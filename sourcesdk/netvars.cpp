@@ -5,6 +5,7 @@
 
 #include "../util/debug/assert.hpp"
 #include "../util/debug/labels.hpp"
+#include "../util/debug/errors.hpp"
 
 #include "../util/strings.hpp"
 
@@ -12,7 +13,7 @@
 #include <fstream>
 
 // dump everything in file?
-//#define SOURCE_SDK_NETVARS_MGR_DUMP UTIL_XOR("Z:\\Documents\\dump.txt")
+//#define SOURCE_SDK_NETVARS_MGR_DUMP UTIL_XOR("Z:\\Documents\\dump1.txt")
 
 #ifdef SOURCE_SDK_NETVARS_MGR_DUMP
 std::ofstream* dumpFile{ nullptr };
@@ -22,94 +23,94 @@ void SourceSDK::NetvarManager::Parse(const char* client_class_name, const RecvTa
 {
 	UTIL_DEBUG_ASSERT(client_class_name);
 
-	if (table.netTableName && table.propArray)
-	{
 	#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
-		*dumpFile
-			<< UTIL_XOR("[TABLE TREE] Address: 0x")
-			<< std::hex << &table << std::dec
-			<< UTIL_XOR(" Name: \"")
-			<< table.netTableName
-			<< UTIL_XOR("\" Prop Count: ")
-			<< table.propCount
-			<< '\n';
+	*dumpFile
+		<< "[TABLE TREE] Address: 0x"
+		<< std::hex << &table << std::dec
+		<< " Name: \""
+		<< table.netTableName
+		<< "\" Prop Count: "
+		<< table.propCount
+		<< std::endl;
 	#endif
 
-		for (auto i = 0; i < table.propCount; i++)
-			Parse(client_class_name, table.propArray[i], offset);
-	}
+	for (auto i = 0; i < table.propCount; i++)
+		Parse(client_class_name, table.propArray[i], offset);
 }
 
 void SourceSDK::NetvarManager::Parse(const char* client_class_name, const RecvProp& prop, std::uint32_t offset)
 {
 	UTIL_DEBUG_ASSERT(client_class_name);
 
-	if (prop.name && prop.offset)
-		switch (prop.type)
-		{
-			case RecvProp::Type::Int:
-			case RecvProp::Type::Float:
-			case RecvProp::Type::String:
-			case RecvProp::Type::Vector:
-			case RecvProp::Type::NumSendPropTypes:
+	#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
+	*dumpFile
+		<< "[NETVAR] Address: 0x"
+		<< std::hex << &prop << std::dec
+		<< " Name: \""
+		<< prop.name
+		<< "\" Offset: "
+		<< offset + prop.offset
+		<< " Type: "
+		<< int(prop.type)
+		<< '\n';
+	#endif
+
+	switch (prop.type)
+	{
+		case RecvProp::Type::Int:
+		case RecvProp::Type::Float:
+		case RecvProp::Type::String:
+		case RecvProp::Type::Vector:
+		case RecvProp::Type::NumSendPropTypes:
+			_offsets.insert(
+				std::make_pair(
+					UTIL_RUNTIME_HASH(UTIL_FORMAT(
+						client_class_name << ':' << prop.name
+					)),
+					offset + prop.offset
+				)
+			);
+			break;
+
+		case RecvProp::Type::Array:
 			#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
-				*dumpFile
-					<< UTIL_XOR("[NETVAR] Address: 0x")
-					<< std::hex << &prop << std::dec
-					<< UTIL_XOR(" Name: \"")
-					<< prop.name
-					<< UTIL_XOR("\" Offset: ")
-					<< offset + prop.offset
-					<< UTIL_XOR(" Type: ")
-					<< int(prop.type)
-					<< '\n';
+			*dumpFile << "[BEGIN PROP TREE]\n";
 			#endif
 
-				_offsets.insert(
-					std::make_pair(
-						UTIL_RUNTIME_HASH(UTIL_FORMAT(
-							client_class_name << ':' << prop.name
-						)),
-						offset + prop.offset
-					)
-				);
-				break;
+			if (prop.propArray)
+				for (auto i = 0; i < prop.elementCount; i++)
+					Parse(client_class_name, prop.propArray[i], offset + prop.offset);
+			#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
+			else
+				*dumpFile << "!!! GOT NULL PROP TREE !!!\n";
+			#endif
 
-			case RecvProp::Type::Array:
-				if (prop.propArray && prop.elementCount > 0)
-				{
-				#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
-					*dumpFile
-						<< UTIL_XOR("[PROP TREE] Address: 0x")
-						<< std::hex << &prop << std::dec
-						<< UTIL_XOR(" Name: \"")
-						<< prop.name
-						<< UTIL_XOR("\" Prop Count: ")
-						<< prop.elementCount
-						<< '\n';
-				#endif
+			#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
+			*dumpFile << "[END PROP TREE]\n";
+			#endif
 
-					for (auto i = 0; i < prop.elementCount; i++)
-						Parse(client_class_name, prop.propArray[i], offset + prop.offset);
-				}
+			break;
 
-				break;
+		case RecvProp::Type::DataTable:
+			if (prop.table)
+				Parse(client_class_name, *prop.table, offset + prop.offset);
+			#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
+			else
+				*dumpFile << "!!! TRIED TO PARSE DATATABLE BUT TABLE IS NULL !!!\n";
+			#endif
 
-			case RecvProp::Type::DataTable:
-				if (prop.table)
-					Parse(client_class_name, *prop.table, offset + prop.offset);
-
-				break;
+			break;
 
 			#if BUILD_GAME_IS_GMOD
-			case RecvProp::Type(7): break; // unknown
+		case RecvProp::Type::GmodDataTable:
+			break;
 			#endif
 
-			default:
-				// skipped switch element
-				UTIL_DEBUG_ASSERT(false);
-				break;
-		}
+		default:
+			// skipped switch element
+			UTIL_DEBUG_ASSERT(false);
+			break;
+	}
 }
 
 SourceSDK::NetvarManager::NetvarManager()
@@ -117,18 +118,18 @@ SourceSDK::NetvarManager::NetvarManager()
 #ifdef SOURCE_SDK_NETVARS_MGR_DUMP
 	UTIL_CHECK_ALLOC(dumpFile = new std::ofstream(SOURCE_SDK_NETVARS_MGR_DUMP));
 
-	UTIL_DEBUG_ASSERT(dumpFile->bad());
+	UTIL_DEBUG_ASSERT(dumpFile->good());
 #endif
 
 	for (auto cclass = interfaces->clientDLL->GetHeadClientClass(); cclass; cclass = cclass->next)
 	{
 		#ifdef SOURCE_SDK_NETVARS_MGR_DUMP
 		*dumpFile
-			<< UTIL_XOR("[CLASSID] Address: 0x")
+			<< "[CLASSID] Address: 0x"
 			<< std::hex << cclass << std::dec
-			<< UTIL_XOR(" Name: \"")
+			<< " Name: \""
 			<< cclass->networkName
-			<< UTIL_XOR("\" ID:")
+			<< "\" ID:"
 			<< int(cclass->id)
 			<< '\n';
 		#endif
