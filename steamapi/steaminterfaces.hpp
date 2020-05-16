@@ -3,6 +3,7 @@
 
 #include "steamclient.hpp"
 #include "steamuser.hpp"
+#include "steamuserstats.hpp"
 
 class SteamInterfaces
 {
@@ -11,8 +12,9 @@ private:
 	SteamAPI::SteamUserHandle _userHandle;
 
 public:
-	SteamAPI::SteamClient* client;
-	SteamAPI::SteamUser* user;
+	SteamAPI::ISteamClient* client;
+	SteamAPI::ISteamUser* user;
+	SteamAPI::ISteamUserStats* userstats;
 
 	SteamInterfaces();
 	~SteamInterfaces();

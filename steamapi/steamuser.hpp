@@ -14,7 +14,7 @@ namespace SteamAPI
 
 	using SteamUserHandle = int;
 	// interface name: "SteamUser020"
-	class SteamUser
+	class ISteamUser
 	{
 	public:
 		virtual SteamUserHandle GetSteamUserHandle() = 0;
