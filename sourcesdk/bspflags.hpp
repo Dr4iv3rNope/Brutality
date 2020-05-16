@@ -44,20 +44,12 @@ namespace SourceSDK
 			Contents_Monster |
 			Contents_Grate,
 
-		Mask_PlayerSolid =
-			Contents_Solid |
-			Contents_Moveable |
-			Contents_PlayerClip |
-			Contents_Window |
-			Contents_Monster |
-			Contents_Grate,
-
 		Mask_Shot =
 			Contents_Solid |
 			Contents_Moveable |
 			Contents_Monster |
 			Contents_Window |
 			Contents_Debris |
-			Contents_Grate
+			Contents_Hitbox
 	};
 }
