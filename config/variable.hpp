@@ -604,8 +604,8 @@ namespace Config
 		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
 		inline auto GetKeyValue() const noexcept { return _key_value; }
 
-		inline bool HasKeyValue() const noexcept { return _key_value != -1; }
-		inline void ResetKeyValue() noexcept { _key_value = -1; }
+		inline bool HasKeyValue() const noexcept { return _key_value != ImGui::Custom::Keys::INVALID; }
+		inline void ResetKeyValue() noexcept { _key_value = ImGui::Custom::Keys::INVALID; }
 
 
 		virtual bool Export(nlohmann::json& value) const override
