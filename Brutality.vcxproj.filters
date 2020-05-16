@@ -173,29 +173,8 @@
     <ClCompile Include="sourcesdk\viewrender.cpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\custom\specialchars.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\colors.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\text.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\keys.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
     <ClCompile Include="features\chatspam.cpp">
       <Filter>Shared Features\Chat Spammer</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\windowmanager.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\errors.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\variableui.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
     </ClCompile>
     <ClCompile Include="util\httpclient.cpp">
       <Filter>Utilities\HTTP</Filter>
@@ -224,12 +203,6 @@
     <ClCompile Include="features\chams.cpp">
       <Filter>Shared Features\Chams</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\custom\flags.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\custom\groups.cpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClCompile>
     <ClCompile Include="gmod\features\antiscreengrab.cpp">
       <Filter>Games\Garry%27s Mod\Features</Filter>
     </ClCompile>
@@ -239,7 +212,6 @@
     <ClCompile Include="gmod\luasdk\luainterface.cpp">
       <Filter>Games\Garry%27s Mod\Lua SDK</Filter>
     </ClCompile>
-    <ClCompile Include="steamapi\steaminterfaces.cpp" />
     <ClCompile Include="gmod\gmod.cpp">
       <Filter>Games\Garry%27s Mod</Filter>
     </ClCompile>
@@ -249,10 +221,46 @@
     <ClCompile Include="features\entlist.cpp">
       <Filter>Shared Features\Entity List</Filter>
     </ClCompile>
-    <ClCompile Include="sourcesdk\achievementmgr.cpp" />
     <ClCompile Include="features\achmgr.cpp">
       <Filter>Shared Features\Achievement Manager</Filter>
     </ClCompile>
+    <ClCompile Include="features\triggerbot.cpp">
+      <Filter>Shared Features\Trigger Bot</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\colors.cpp">
+      <Filter>ImGui\Custom GUI%27s\Colors</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\errors.cpp">
+      <Filter>ImGui\Custom GUI%27s\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\flags.cpp">
+      <Filter>ImGui\Custom GUI%27s\Flags</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\groups.cpp">
+      <Filter>ImGui\Custom GUI%27s\Groups</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\keys.cpp">
+      <Filter>ImGui\Custom GUI%27s\Keys</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\specialchars.cpp">
+      <Filter>ImGui\Custom GUI%27s\Special Chars</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\text.cpp">
+      <Filter>ImGui\Custom GUI%27s\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\variableui.cpp">
+      <Filter>ImGui\Custom GUI%27s\Config Variables</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\custom\windowmanager.cpp">
+      <Filter>ImGui\Custom GUI%27s\Window Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\achievementmgr.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="steamapi\steaminterfaces.cpp">
+      <Filter>Steam API</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -503,6 +511,36 @@
     </Filter>
     <Filter Include="Shared Features\Achievement Manager">
       <UniqueIdentifier>{89d72c7f-e582-4866-8710-663203803367}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Trigger Bot">
+      <UniqueIdentifier>{a56848f0-49f5-4a34-835f-7e923896d6ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Colors">
+      <UniqueIdentifier>{1b56374c-264a-4ad8-b406-333b9f815459}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Errors">
+      <UniqueIdentifier>{1891ed83-b2d8-4551-a8f0-49da80fa0f88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Flags">
+      <UniqueIdentifier>{74117713-368f-45fe-b2e7-bf8256f49a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Groups">
+      <UniqueIdentifier>{fc04dddb-4c4d-4d48-a9b9-e191330645de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Keys">
+      <UniqueIdentifier>{e45f2db4-1fcf-4d8a-981c-6ff1d0d570b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Special Chars">
+      <UniqueIdentifier>{df6fd497-fa20-40a0-8a17-90d449685d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Text">
+      <UniqueIdentifier>{9bf8accb-4612-45ab-9e0c-2fcd9bdcd4d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Config Variables">
+      <UniqueIdentifier>{6573f09a-8176-4ba8-a9e4-fead8a8c2611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui\Custom GUI%27s\Window Manager">
+      <UniqueIdentifier>{9f367599-ee7b-4de7-b5b6-5aa760d12222}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -818,32 +856,11 @@
     <ClInclude Include="sourcesdk\viewrender.hpp">
       <Filter>Source SDK\Interfaces\CViewRender</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\custom\keys.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\specialchars.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\colors.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\text.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
     <ClInclude Include="imgui\custom\numeric.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\windowmanager.hpp">
       <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
     <ClInclude Include="features\chatspam.hpp">
       <Filter>Shared Features\Chat Spammer</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\variableui.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\errors.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
     <ClInclude Include="steamapi\steamuser.hpp">
       <Filter>Steam API</Filter>
@@ -902,14 +919,8 @@
     <ClInclude Include="sourcesdk\materialvar.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
     </ClInclude>
-    <ClInclude Include="imgui\custom\flags.h">
-      <Filter>ImGui\Custom GUI%27s</Filter>
-    </ClInclude>
     <ClInclude Include="sourcesdk\viewmodel.hpp">
       <Filter>Source SDK\Entities\CBaseViewModel</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\custom\groups.hpp">
-      <Filter>ImGui\Custom GUI%27s</Filter>
     </ClInclude>
     <ClInclude Include="gmod\features\antiscreengrab.hpp">
       <Filter>Games\Garry%27s Mod\Features</Filter>
@@ -944,6 +955,39 @@
     </ClInclude>
     <ClInclude Include="features\achmgr.hpp">
       <Filter>Shared Features\Achievement Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="features\triggerbot.hpp">
+      <Filter>Shared Features\Trigger Bot</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\colors.hpp">
+      <Filter>ImGui\Custom GUI%27s\Colors</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\errors.hpp">
+      <Filter>ImGui\Custom GUI%27s\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\flags.h">
+      <Filter>ImGui\Custom GUI%27s\Flags</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\groups.hpp">
+      <Filter>ImGui\Custom GUI%27s\Groups</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\keys.hpp">
+      <Filter>ImGui\Custom GUI%27s\Keys</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\specialchars.hpp">
+      <Filter>ImGui\Custom GUI%27s\Special Chars</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\text.hpp">
+      <Filter>ImGui\Custom GUI%27s\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\variableui.hpp">
+      <Filter>ImGui\Custom GUI%27s\Config Variables</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\custom\windowmanager.hpp">
+      <Filter>ImGui\Custom GUI%27s\Window Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="steamapi\steamuserstats.hpp">
+      <Filter>Steam API</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

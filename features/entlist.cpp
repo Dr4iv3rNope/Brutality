@@ -94,22 +94,35 @@ static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
 		ImGui::NewLine();
 
 		if (ImVec4 color = ImGui::ColorConvertU32ToFloat4(settings->chamsVisColor);
-			ImGui::Custom::ColorPicker(UTIL_CXOR("Chams Visible Color"), color))
+			ImGui::Custom::ColorPicker(UTIL_CXOR("Chams Visible"), color))
 			settings->chamsVisColor = ImGui::ColorConvertFloat4ToU32(color);
 
-		ImGui::Combo(UTIL_CXOR("Chams Visible Type"),
-					 &settings->chamsVisType,
-					 UTIL_CXOR("Disable\0Normal\0Flat\0Shiny\0Glow\0Animated Spawn Effect\0Animated Shield\0")
+		ImGui::SameLine();
+
+		ImGui::PushID(1);
+		ImGui::PushItemWidth(-1.f);
+		ImGui::Combo(
+			"",
+			&settings->chamsVisType,
+			UTIL_CXOR("Disable\0Normal\0Flat\0Shiny\0Glow\0Animated Spawn Effect\0")
 		);
+		ImGui::PopID();
+
 
 		if (ImVec4 color = ImGui::ColorConvertU32ToFloat4(settings->chamsOccColor);
-			ImGui::Custom::ColorPicker(UTIL_CXOR("Chams Occluded Color"), color))
+			ImGui::Custom::ColorPicker(UTIL_CXOR("Chams Occluded"), color))
 			settings->chamsOccColor = ImGui::ColorConvertFloat4ToU32(color);
 
-		ImGui::Combo(UTIL_CXOR("Chams Occluded Type"),
-					 &settings->chamsOccType,
-					 UTIL_CXOR("Disable\0Normal\0Flat\0Shiny\0Glow\0Animated Spawn Effect\0Animated Shield\0")
+		ImGui::SameLine();
+
+		ImGui::PushID(1);
+		ImGui::PushItemWidth(-1.f);
+		ImGui::Combo(
+			"",
+			&settings->chamsOccType,
+			UTIL_CXOR("Disable\0Normal\0Flat\0Shiny\0Glow\0Animated Spawn Effect\0")
 		);
+		ImGui::PopID();
 	}
 	else
 		ImGui::TextUnformatted(UTIL_CXOR("Choose item from list above"));

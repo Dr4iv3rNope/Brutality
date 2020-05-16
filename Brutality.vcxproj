@@ -177,6 +177,7 @@
     <ClCompile Include="features\playerlist.cpp" />
     <ClCompile Include="features\spectatorlist.cpp" />
     <ClCompile Include="features\textradar.cpp" />
+    <ClCompile Include="features\triggerbot.cpp" />
     <ClCompile Include="gmod\features\antiscreengrab.cpp" />
     <ClCompile Include="gmod\features\lualoader.cpp" />
     <ClCompile Include="gmod\gmod.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="sourcesdk\keyvalues.cpp" />
     <ClCompile Include="sourcesdk\localize.cpp" />
     <ClCompile Include="sourcesdk\materialsystem.cpp" />
+    <ClCompile Include="sourcesdk\math.cpp" />
     <ClCompile Include="sourcesdk\modelcache.cpp" />
     <ClCompile Include="sourcesdk\modelrender.cpp" />
     <ClCompile Include="sourcesdk\netchannel.cpp" />
@@ -267,6 +269,7 @@
     <ClInclude Include="features\playerlist.hpp" />
     <ClInclude Include="features\spectatorlist.hpp" />
     <ClInclude Include="features\textradar.hpp" />
+    <ClInclude Include="features\triggerbot.hpp" />
     <ClInclude Include="gmod\features\antiscreengrab.hpp" />
     <ClInclude Include="gmod\features\lualoader.hpp" />
     <ClInclude Include="gmod\gmod.hpp" />
@@ -378,6 +381,7 @@
     <ClInclude Include="steamapi\steamid.hpp" />
     <ClInclude Include="steamapi\steaminterfaces.hpp" />
     <ClInclude Include="steamapi\steamuser.hpp" />
+    <ClInclude Include="steamapi\steamuserstats.hpp" />
     <ClInclude Include="ui\onmenurender.hpp" />
     <ClInclude Include="ui\onoverlayrender.hpp" />
     <ClInclude Include="ui\ui.hpp" />
