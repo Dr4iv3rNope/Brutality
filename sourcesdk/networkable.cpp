@@ -56,3 +56,20 @@ const SourceSDK::ClientClass* SourceSDK::Networkable::GetClientClass()
 	
 	return Util::Vmt::CallMethod<ClientClass*>(this, offset);
 }
+
+int SourceSDK::Networkable::GetEntityIndex()
+{
+	// "'%s' (entindex %d) %s" in CC_CL_Find_Ent
+	#if BUILD_GAME_IS_GMOD
+	static const auto offset
+	{
+		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
+			"client.dll",
+			"BA ?? ?? ?? ?? 0F 44 D0 8B 46 08 52 FF 50",
+			14
+		)) / 4
+	};
+	#endif
+
+	return Util::Vmt::CallMethod<int>(this, offset);
+}

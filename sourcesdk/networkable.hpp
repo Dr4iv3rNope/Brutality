@@ -14,5 +14,6 @@ namespace SourceSDK
 
 		bool IsDormant();
 		const ClientClass* GetClientClass();
+		int GetEntityIndex();
 	};
 }
