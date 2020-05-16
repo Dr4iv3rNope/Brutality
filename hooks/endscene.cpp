@@ -6,10 +6,9 @@
 
 HRESULT __stdcall Hooks::EndScene(IDirect3DDevice9* device)
 {
-	SHUTDOWN_HOOK_GUARD(L"EndScene");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
-	UI::Think();
+	UI::Draw();
 
 	return reinterpret_cast<decltype(Hooks::EndScene)*>
 		(hooks->oldEndScene->GetOriginal())

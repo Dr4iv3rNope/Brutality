@@ -9,8 +9,7 @@ void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 										const SourceSDK::ModelRenderInfo& info,
 										SourceSDK::Matrix3x4* boneToWorld)
 {
-	SHUTDOWN_HOOK_GUARD(L"DrawModelExecute");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
 	if (Features::Chams::Render(SourceSDK::DrawModelExecuteArgs(state, info, boneToWorld)))
 	{

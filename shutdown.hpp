@@ -1,59 +1,39 @@
 #pragma once
 #include "main.hpp"
 
-#include <atomic>
-#include <functional>
-
 #include "util/debug/assert.hpp"
 #include "util/debug/errors.hpp"
 
+#include <atomic>
+#include <thread>
+
 namespace Shutdown
 {	
-	using ActionFn = std::function<void()>;
-
-	struct Element final
-	{
-		std::atomic_bool busy { false };
-		ActionFn action;
-		std::wstring name;
-
-		inline Element(const std::wstring& name, ActionFn action = nullptr) noexcept
-			: action { action }, name { name }
-		{
-			Main::AddToShutdown(this);
-		}
-	};
-
 	class Guard final
 	{
 	private:
-		Element* _element;
+		static inline std::atomic_uint activeGuards;
 
 	public:
-		inline Guard(Element*& element) noexcept
+		static inline std::uint32_t GetActiveGuards() noexcept
 		{
-			UTIL_DEBUG_ASSERT(element);
-
-			_element = element;
+			return activeGuards;
 		}
 
-		inline ~Guard() noexcept
+		inline Guard() noexcept
 		{
-			_element->busy = false;
+			activeGuards++;
+		}
+
+		inline ~Guard()
+		{
+			activeGuards--;
+
+			if (Main::IsInShutdown())
+				std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	};
 }
 
-#define SHUTDOWN_HOOK_GUARD_CALLBACK(name, ...) \
-	static Shutdown::Element* __shutdown_element; \
-	if (!__shutdown_element) { \
-		UTIL_CHECK_ALLOC(__shutdown_element = new Shutdown::Element(UTIL_XOR(name), [] () \
-			{ __VA_ARGS__ })) }
-
-#define SHUTDOWN_HOOK_GUARD(name) \
-	static Shutdown::Element* __shutdown_element; \
-	if (!__shutdown_element) { \
-		UTIL_CHECK_ALLOC(__shutdown_element = new Shutdown::Element(UTIL_XOR(name))) }
-
-#define MAKE_BUSY_SHUTDOWN_GUARD \
-	auto __shutdown_guard = Shutdown::Guard(__shutdown_element);
+#define _SHUTDOWN_GUARD \
+	auto _shutdown_guard = Shutdown::Guard();

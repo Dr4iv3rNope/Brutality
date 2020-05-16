@@ -20,6 +20,23 @@ SourceSDK::QueueFriendlyMaterial* SourceSDK::MaterialSystem::CreateQFriendlyMate
 	return Util::Vmt::CallMethod<QueueFriendlyMaterial*, const char*, KeyValues*>(this, offset, material_name, key_values);
 }
 
+void SourceSDK::Material::DecrementReferenceCount() noexcept
+{
+	// "skybox/%s%s"
+	#if BUILD_GAME_IS_GMOD
+	static const auto offset
+	{
+		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
+			"engine.dll",
+			"89 8E ?? ?? ?? ?? 8B 01 FF 50 ?? 83 C6",
+			10
+		)) / 4
+	};
+	#endif
+
+	Util::Vmt::CallMethod<void>(this, offset);
+}
+
 void SourceSDK::Material::ColorModulate(float r, float g, float b) noexcept
 {
 	// "ViewDrawFade"

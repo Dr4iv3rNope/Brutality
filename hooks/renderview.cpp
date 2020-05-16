@@ -22,21 +22,20 @@ static inline std::mutex& GetLastWorldToScreenMutex() noexcept
 
 void __fastcall Hooks::RenderView(void* ecx, void* edx, const SourceSDK::ViewSetup& setup, int clearFlags, int whatToDraw)
 {
-	SHUTDOWN_HOOK_GUARD(L"RenderView");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
 	reinterpret_cast<decltype(RenderView)*>
 		(hooks->oldRenderView->GetOriginal())
 		(ecx, edx, setup, clearFlags, whatToDraw);
 
 	GetLastWorldToScreenMutex().lock();
-	memcpy(LastWorldToScreenMatrix(), interfaces->render->WorldToScreenMatrix(), sizeof(SourceSDK::VMatrix));
+	memcpy(LastWorldToScreenMatrix().data(), interfaces->render->WorldToScreenMatrix().data(), sizeof(SourceSDK::VMatrix));
 	GetLastWorldToScreenMutex().unlock();
 }
 
 void Hooks::CopyLastWorldToScreenMatrix(SourceSDK::VMatrix& matrix) noexcept
 {
 	GetLastWorldToScreenMutex().lock();
-	memcpy(matrix, LastWorldToScreenMatrix(), sizeof(matrix));
+	memcpy(matrix.data(), LastWorldToScreenMatrix().data(), sizeof(matrix));
 	GetLastWorldToScreenMutex().unlock();
 }

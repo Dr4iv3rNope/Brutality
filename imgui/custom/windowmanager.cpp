@@ -1,6 +1,8 @@
 #include "windowmanager.hpp"
 #include "variableui.hpp"
 
+#include "../../main.hpp"
+
 #include "../../config/variable.hpp"
 
 #include "../../util/strings.hpp"
@@ -184,6 +186,10 @@ void ImGui::Custom::WindowManager::Render() noexcept
 			}
 		}
 		ImGui::EndChild();
+		ImGui::Separator();
+
+		if (ImGui::Button(UTIL_CXOR("Shutdown"), ImVec2(-1.f, 0.f)))
+			Main::Shutdown();
 	}
 	ImGui::End();
 }

@@ -67,8 +67,6 @@ static UTIL_NAKED_FUNC(renderCapturePixels)
 	}
 }
 
-static Shutdown::Element* shutdownElement;
-
 void GarrysMod::Features::AntiScreenGrab::Initialize()
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Anti-Screengrab initialize"));
@@ -112,11 +110,6 @@ void GarrysMod::Features::AntiScreenGrab::Initialize()
 	UTIL_XLOG(L"Initializing Render CapturePixels hook");
 	oldRenderCapturePixels->Initialize(renderCapturePixels);
 	backRenderCapturePixelsAddress = oldRenderCapturePixels->GetBackAddress();
-
-	UTIL_CHECK_ALLOC(shutdownElement = new Shutdown::Element(UTIL_XOR(L"Anti-Screengrab"), [] ()
-	{
-		AntiScreenGrab::Shutdown();
-	}));
 
 	UTIL_LABEL_OK();
 }

@@ -55,14 +55,12 @@ void Util::Debug::LogSystem::Initialize(const std::wstring& path)
 
 void Util::Debug::LogSystem::Shutdown()
 {
-	GetLogStreamMutex().lock();
 	UTIL_DEBUG_ASSERT_MSGBOX(logStream);
 
 	UTIL_XLOG(L"Log Stream Closed\n\n");
 
 	logStream->close();
 	delete logStream;
-	GetLogStreamMutex().unlock();
 }
 
 void LogFull(std::function<void(std::wstringstream&)> callback)

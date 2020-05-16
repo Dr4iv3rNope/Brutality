@@ -6,6 +6,7 @@
 #include "../features/esp.hpp"
 #include "../features/customdisconnect.hpp"
 #include "../features/textradar.hpp"
+#include "../features/triggerbot.hpp"
 #include "../features/namechanger.hpp"
 #include "../features/spectatorlist.hpp"
 #include "../features/chatspam.hpp"
@@ -15,8 +16,7 @@
 
 void __stdcall Hooks::FrameStageNotify(SourceSDK::ClientFrameStage stage)
 {
-	SHUTDOWN_HOOK_GUARD(L"FrameStageNotify");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
 	switch (stage)
 	{

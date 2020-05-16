@@ -61,8 +61,6 @@ static bool __fastcall RunString(void* ecx, void* edx,
 		(ecx, edx, id, unk0, code, unk1, unk2);
 }
 
-static Shutdown::Element* shutdownElement;
-
 bool GarrysMod::LuaInterface::IsInitialized() noexcept { return oldRunString; }
 
 bool GarrysMod::LuaInterface::TryToInitialize()
@@ -78,22 +76,21 @@ bool GarrysMod::LuaInterface::TryToInitialize()
 	UTIL_CHECK_ALLOC(oldRunString = new Util::Vmt::HookedMethod(*interfaces->luainterface, GetRunStringIndex()));
 	oldRunString->Initialize(::RunString);
 
-	UTIL_CHECK_ALLOC(shutdownElement = new Shutdown::Element(UTIL_XOR(L"LuaInterface"), [] ()
-	{
-		LuaInterface::Shutdown();
-	}));
-
 	UTIL_LABEL_OK();
 	return true;
 }
 
 void GarrysMod::LuaInterface::Shutdown()
 {
-	UTIL_LABEL_ENTRY(UTIL_XOR(L"Initializing RunString hook"));
-	UTIL_DEBUG_ASSERT(oldRunString);
-
-	delete oldRunString;
-	UTIL_LABEL_OK();
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown RunString hook"));
+	
+	if (IsInitialized())
+	{
+		delete oldRunString;
+		UTIL_LABEL_OK();
+	}
+	else
+		UTIL_LABEL_OVERRIDE();
 }
 
 bool GarrysMod::LuaInterface::RunString(const char* id, const char* code) noexcept

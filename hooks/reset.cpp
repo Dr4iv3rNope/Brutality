@@ -6,8 +6,7 @@
 
 HRESULT __stdcall Hooks::Reset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* params)
 {
-	SHUTDOWN_HOOK_GUARD(L"Reset");
-	MAKE_BUSY_SHUTDOWN_GUARD;
+	_SHUTDOWN_GUARD;
 
 	UI::Reset();
 

@@ -3,6 +3,7 @@
 #include "onoverlayrender.hpp"
 
 #include "../main.hpp"
+#include "../shutdown.hpp"
 
 #include <Windows.h>
 #include <ShlObj.h>
@@ -27,7 +28,10 @@
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
 
-static bool initialized{ false }, isMenuOpen{ false };
+static bool isMenuOpen{ false };
+#ifdef _DEBUG
+static bool dbg_initialized { false };
+#endif
 
 static HWND gameWindow;
 static WNDPROC oldWindowProc;
@@ -37,6 +41,8 @@ static Util::Vmt::HookedMethod* oldLockCursor { nullptr };
 
 static LRESULT __stdcall WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	_SHUTDOWN_GUARD;
+
 	extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
 
@@ -78,6 +84,8 @@ static LRESULT __stdcall WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
 static void __fastcall SurfaceLockCursor(void* ecx, void* edx) noexcept
 {
+	_SHUTDOWN_GUARD;
+
 	if (isMenuOpen)
 		return;
 
@@ -86,15 +94,10 @@ static void __fastcall SurfaceLockCursor(void* ecx, void* edx) noexcept
 }
 
 
-bool UI::IsInitialized() noexcept
-{
-	return initialized;
-}
-
 void UI::Initialize()
 {
 	// UI already initialized! BUG
-	UTIL_DEBUG_ASSERT(!initialized);
+	UTIL_DEBUG_ASSERT(!dbg_initialized);
 
 	gameWindow = FindWindowA(UTIL_CXOR("Valve001"), nullptr);
 	UTIL_ASSERT(gameWindow, "game window not found");
@@ -263,30 +266,34 @@ void UI::Initialize()
 		ImGui::GetIO().LogFilename = logs_path.c_str();
 	}
 
-	initialized = true;
+	#ifdef _DEBUG
+	dbg_initialized = true;
+	#endif
 }
 
 void UI::Shutdown() noexcept
 {
 	// Bug! Tried to shutdown ui, but it's not initialized!
-	UTIL_DEBUG_ASSERT(initialized);
+	UTIL_DEBUG_ASSERT(dbg_initialized);
 
-	if (initialized)
-	{
-		UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown ui"));
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown ui"));
 
-		delete oldLockCursor;
+	::interfaces->inputsystem->EnableInput(true);
+	::interfaces->inputsystem->ResetInputState();
 
-		ImGui::DestroyContext();
+	delete oldLockCursor;
 
-		ImGui_ImplDX9_InvalidateDeviceObjects();
-		ImGui_ImplWin32_Shutdown();
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+	ImGui_ImplWin32_Shutdown();
 
-		SetWindowLongA(gameWindow, GWLP_WNDPROC, LONG(oldWindowProc));
+	ImGui::DestroyContext();
 
-		initialized = false;
-		UTIL_LABEL_OK();
-	}
+	SetWindowLongA(gameWindow, GWLP_WNDPROC, LONG(oldWindowProc));
+
+	#ifdef _DEBUG
+	dbg_initialized = false;
+	#endif
+	UTIL_LABEL_OK();
 }
 
 //#define __ENABLE_STYLE_EDITOR

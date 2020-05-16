@@ -44,7 +44,7 @@ void SourceSDK::InputSystem::ResetInputState()
 	static const auto offset
 	{
 		(*(int*)UTIL_XFIND_PATTERN(
-			"engine.dll",
+			"inputsystem.dll",
 			"8B 06 FF 90 ?? ?? ?? ?? 8B 86 ?? ?? ?? ?? 85 C0",
 			4
 		)) / 4

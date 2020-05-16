@@ -22,6 +22,8 @@ namespace SourceSDK
 			AlphaModulate(color.Alpha());
 		}
 
+		void DecrementReferenceCount() noexcept;
+
 		void ColorModulate(float r, float g, float b) noexcept;
 		void AlphaModulate(float alpha) noexcept;
 

@@ -30,8 +30,12 @@
 #include "gmod/features/lualoader.hpp"
 #include "gmod/features/antiscreengrab.hpp"
 
+#include "gmod/luasdk/luainterface.hpp"
+
 #include "config/config.hpp"
 #include "config/variable.hpp"
+
+#include "ui/ui.hpp"
 
 
 #include <thread>
@@ -314,8 +318,7 @@ std::initializer_list chamsTypes =
 	UTIL_SXOR("Flat"),
 	UTIL_SXOR("Shiny"),
 	UTIL_SXOR("Glow"),
-	UTIL_SXOR("Animated Spawn Effect"),
-	UTIL_SXOR("Animated Shield")
+	UTIL_SXOR("Animated Spawn Effect")
 };
 
 Config::Color chamsNormalsVisÑolor(
@@ -414,6 +417,17 @@ Config::Enum chamsRagesOccType(
 	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
 );
 
+
+// trigger bot
+
+Config::Bool triggerbotEnable(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Enable"));
+Config::Bool triggerbotTargetNormals(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Normal Players"), Config::VariableFlags_AtNewLine);
+Config::Bool triggerbotTargetDangerous(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Dangerous Players"));
+Config::Bool triggerbotTargetFriends(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Friends Players"));
+Config::Bool triggerbotTargetRages(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Rages Players"));
+Config::Key triggerbotKey(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("hold key"), ImGui::Custom::Keys::INVALID, Config::VariableFlags_AtNewLine);
+Config::LFloat triggerbotDelay(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 1.f, Config::VariableFlags_AtNewLine);
+
 #pragma endregion
 
 #pragma region Initialize hack
@@ -460,9 +474,11 @@ void Main::Initialize() noexcept
 	UTIL_DEBUG_ASSERT(!dbg_initialized);
 
 	::interfaces = new GameInterfaces();
+	::steamInterfaces = new SteamInterfaces();
 
 	InitializeHelpers();
 	InitializeFeatures();
+	UI::Initialize();
 
 	::hooks = new GameHooks();
 	::hooks->Initialize();
@@ -474,12 +490,24 @@ void Main::Initialize() noexcept
 	#endif
 }
 
-namespace
+static HMODULE thisModule;
+
+BOOL WINAPI DllMain(HMODULE this_module, DWORD attach_reason, LPVOID)
 {
-	__INLINE_RUN_FUNC(_Initialize)
+	thisModule = this_module;
+	DisableThreadLibraryCalls(this_module);
+
+	switch (attach_reason)
 	{
-		Main::Initialize();
+		case DLL_PROCESS_ATTACH:
+			Main::Initialize();
+			break;
+
+		default:
+			break;
 	}
+
+	return TRUE;
 }
 
 #pragma endregion
@@ -487,41 +515,17 @@ namespace
 //
 // shutdown
 //
-static std::atomic_bool isInShutdown { false };
+static bool isInShutdown { false };
 
-static inline auto& GetShutdownItemsMutex() noexcept
+bool Main::IsInShutdown() noexcept
 {
-	static std::mutex shutdownItemsMutex {};
-
-	return shutdownItemsMutex;
-}
-
-static inline auto& GetShutdownItems() noexcept
-{
-	static std::list<Shutdown::Element*> shutdownItems {};
-
-	return shutdownItems;
-}
-
-void Main::AddToShutdown(Shutdown::Element* element) noexcept
-{
-	UTIL_DEBUG_ASSERT(element);
-
-	GetShutdownItemsMutex().lock();
-
-	UTIL_DEBUG_ASSERT(
-		std::find(GetShutdownItems().begin(), GetShutdownItems().end(), element)
-		==
-		GetShutdownItems().end()
-	);
-
-	GetShutdownItems().push_back(element);
-	GetShutdownItemsMutex().unlock();
+	return isInShutdown;
 }
 
 void Main::Shutdown() noexcept
 {
 	UTIL_DEBUG_ASSERT(dbg_initialized);
+	UTIL_DEBUG_ASSERT(thisModule);
 	UTIL_DEBUG_ASSERT(!isInShutdown);
 
 	isInShutdown = true;
@@ -530,30 +534,20 @@ void Main::Shutdown() noexcept
 	{
 		UTIL_LABEL_ENTRY(UTIL_XOR(L"Shutdown"));
 
-		GetShutdownItemsMutex().lock();
+		while (Shutdown::Guard::GetActiveGuards() != 0) {}
 
-		while (!GetShutdownItems().empty())
-		{
-			std::remove_if(GetShutdownItems().begin(), GetShutdownItems().end(), [] (Shutdown::Element* element)
-			{
-				if (!element->busy)
-				{
-					UTIL_LABEL_ENTRY(UTIL_SXOR(L"Shutdown item: ") + element->name);
+		UI::Shutdown();
 
-					if (element->action)
-						element->action();
-					
-					delete element;
+		delete ::hooks;
 
-					UTIL_LABEL_OK();
-					return true;
-				}
-				else
-					return false;
-			});
-		}
+		Features::Chams::Shutdown();
+		#if BUILD_GAME_IS_GMOD
+		GarrysMod::Features::AntiScreenGrab::Shutdown();
+		GarrysMod::LuaInterface::Shutdown();
+		#endif
 
-		GetShutdownItemsMutex().unlock();
+		delete ::interfaces;
+		delete ::steamInterfaces;
 
 		UTIL_LABEL_OK();
 		Util::Debug::LogSystem::Shutdown();
@@ -561,7 +555,8 @@ void Main::Shutdown() noexcept
 		#ifdef _DEBUG
 		dbg_initialized = false;
 		#endif
+		isInShutdown = false;
+
+		FreeLibraryAndExitThread(thisModule, EXIT_SUCCESS);
 	});
 }
-
-bool Main::IsInShutdown() noexcept { return isInShutdown; }
