@@ -336,6 +336,14 @@ bool ImGui::Custom::IsKeyReleased(Key key) noexcept
 	return false;
 }
 
+short ImGui::Custom::GetAsyncKeyState(Key key) noexcept
+{
+	if (VirtualKey vk; KeyToVirtualKey(key, &vk))
+		return ::GetAsyncKeyState(vk);
+
+	return 0;
+}
+
 bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 {
 	bool is_changed { false };

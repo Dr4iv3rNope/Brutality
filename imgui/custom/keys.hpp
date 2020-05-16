@@ -195,6 +195,9 @@ namespace ImGui
 		extern bool IsKeyDown(Key key) noexcept;
 		extern bool IsKeyReleased(Key key) noexcept;
 
+		// uses winapi GetAsyncKeyState
+		extern short GetAsyncKeyState(Key key) noexcept;
+
 		extern bool InputKey(const char* label, Key& key) noexcept;
 	}
 }
