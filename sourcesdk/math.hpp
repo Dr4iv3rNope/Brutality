@@ -12,4 +12,8 @@ namespace SourceSDK
 
 	template <typename T>
 	constexpr inline T DegToRad(T rad) noexcept { return rad * MATH_PI<T> / T(180); }
+
+	struct Angle;
+	struct Vector3;
+	extern Angle GetRelativeAngle(const Vector3& from, const Vector3& to) noexcept;
 }
