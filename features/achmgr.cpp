@@ -15,6 +15,8 @@
 #include "../sourcesdk/engineclient.hpp"
 #include "../sourcesdk/localize.hpp"
 
+#include "../steamapi/steaminterfaces.hpp"
+
 #include "../main.hpp"
 
 #include <deque>
@@ -25,7 +27,12 @@ enum Err_
 	Err_None = -1,
 	Err_FailedGetMgr,
 	Err_FailedGetAch,
-	Err_FailedGetLocal
+	Err_FailedGetLocal,
+
+	// steam errors
+
+	Err_FailedResetAch,
+	Err_FailedStoreStats,
 };
 
 static Err_ currentError { Err_None };
@@ -46,6 +53,16 @@ static ImGui::Custom::ErrorList errorList
 		UTIL_SXOR("Failed to get some localized achievement name/description"),
 		ImVec4(1.f, 1.f, 0.f, 1.f),
 		UTIL_SXOR("Check logs for more information")
+	),
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to reset achievement"),
+		ImVec4(1.f, 0.f, 0.f, 1.f)
+	),
+
+	ImGui::Custom::Error(
+		UTIL_SXOR("Failed to store stats"),
+		ImVec4(1.f, 0.f, 0.f, 1.f)
 	),
 };
 
@@ -159,27 +176,64 @@ static void UpdateAchievementList() noexcept
 	}
 }
 
-static void UnlockAll() noexcept
-{
-	for (auto& info : achievementList)
-		info->achieved = true;
-}
-
 static void LockAll() noexcept
 {
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Locking all achievements"));
+
 	for (auto& info : achievementList)
-		info->achieved = false;
+	{
+		if (!steamInterfaces->userstats->ClearAchievement(info->name))
+		{
+			currentError = Err_FailedResetAch;
+
+			UTIL_LOG(UTIL_WFORMAT(
+				UTIL_XOR(L"Failed to clear achievement ") << info->name
+			));
+			continue;
+		}
+
+		if (!steamInterfaces->userstats->StoreStats())
+		{
+			currentError = Err_FailedStoreStats;
+
+			UTIL_LOG(UTIL_WFORMAT(
+				UTIL_XOR(L"Failed to store stats at achievement ") << info->name
+			));
+			continue;
+		}
+	}
+
+	if (currentError != Err_FailedStoreStats &&
+		currentError != Err_FailedResetAch)
+		currentError = Err_None;
+
+	UTIL_LABEL_OK();
 }
 
-static bool UnlockCurrent() noexcept
+static void UnlockAll() noexcept
 {
-	if (currentAchievement == -1)
-		return false;
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Unlocking all achievements"));
 
-	UTIL_DEBUG_ASSERT(currentAchievementIter != achievementList.end());
+	if (auto ach_mgr = interfaces->engine->GetAchievementMgr())
+	{
+		LockAll();
 
-	currentAchievementIter->achievement->achieved = true;
-	return true;
+		for (auto& info : achievementList)
+			ach_mgr->AwardAchievement(info->achievementID);
+
+		if (currentError != Err_FailedStoreStats &&
+			currentError != Err_FailedResetAch)
+			currentError = Err_None;
+
+		UTIL_LABEL_OK();
+	}
+	else
+	{
+		currentError = Err_FailedGetMgr;
+
+		UTIL_XLOG(L"Failed to get achievement manager!");
+		UTIL_LABEL_OVERRIDE();
+	}
 }
 
 static bool LockCurrent() noexcept
@@ -187,10 +241,72 @@ static bool LockCurrent() noexcept
 	if (currentAchievement == -1)
 		return false;
 
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Locking achievement"));
 	UTIL_DEBUG_ASSERT(currentAchievementIter != achievementList.end());
 
-	currentAchievementIter->achievement->achieved = false;
+	if (!steamInterfaces->userstats->ClearAchievement(
+		steamInterfaces->userstats->GetAchievementName(currentAchievement)))
+	{
+		currentError = Err_FailedResetAch;
+
+		UTIL_LOG(UTIL_WFORMAT(
+			UTIL_XOR(L"Failed to clear achievement ") <<
+			currentAchievementIter->achievement->name
+		));
+
+		UTIL_LABEL_OVERRIDE();
+		return false;
+	}
+
+	if (!steamInterfaces->userstats->StoreStats())
+	{
+		currentError = Err_FailedStoreStats;
+
+		UTIL_LOG(UTIL_WFORMAT(
+			UTIL_XOR(L"Failed to store stats at achievement ") <<
+			currentAchievementIter->achievement->name
+		));
+
+		UTIL_LABEL_OVERRIDE();
+		return false;
+	}
+
+	UTIL_LABEL_OK();
 	return true;
+}
+
+static bool UnlockCurrent() noexcept
+{
+	if (currentAchievement == -1)
+		return false;
+
+	UTIL_LABEL_ENTRY(UTIL_XOR(L"Unlocking achievement"));
+	UTIL_DEBUG_ASSERT(currentAchievementIter != achievementList.end());
+
+	if (auto ach_mgr = interfaces->engine->GetAchievementMgr())
+	{
+		if (!LockCurrent())
+		{
+			UTIL_LABEL_OVERRIDE();
+			return false;
+		}
+
+		ach_mgr->AwardAchievement(currentAchievement);
+
+		currentError = Err_None;
+		
+		UTIL_LABEL_OK();
+		return true;
+	}
+	else
+	{
+		currentError = Err_FailedGetMgr;
+
+		UTIL_XLOG(L"Failed to get achievement manager!");
+
+		UTIL_LABEL_OVERRIDE();
+		return false;
+	}
 }
 
 static void DrawWindow(ImGui::Custom::Window&) noexcept
@@ -222,6 +338,11 @@ static void DrawWindow(ImGui::Custom::Window&) noexcept
 	{
 		currentAchievementIter = achievementList.begin();
 		std::advance(currentAchievementIter, currentAchievement);
+
+		UTIL_LOG(UTIL_WFORMAT(
+			UTIL_XOR(L"Selected achievment ") <<
+			Util::ToWideChar(currentAchievementIter->name)
+		));
 	}
 
 	if (currentAchievement != -1)
