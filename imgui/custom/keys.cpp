@@ -369,6 +369,7 @@ bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 	if (ImGui::BeginPopup(UTIL_CXOR("CUSTOM##INPUTKEY")))
 	{
 		static Key newKey { Keys::INVALID };
+		static Key copiedKey { Keys::INVALID };
 
 		showKey(UTIL_CXOR("Current Key"), key);
 
@@ -383,7 +384,7 @@ bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 			ImGui::EndTooltip();
 
 			for (Key i = 0; i < Keys::KEY_COUNT; i++)
-				if (Custom::IsKeyDown(i))
+				if (Custom::GetAsyncKeyState(i))
 					newKey = i;
 		}
 
@@ -402,6 +403,39 @@ bool ImGui::Custom::InputKey(const char* label, Key& key) noexcept
 		{
 			key = newKey = Keys::INVALID;
 			is_changed = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button(UTIL_CXOR("Copy")))
+		{
+			copiedKey = key;
+			is_changed = true;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+
+			showKey(UTIL_CXOR("Before"), copiedKey);
+			showKey(UTIL_CXOR("After"), key);
+
+			ImGui::EndTooltip();
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button(UTIL_CXOR("Paste")))
+		{
+			key = newKey = copiedKey;
+			is_changed = true;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			showKey(UTIL_CXOR("Copied key"), copiedKey);
+			ImGui::EndTooltip();
 		}
 
 		ImGui::EndPopup();
