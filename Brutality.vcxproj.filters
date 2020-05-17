@@ -261,6 +261,9 @@
       <Filter>Steam API</Filter>
     </ClCompile>
     <ClCompile Include="sourcesdk\math.cpp" />
+    <ClCompile Include="gmod\features\airstuck.cpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -988,6 +991,9 @@
     </ClInclude>
     <ClInclude Include="steamapi\steamuserstats.hpp">
       <Filter>Steam API</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\features\airstuck.hpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

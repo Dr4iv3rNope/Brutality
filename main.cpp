@@ -28,6 +28,7 @@
 #include "features/chatspam.hpp"
 #include "features/achmgr.hpp"
 #include "gmod/features/lualoader.hpp"
+#include "gmod/features/airstuck.hpp"
 #include "gmod/features/antiscreengrab.hpp"
 
 #include "gmod/luasdk/luainterface.hpp"
@@ -101,7 +102,6 @@ const std::wstring& Main::GetLocalPath()
 
 	return localPath;
 }
-
 
 namespace
 {
@@ -428,6 +428,15 @@ Config::Bool triggerbotTargetRages(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target A
 Config::Key triggerbotKey(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("hold key"), ImGui::Custom::Keys::INVALID, Config::VariableFlags_AtNewLine);
 Config::LFloat triggerbotDelay(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 1.f, Config::VariableFlags_AtNewLine);
 
+#if BUILD_GAME_IS_GMOD
+// air stuck
+
+Config::Bool airstuckEnable(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Enable"));
+Config::Key airstuckKey(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Key"));
+Config::LUInt32 airstuckMaxTicks(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Max Ticks"), 400, 50, 1000);
+
+#endif
+
 #pragma endregion
 
 #pragma region Initialize hack
@@ -445,6 +454,7 @@ static void InitializeFeatures() noexcept
 	Features::NameChanger::Initialize();
 	Features::Chams::Initialize();
 	#if BUILD_GAME_IS_GMOD
+	GarrysMod::Features::AirStuck::Initialize();
 	GarrysMod::Features::AntiScreenGrab::Initialize();
 	#endif
 }
@@ -544,6 +554,7 @@ void Main::Shutdown() noexcept
 		#if BUILD_GAME_IS_GMOD
 		GarrysMod::Features::AntiScreenGrab::Shutdown();
 		GarrysMod::LuaInterface::Shutdown();
+		GarrysMod::Features::AirStuck::Shutdown();
 		#endif
 
 		delete ::interfaces;

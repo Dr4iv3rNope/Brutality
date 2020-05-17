@@ -178,6 +178,7 @@
     <ClCompile Include="features\spectatorlist.cpp" />
     <ClCompile Include="features\textradar.cpp" />
     <ClCompile Include="features\triggerbot.cpp" />
+    <ClCompile Include="gmod\features\airstuck.cpp" />
     <ClCompile Include="gmod\features\antiscreengrab.cpp" />
     <ClCompile Include="gmod\features\lualoader.cpp" />
     <ClCompile Include="gmod\gmod.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="features\spectatorlist.hpp" />
     <ClInclude Include="features\textradar.hpp" />
     <ClInclude Include="features\triggerbot.hpp" />
+    <ClInclude Include="gmod\features\airstuck.hpp" />
     <ClInclude Include="gmod\features\antiscreengrab.hpp" />
     <ClInclude Include="gmod\features\lualoader.hpp" />
     <ClInclude Include="gmod\gmod.hpp" />
