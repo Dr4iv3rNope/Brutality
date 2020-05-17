@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 namespace GarrysMod
 {
@@ -6,8 +7,7 @@ namespace GarrysMod
 	{
 		namespace AirStuck
 		{
-			void Initialize() noexcept;
-			void Shutdown() noexcept;
+			void Think(std::uintptr_t clmove_frame, bool& sendPacket) noexcept;
 		}
 	}
 }

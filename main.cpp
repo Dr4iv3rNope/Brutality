@@ -28,7 +28,6 @@
 #include "features/chatspam.hpp"
 #include "features/achmgr.hpp"
 #include "gmod/features/lualoader.hpp"
-#include "gmod/features/airstuck.hpp"
 #include "gmod/features/antiscreengrab.hpp"
 
 #include "gmod/luasdk/luainterface.hpp"
@@ -454,7 +453,6 @@ static void InitializeFeatures() noexcept
 	Features::NameChanger::Initialize();
 	Features::Chams::Initialize();
 	#if BUILD_GAME_IS_GMOD
-	GarrysMod::Features::AirStuck::Initialize();
 	GarrysMod::Features::AntiScreenGrab::Initialize();
 	#endif
 }
@@ -554,7 +552,6 @@ void Main::Shutdown() noexcept
 		#if BUILD_GAME_IS_GMOD
 		GarrysMod::Features::AntiScreenGrab::Shutdown();
 		GarrysMod::LuaInterface::Shutdown();
-		GarrysMod::Features::AirStuck::Shutdown();
 		#endif
 
 		delete ::interfaces;
