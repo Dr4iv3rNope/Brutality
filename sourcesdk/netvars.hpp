@@ -32,5 +32,6 @@ namespace SourceSDK
 }
 
 #define SOURCE_SDK_NETVAR(typeName, funcName, tableName, propName, offset) \
-	typeName& funcName() const { static const auto s_offset = SourceSDK::netvars->FindOffset(UTIL_HASH(tableName##":"##propName)); \
-		return *(typeName*)(std::uintptr_t(this) + offset + s_offset); }
+	inline typeName& funcName() const { \
+		static const auto s_offset = SourceSDK::netvars->FindOffset(UTIL_HASH(tableName ":" propName)) + offset; \
+		return *(typeName*)(std::uintptr_t(this) + s_offset); }
