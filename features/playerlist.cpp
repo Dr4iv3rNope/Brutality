@@ -51,7 +51,7 @@ struct PlayerListInfo
 
 	inline PlayerListInfo(int player_index, const PlayerInfo& info, bool is_local_player = false)
 	{
-		this->steamid = info.steamid;
+		this->steamid = info.GetSteamID();
 		this->engineInfo = info;
 		this->isLocalPlayer = is_local_player;
 		
@@ -246,7 +246,7 @@ static bool ImplementPlayer(int idx, PlayerInfo* info = nullptr, bool is_local_p
 		{
 			// if player exists and steamid not equal to
 			// current player steam id
-			if (playerList[idx]->steamid == std::string(info->steamid, MAX_PLAYER_NAME_LENGTH))
+			if (playerList[idx]->steamid != info->GetSteamID())
 			{
 				playerList[idx] = PlayerListInfo(idx, *info, is_local_player);
 				return true;
@@ -469,6 +469,14 @@ static void DrawMenu(ImGui::Custom::Window&) noexcept
 				ImGui::Columns(2);
 
 				ImGui::Text(UTIL_CXOR("Clients: %i"), interfaces->globals->maxClients);
+
+				if (ImGui::Button(UTIL_CXOR("Force Update")))
+				{
+					for (auto& player : playerList)
+						player = std::nullopt;
+
+					selectedPlayer = -1;
+				}
 
 				ImGui::PushID(UTIL_CXOR("##PLAYER_LIST"));
 				ImGui::PushItemWidth(-1.f);

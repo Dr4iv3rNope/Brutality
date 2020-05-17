@@ -22,5 +22,10 @@ namespace SourceSDK
 		{
 			return std::string(this->name).substr(0, MAX_PLAYER_NAME_LENGTH);
 		}
+
+		inline std::string GetSteamID() const noexcept
+		{
+			return std::string(this->steamid).substr(0, SIGNED_GUID_LEN);
+		}
 	};
 }
