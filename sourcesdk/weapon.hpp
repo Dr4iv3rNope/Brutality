@@ -18,12 +18,12 @@ namespace SourceSDK
 		#if BUILD_GAME_IS_GMOD
 		// for gmod we need find "m_flNextPrimaryAttack" manualy =/
 		
-		inline float GetNextPrimaryFire() const noexcept
+		inline float GetNextPrimaryAttack() const noexcept
 		{
 			return *(float*)(std::uintptr_t(this) + 0x1560);
 		}
 
-		inline float GetNextSecondaryFire() const noexcept
+		inline float GetNextSecondaryAttack() const noexcept
 		{
 			return *(float*)(std::uintptr_t(this) + 0x1564);
 		}

@@ -4,6 +4,7 @@
 #include "../sourcesdk/usercmd.hpp"
 #include "../sourcesdk/enginetraceclient.hpp"
 #include "../sourcesdk/player.hpp"
+#include "../sourcesdk/weapon.hpp"
 #include "../sourcesdk/globals.hpp"
 #include "../sourcesdk/networkable.hpp"
 #include "../sourcesdk/clientstate.hpp"
@@ -33,9 +34,7 @@ static inline bool IsTriggerBotKeyPressed() noexcept
 		ImGui::Custom::GetAsyncKeyState(triggerbotKey.GetKeyValue());
 }
 
-static void InternalTraceLine(
-	SourceSDK::BasePlayer* local_player
-) noexcept
+static void InternalTraceLine(SourceSDK::BasePlayer* local_player) noexcept
 {
 	UTIL_DEBUG_ASSERT(local_player);
 
@@ -70,9 +69,10 @@ static void InternalTraceLine(
 		lastDelay = interfaces->globals->curTime + *triggerbotDelay;
 }
 
-static inline bool Shoot(SourceSDK::UserCmd* cmd) noexcept
+static inline bool Shoot(SourceSDK::UserCmd* cmd, float nextAttackTime) noexcept
 {
-	if (cmd->commandNumber % 2)
+	if (cmd->commandNumber % 2 &&
+		interfaces->globals->curTime > nextAttackTime)
 	{
 		cmd->AddButton(SourceSDK::InButton::Attack);
 		return true;
@@ -96,18 +96,6 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 		return;
 	}
 
-	if (lastDelay != -1.f &&
-		interfaces->globals->curTime > lastDelay)
-	{
-		if (Shoot(cmd))
-		{
-			lastDelay = -1.f;
-			lastTrace = std::nullopt;
-		}
-
-		return;
-	}
-
 	auto local_player = SourceSDK::BasePlayer::GetLocalPlayer();
 
 	if (!local_player)
@@ -115,6 +103,23 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 
 	if (local_player->IsDead())
 		return;
+
+	auto weapon = local_player->GetActiveWeapon();
+
+	if (!weapon)
+		return;
+
+	if (lastDelay != -1.f &&
+		interfaces->globals->curTime > lastDelay)
+	{
+		if (Shoot(cmd, weapon->GetNextPrimaryAttack()))
+		{
+			lastDelay = -1.f;
+			lastTrace = std::nullopt;
+		}
+
+		return;
+	}
 
 	InternalTraceLine(local_player);
 
@@ -159,7 +164,7 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 				break;
 		}
 
-		if (Shoot(cmd))
+		if (Shoot(cmd, weapon->GetNextPrimaryAttack()))
 		{
 			if (*triggerbotDelay != 0.f)
 				lastDelay = interfaces->globals->curTime + *triggerbotDelay;

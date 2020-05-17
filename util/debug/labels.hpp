@@ -18,13 +18,13 @@ namespace Util
 		private:
 			std::wstring _what;
 			
-			enum
+			enum class Status
 			{
-				LLStatus_Success,
-				LLStatus_Failed,	// will assert
-				LLStatus_Overrided, // will not assert, but will say that label failed
-				LLStatus_Forbidden	// dev error: label has been released them self
-			} _status{ LLStatus_Forbidden };
+				Success,
+				Failed,		// will assert
+				Overrided,	// will not assert, but will say that label failed
+				Forbidden	// dev error: label has been released them self
+			} _status{ Status::Forbidden };
 
 		public:
 			inline LogLabel(const std::wstring& what) noexcept
@@ -38,20 +38,20 @@ namespace Util
 			{
 				switch (this->_status)
 				{
-					case LLStatus_Success:
+					case Status::Success:
 						UTIL_LOG(UTIL_SXOR(L"[LogLabel] Exit <=~- ") + this->_what);
 						break;
 
-					case LLStatus_Failed:
+					case Status::Failed:
 						UTIL_LOG(UTIL_SXOR(L"[LogLabel] Failed -~x~- ") + this->_what);
 						UTIL_ASSERT(false, "Log label failed");
 						break; // unreachable
 
-					case LLStatus_Overrided:
+					case Status::Overrided:
 						UTIL_LOG(UTIL_SXOR(L"[LogLabel] Override Fail <=~?.. ") + this->_what);
 						break;
 
-					case LLStatus_Forbidden:
+					case Status::Forbidden:
 						UTIL_LOG(UTIL_SXOR(L"[LogLabel] Forbidden =>*** ") + this->_what);
 						UTIL_ASSERT(false, "Log label is forbidden");
 						break; // unreachable
@@ -65,19 +65,19 @@ namespace Util
 
 			static inline void ExitSuccess(LogLabel* label)
 			{
-				label->_status = LLStatus_Success;
+				label->_status = Status::Success;
 				delete label;
 			}
 
 			static inline void ExitFailure(LogLabel* label)
 			{
-				label->_status = LLStatus_Failed;
+				label->_status = Status::Failed;
 				delete label;
 			}
 
 			static inline void ExitOverride(LogLabel* label)
 			{
-				label->_status = LLStatus_Overrided;
+				label->_status = Status::Overrided;
 				delete label;
 			}
 		};
