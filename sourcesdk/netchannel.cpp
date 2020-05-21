@@ -46,3 +46,20 @@ void SourceSDK::NetChannel::SendNetMsg(INetMessage* message, bool force_reliable
 
 	UTIL_LABEL_OK();
 }
+
+float SourceSDK::NetChannel::GetLatency(Flow flow)
+{
+	// "StartLagCompensation"
+	#if BUILD_GAME_IS_GMOD
+	static const auto offset
+	{
+		(*(std::uint8_t*)UTIL_XFIND_PATTERN(
+			"server.dll",
+			"FF D0 8B C8 85 C9 74 ?? 8B 01 6A 00 8B 40 ?? FF D0",
+			14
+		)) / 4
+	};
+	#endif
+
+	return Util::Vmt::CallMethod<float, Flow>(this, offset, flow);
+}
