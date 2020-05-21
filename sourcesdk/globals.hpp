@@ -24,5 +24,9 @@ namespace SourceSDK
 		{
 			return 1 / this->frameTime;
 		}
+
+		int TimeToTicks(float time) noexcept;
+		float TicksToTime(int ticks) noexcept;
+		float GetServerTime() noexcept;
 	};
 }
