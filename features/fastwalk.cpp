@@ -16,24 +16,24 @@ void Features::FastWalk::Think(SourceSDK::UserCmd* cmd) noexcept
 		local_player && local_player->IsAlive() && local_player->IsOnGround())
 	{
 		// if we moving only forward or backward
-		if ((cmd->HasButton(SourceSDK::InButton::Forward) || cmd->HasButton(SourceSDK::InButton::Back))
+		if ((cmd->HasButton(SourceSDK::Input_MoveForward) || cmd->HasButton(SourceSDK::Input_MoveBack))
 			&&
-			!(cmd->HasButton(SourceSDK::InButton::MoveLeft) || cmd->HasButton(SourceSDK::InButton::MoveRight)))
+			!(cmd->HasButton(SourceSDK::Input_MoveLeft) || cmd->HasButton(SourceSDK::Input_MoveRight)))
 		{
 			if (cmd->commandNumber % 2)
-				cmd->move.Y() = SourceSDK::MAX_CMD_MOVE_SPEED / 2.f;
+				cmd->move.Y() = SourceSDK::GetMaxSideSpeed() / 2.f;
 			else
-				cmd->move.Y() = -(SourceSDK::MAX_CMD_MOVE_SPEED / 2.f);
+				cmd->move.Y() = -(SourceSDK::GetMaxSideSpeed() / 2.f);
 		}
 		// if we moving only left or right
-		else if ((cmd->HasButton(SourceSDK::InButton::MoveLeft) || cmd->HasButton(SourceSDK::InButton::MoveRight))
+		else if ((cmd->HasButton(SourceSDK::Input_MoveLeft) || cmd->HasButton(SourceSDK::Input_MoveRight))
 				 &&
-				 !(cmd->HasButton(SourceSDK::InButton::Forward) || cmd->HasButton(SourceSDK::InButton::Back)))
+				 !(cmd->HasButton(SourceSDK::Input_MoveForward) || cmd->HasButton(SourceSDK::Input_MoveBack)))
 		{
 			if (cmd->commandNumber % 2)
-				cmd->move.X() = SourceSDK::MAX_CMD_MOVE_SPEED / 2.f;
+				cmd->move.X() = SourceSDK::GetMaxForwardSpeed() / 2.f;
 			else
-				cmd->move.X() = -(SourceSDK::MAX_CMD_MOVE_SPEED / 2.f);
+				cmd->move.X() = -(SourceSDK::GetMaxForwardSpeed() / 2.f);
 		}
 	}
 }

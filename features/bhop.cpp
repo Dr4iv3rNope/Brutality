@@ -22,9 +22,9 @@ extern Config::Bool bhopAutoStrafe;
 static inline void AutoStrafe(SourceSDK::UserCmd* cmd) noexcept
 {
 	if (cmd->mouseX > 0)
-		cmd->move.Y() = SourceSDK::MAX_CMD_MOVE_SPEED;
+		cmd->move.Y() = SourceSDK::GetMaxSideSpeed();
 	else if (cmd->mouseX < 0)
-		cmd->move.Y() = -SourceSDK::MAX_CMD_MOVE_SPEED;
+		cmd->move.Y() = -SourceSDK::GetMaxSideSpeed();
 }
 
 void Features::BunnyHop::Think(SourceSDK::UserCmd* cmd) noexcept
@@ -66,10 +66,10 @@ void Features::BunnyHop::Think(SourceSDK::UserCmd* cmd) noexcept
 		return;*/
 
 	if (localPlayer->IsOnGround())
-		cmd->AddButton(SourceSDK::InButton::Jump);
+		cmd->SetButton(SourceSDK::Input_Jump);
 	else
 	{
-		cmd->RemoveButton(SourceSDK::InButton::Jump);
+		cmd->RemoveButton(SourceSDK::Input_Jump);
 
 		if (*bhopAutoStrafe)
 			AutoStrafe(cmd);

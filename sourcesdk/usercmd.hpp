@@ -1,10 +1,16 @@
 #pragma once
+#include "../build.hpp"
+
+#include "convar.hpp"
+#include "cvar.hpp"
 #include "vector.hpp"
 #include "inputbuttons.hpp"
 
 namespace SourceSDK
 {
-	constexpr float MAX_CMD_MOVE_SPEED { 10000.f };
+	extern float GetMaxForwardSpeed() noexcept;
+	extern float GetMaxSideSpeed() noexcept;
+	extern float GetMaxUpSpeed() noexcept;
 
 	struct UserCmd final
 	{
@@ -12,8 +18,8 @@ namespace SourceSDK
 		int tickCount;
 		Angle viewAngles;
 		Vector3 move;
-		int buttons;
-		char impulse;
+		InButtons buttons;
+		std::uint8_t impulse;
 		int weaponSelect;
 		int weaponSubtype;
 		int randomSeed;
@@ -21,10 +27,8 @@ namespace SourceSDK
 		short mouseY;
 		bool hasBeenPredicted;
 
-
-		inline void AddButton(InButton button) noexcept { this->buttons |= int(button); }
-		inline void RemoveButton(InButton button) noexcept { this->buttons &= ~int(button); }
-
-		inline bool HasButton(InButton button) const noexcept { return this->buttons & int(button); }
+		inline void SetButton(Input_ button) noexcept { this->buttons.SetFlag(button); }
+		inline void RemoveButton(Input_ button) noexcept { this->buttons.RemoveFlag(button); }
+		inline bool HasButton(Input_ button) const noexcept { return this->buttons.HasFlag(button); }
 	};
 }
