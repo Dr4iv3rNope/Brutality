@@ -5,6 +5,7 @@
 #include "const.hpp"
 #include "vector.hpp"
 #include "matrix.hpp"
+#include "bonemasks.hpp"
 
 #include "../util/pad.hpp"
 
@@ -44,7 +45,7 @@ namespace SourceSDK
 			Matrix3x4 poseToBone;
 			Quaternion alignment;
 
-			int flags;
+			BoneMask mask; // aka flags
 			int procType;
 			int procIndex;
 			

@@ -224,7 +224,7 @@ static void PushPlayer(
 	if (espSkeleton)
 		player->ToRenderable()->EnumerateBones([&player, &info] (int idx, const Studio::Bone* bone) -> bool
 		{
-			if (bone->parentIndex != -1 && bone->flags & BoneMask_Hitbox)
+			if (bone->parentIndex != -1 && bone->mask & BoneMask_Hitbox)
 				if (Vector3 parent; player->ToRenderable()->GetBonePosition(bone->parentIndex, parent))
 					if (Vector3 child; player->ToRenderable()->GetBonePosition(idx, child))
 						info.GetPlayerInfo()->skeletonPath.push_back(std::make_pair(parent, child));
