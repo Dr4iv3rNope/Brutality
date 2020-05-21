@@ -1,4 +1,7 @@
 #pragma once
+#include "../../build.hpp"
+#if BUILD_GAME_IS_GMOD
+
 #include <cstdint>
 
 namespace GarrysMod
@@ -11,3 +14,5 @@ namespace GarrysMod
 		}
 	}
 }
+
+#endif

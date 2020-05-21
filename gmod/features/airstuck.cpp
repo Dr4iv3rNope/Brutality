@@ -1,4 +1,5 @@
 #include "airstuck.hpp"
+#if BUILD_GAME_IS_GMOD
 
 #include "../../sourcesdk/hlclient.hpp"
 
@@ -27,3 +28,5 @@ void GarrysMod::Features::AirStuck::Think(std::uintptr_t clmove_frame, bool& sen
 	else
 		ticksStucked = 0;
 }
+
+#endif
