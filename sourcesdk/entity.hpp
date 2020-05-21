@@ -60,5 +60,18 @@ namespace SourceSDK
 		SOURCE_SDK_NETVAR(Vector3, GetVelocity, "CBaseEntity", "m_vecVelocity[0]", 0);
 
 		const char* GetClassname();
+
+		const SourceSDK::Vector3& GetAbsOrigin();
+		const SourceSDK::Angle& GetAbsAngles();
+
+		void SetAbsOrigin(const SourceSDK::Vector3& origin);
+		void SetAbsAngle(const SourceSDK::Angle& angles);
+
+		#if BUILD_GAME_IS_GMOD
+		inline int GetTickBase() const noexcept
+		{
+			return *(int*)(std::uintptr_t(this) + 0x2590);
+		}
+		#endif
 	};
 }
