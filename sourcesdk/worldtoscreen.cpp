@@ -1,14 +1,27 @@
 #include "worldtoscreen.hpp"
 #include "matrix.hpp"
+#include "render.hpp"
+#include "cvar.hpp"
+#include "convar.hpp"
 
-#include "../hooks/renderview.hpp"
+#include "../main.hpp"
+
+#include "../hooks/framestagenotify.hpp"
 
 #include "../imgui/imgui.h"
 
 SourceSDK::W2SOutput SourceSDK::WorldToScreen(const Vector3& world)
 {
+	static IConVar* mat_queue_mode = interfaces->cvar->FindVar(UTIL_CXOR("mat_queue_mode"));
+	UTIL_DEBUG_ASSERT(mat_queue_mode);
+
 	static VMatrix worldToScreen;
-	Hooks::CopyLastWorldToScreenMatrix(worldToScreen);
+
+	if (mat_queue_mode->GetRaw()->intValue != 0)
+		// if we're in multi-thread mode then copy last w2s matrix
+		Hooks::CopyLastWorldToScreenMatrix(worldToScreen);
+	else
+		worldToScreen = interfaces->render->WorldToScreenMatrix();
 
 	float w =
 		worldToScreen[3][0] * world.X() +
