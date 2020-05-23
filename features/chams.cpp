@@ -27,18 +27,6 @@
 extern Config::Bool chamsEnable;
 extern Config::Bool chamsDrawDormant;
 
-enum Chams_
-{
-	Chams_Disable,
-	Chams_Normal,
-	Chams_Flat,
-	Chams_Shiny,
-	Chams_Glow,
-	Chams_SpawnEffect,
-
-	Chams__Count
-};
-
 extern Config::Color chamsNormalsVis—olor;
 extern Config::Enum chamsNormalsVisType;
 extern Config::Color chamsNormalsOccColor;
@@ -60,22 +48,22 @@ extern Config::Color chamsRagesOccColor;
 extern Config::Enum chamsRagesOccType;
 
 
-static std::array<SourceSDK::Material*, Chams__Count - 1> chamsMaterials;
+static std::array<SourceSDK::Material*, int(Features::Chams::Type::_Count) - 1> chamsMaterials;
 
-static inline decltype(chamsMaterials)::value_type& GetMaterial(Chams_ chams) noexcept
+static inline decltype(chamsMaterials)::value_type& GetChamsMaterial(Features::Chams::Type chams) noexcept
 {
-	return chamsMaterials[chams - 1];
+	return chamsMaterials[int(chams) - 1];
 }
 
 static void BuildNormalChams() noexcept
 {
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Building normal chams material"));
 
-	auto keys = SourceSDK::KeyValues::Create("VertexLitGeneric");
-	keys->SetString("$basetexture", "Models/Debug/debugwhite");
-	keys->SetInt("$halflambert", 1);
+	auto keys = SourceSDK::KeyValues::Create(UTIL_CXOR("VertexLitGeneric"));
+	keys->SetString(UTIL_CXOR("$basetexture"), UTIL_CXOR("Models/Debug/debugwhite"));
+	keys->SetInt(UTIL_CXOR("$halflambert"), 1);
 
-	if (GetMaterial(Chams_Normal) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_normal"), keys))
+	if (::GetChamsMaterial(Features::Chams::Type::Normal) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_normal"), keys))
 		UTIL_LABEL_OK();
 	else
 		UTIL_LABEL_FAIL();
@@ -86,10 +74,10 @@ static void BuildFlatChams() noexcept
 	UTIL_LABEL_ENTRY(UTIL_XOR(L"Building flat chams material"));
 
 	auto keys = SourceSDK::KeyValues::Create("UnlitGeneric");
-	keys->SetString("$basetexture", "Models/Debug/debugwhite");
-	keys->SetInt("$halflambert", 1);
+	keys->SetString(UTIL_CXOR("$basetexture"), UTIL_CXOR("Models/Debug/debugwhite"));
+	keys->SetInt(UTIL_CXOR("$halflambert"), 1);
 
-	if (GetMaterial(Chams_Flat) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_flat"), keys))
+	if (::GetChamsMaterial(Features::Chams::Type::Flat) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_flat"), keys))
 		UTIL_LABEL_OK();
 	else
 		UTIL_LABEL_FAIL();
@@ -116,11 +104,13 @@ static void BuildShinyChams() noexcept
 		)
 	);
 
-	if (GetMaterial(Chams_Shiny) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_shiny"), keys))
+	if (::GetChamsMaterial(Features::Chams::Type::Shiny) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_shiny"), keys))
 		UTIL_LABEL_OK();
 	else
 		UTIL_LABEL_FAIL();
 }
+
+#if BUILD_GAME_IS_GMOD
 
 static void BuildGlowChams() noexcept
 {
@@ -140,7 +130,7 @@ static void BuildGlowChams() noexcept
 		)
 	);
 
-	if (GetMaterial(Chams_Glow) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_glow"), keys))
+	if (::GetChamsMaterial(Features::Chams::Type::Glow) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_glow"), keys))
 		UTIL_LABEL_OK();
 	else
 		UTIL_LABEL_FAIL();
@@ -172,11 +162,13 @@ static void BuildSpawnEffectChams() noexcept
 		)
 	);
 
-	if (GetMaterial(Chams_SpawnEffect) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_spawneffect"), keys))
+	if (::GetChamsMaterial(Features::Chams::Type::SpawnEffect) = interfaces->materialsystem->CreateMaterial(UTIL_CXOR("__chams_spawneffect"), keys))
 		UTIL_LABEL_OK();
 	else
 		UTIL_LABEL_FAIL();
 }
+
+#endif
 
 #ifdef _DEBUG
 static bool dbg_initialized = false;
@@ -190,8 +182,11 @@ void Features::Chams::Initialize() noexcept
 	BuildNormalChams();
 	BuildFlatChams();
 	BuildShinyChams();
+
+	#if BUILD_GAME_IS_GMOD
 	BuildGlowChams();
 	BuildSpawnEffectChams();
+	#endif
 
 	#ifdef _DEBUG
 	dbg_initialized = true;
@@ -213,48 +208,29 @@ void Features::Chams::Shutdown() noexcept
 	#endif
 }
 
-static bool OverrideMaterial(const SourceSDK::DrawModelExecuteArgs& args,
-							 float r, float g, float b, float a,
-							 Chams_ type,
+static bool OverrideMaterial(const SourceSDK::DrawModelExecuteArgs& args, 
+							 SourceSDK::VecColor4 color,
+							 Features::Chams::Type type,
 							 bool ignorez = false) noexcept
 {
-	if (type == Chams_Disable)
+	if (type == Features::Chams::Type::Disable)
 		return false;
 
-	auto material = GetMaterial(type);
+	auto material = ::GetChamsMaterial(type);
 	UTIL_DEBUG_ASSERT(material);
 
 
-	material->SetMaterialVarFlag(SourceSDK::MaterialVar_Translucent, a < 1.f);
+	material->SetMaterialVarFlag(SourceSDK::MaterialVar_Translucent, color.Alpha() < 1.f);
 	material->SetMaterialVarFlag(SourceSDK::MaterialVar_IgnoreZ, ignorez);
 
-	interfaces->renderview->SetColorModulation(SourceSDK::VecColor3(r, g, b));
-	interfaces->renderview->SetBlend(a);
+	interfaces->renderview->SetColorModulation(
+		SourceSDK::VecColor3(color.Red(), color.Green(), color.Blue())
+	);
+	interfaces->renderview->SetBlend(color.Alpha());
 
 	interfaces->modelrender->ForcedMaterialOverride(material);
 	Hooks::OldDrawModelExecute(args);
 	return true;
-}
-
-static inline bool OverrideMaterial(const SourceSDK::DrawModelExecuteArgs& args,
-									const Config::Color& color,
-									const Config::Enum& enum_type,
-									bool ignorez = false) noexcept
-{
-	return OverrideMaterial(args,
-							color.RedF(), color.GreenF(), color.BlueF(), color.AlphaF(),
-							(Chams_)enum_type.GetCurrentItem(),
-							ignorez);
-}
-
-static inline bool OverrideMaterial(const SourceSDK::DrawModelExecuteArgs& args,
-									const Config::Enum& vis_type,
-									const Config::Color& vis_color,
-									const Config::Enum& occ_type,
-									const Config::Color& occ_color) noexcept
-{
-	OverrideMaterial(args, occ_color, occ_type, true);
-	return OverrideMaterial(args, vis_color, vis_type, false);
 }
 
 static inline bool SetupPlayerMaterial(const SourceSDK::DrawModelExecuteArgs& args,
@@ -263,36 +239,81 @@ static inline bool SetupPlayerMaterial(const SourceSDK::DrawModelExecuteArgs& ar
 	switch (type)
 	{
 		case Features::PlayerList::PlayerType::Normal:
-			return OverrideMaterial(args,
-									chamsNormalsVisType,
-									chamsNormalsVis—olor,
-									chamsNormalsOccType,
-									chamsNormalsOccColor);
+			return Features::Chams::RenderChams(args,
+												Features::Chams::Type(chamsNormalsVisType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsNormalsVis—olor.RedF(),
+													chamsNormalsVis—olor.GreenF(),
+													chamsNormalsVis—olor.BlueF()
+												),
+												Features::Chams::Type(chamsNormalsOccType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsNormalsOccColor.RedF(),
+													chamsNormalsOccColor.GreenF(),
+													chamsNormalsOccColor.BlueF()
+												));
 
 		case Features::PlayerList::PlayerType::Dangerous:
-			return OverrideMaterial(args,
-									chamsDangerousVisType,
-									chamsDangerousVis—olor,
-									chamsDangerousOccType,
-									chamsDangerousOccColor);
+			return Features::Chams::RenderChams(args,
+												Features::Chams::Type(chamsDangerousVisType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsDangerousOccColor.RedF(),
+													chamsDangerousOccColor.GreenF(),
+													chamsDangerousOccColor.BlueF()
+												),
+												Features::Chams::Type(chamsDangerousOccType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsDangerousOccColor.RedF(),
+													chamsDangerousOccColor.GreenF(),
+													chamsDangerousOccColor.BlueF()
+												));
 
 		case Features::PlayerList::PlayerType::Friend:
-			return OverrideMaterial(args,
-									chamsFriendsVisType,
-									chamsFriendsVis—olor,
-									chamsFriendsOccType,
-									chamsFriendsOccColor);
+			return Features::Chams::RenderChams(args,
+												Features::Chams::Type(chamsFriendsVisType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsFriendsOccColor.RedF(),
+													chamsFriendsOccColor.GreenF(),
+													chamsFriendsOccColor.BlueF()
+												),
+												Features::Chams::Type(chamsFriendsOccType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsFriendsOccColor.RedF(),
+													chamsFriendsOccColor.GreenF(),
+													chamsFriendsOccColor.BlueF()
+												));
 
 		case Features::PlayerList::PlayerType::Rage:
-			return OverrideMaterial(args,
-									chamsRagesVisType,
-									chamsRagesVis—olor,
-									chamsRagesOccType,
-									chamsRagesOccColor);
+			return Features::Chams::RenderChams(args,
+												Features::Chams::Type(chamsRagesVisType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsRagesOccColor.RedF(),
+													chamsRagesOccColor.GreenF(),
+													chamsRagesOccColor.BlueF()
+												),
+												Features::Chams::Type(chamsRagesOccType.GetCurrentItem()),
+												SourceSDK::VecColor4(
+													chamsRagesOccColor.RedF(),
+													chamsRagesOccColor.GreenF(),
+													chamsRagesOccColor.BlueF()
+												));
 		default:
 			UTIL_DEBUG_ASSERT(false);
 			return false;
 	}
+}
+
+SourceSDK::Material* Features::Chams::GetChamsMaterial(Type chams_type) noexcept
+{
+	return chamsMaterials[int(chams_type)];
+}
+
+bool Features::Chams::RenderChams(const SourceSDK::DrawModelExecuteArgs& args,
+								  Type vis_type, SourceSDK::VecColor4 vis_color,
+								  Type occ_type, SourceSDK::VecColor4 occ_color) noexcept
+{
+	return OverrideMaterial(args, occ_color, occ_type, true) ||
+		OverrideMaterial(args, vis_color, vis_type, false);
 }
 
 bool Features::Chams::Render(const SourceSDK::DrawModelExecuteArgs& args) noexcept
@@ -331,8 +352,8 @@ bool Features::Chams::Render(const SourceSDK::DrawModelExecuteArgs& args) noexce
 
 				return OverrideMaterial(
 					args,
-					color.x, color.y, color.z, color.w,
-					(Chams_)info->chamsOccType,
+					SourceSDK::VecColor4(color.x, color.y, color.z, color.w),
+					Features::Chams::Type(info->chamsOccType),
 					true
 				);
 			}
@@ -343,8 +364,8 @@ bool Features::Chams::Render(const SourceSDK::DrawModelExecuteArgs& args) noexce
 
 				return OverrideMaterial(
 					args,
-					color.x, color.y, color.z, color.w,
-					(Chams_)info->chamsVisType,
+					SourceSDK::VecColor4(color.x, color.y, color.z, color.w),
+					Features::Chams::Type(info->chamsVisType),
 					false
 				);
 			}

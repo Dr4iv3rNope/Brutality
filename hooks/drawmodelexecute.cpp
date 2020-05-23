@@ -3,6 +3,7 @@
 #include "../shutdown.hpp"
 
 #include "../features/chams.hpp"
+#include "../features/backtrack.hpp"
 
 void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 										const SourceSDK::DrawModelState& state,
@@ -11,13 +12,13 @@ void __fastcall Hooks::DrawModelExecute(SourceSDK::ModelRender* edx, void* ecx,
 {
 	_SHUTDOWN_GUARD;
 
-	if (Features::Chams::Render(SourceSDK::DrawModelExecuteArgs(state, info, boneToWorld)))
-	{
-		interfaces->modelrender->ForcedMaterialOverride(nullptr);
-		return;
-	}
+	bool chams = Features::Chams::Render(SourceSDK::DrawModelExecuteArgs(state, info, boneToWorld));
+	Features::Backtrack::DrawBacktrack(SourceSDK::DrawModelExecuteArgs(state, info, boneToWorld));
 
-	reinterpret_cast<decltype(DrawModelExecute)*>
+	if (chams)
+		interfaces->modelrender->ForcedMaterialOverride(nullptr);
+	else
+		reinterpret_cast<decltype(DrawModelExecute)*>
 		(hooks->oldDrawModelExecute->GetOriginal())
 		(edx, ecx, state, info, boneToWorld);
 }
