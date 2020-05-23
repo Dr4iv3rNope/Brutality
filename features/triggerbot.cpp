@@ -26,7 +26,7 @@ extern Config::LFloat triggerbotDelay;
 
 
 static std::optional<SourceSDK::GameTrace> lastTrace;
-static float lastDelay { -1.f };
+static std::optional<float> lastDelay;
 
 static inline bool IsTriggerBotKeyPressed() noexcept
 {
@@ -38,8 +38,7 @@ static void InternalTraceLine(SourceSDK::BasePlayer* local_player) noexcept
 {
 	UTIL_DEBUG_ASSERT(local_player);
 
-	if (*triggerbotDelay != 0.f &&
-		lastDelay != -1.f)
+	if (*triggerbotDelay != 0.f && lastDelay)
 		return;
 
 	if (local_player->IsDead())
@@ -64,9 +63,6 @@ static void InternalTraceLine(SourceSDK::BasePlayer* local_player) noexcept
 		SourceSDK::BasicTraceFilter(local_player),
 		*lastTrace
 	);
-
-	if (*triggerbotDelay != 0.f)
-		lastDelay = interfaces->globals->curTime + *triggerbotDelay;
 }
 
 static inline bool Shoot(SourceSDK::UserCmd* cmd, float nextAttackTime) noexcept
@@ -74,12 +70,12 @@ static inline bool Shoot(SourceSDK::UserCmd* cmd, float nextAttackTime) noexcept
 	if (cmd->commandNumber % 2 &&
 		interfaces->globals->curTime > nextAttackTime)
 	{
-		cmd->AddButton(SourceSDK::InButton::Attack);
+		cmd->SetButton(SourceSDK::Input_Attack);
 		return true;
 	}
 	else
 	{
-		cmd->RemoveButton(SourceSDK::InButton::Attack);
+		cmd->RemoveButton(SourceSDK::Input_Attack);
 		return false;
 	}
 }
@@ -91,7 +87,7 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 
 	if (!IsTriggerBotKeyPressed())
 	{
-		lastDelay = -1.f;
+		lastDelay = std::nullopt;
 		lastTrace = std::nullopt;
 		return;
 	}
@@ -109,12 +105,12 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 	if (!weapon)
 		return;
 
-	if (lastDelay != -1.f &&
-		interfaces->globals->curTime > lastDelay)
+	if (lastDelay)
 	{
-		if (Shoot(cmd, weapon->GetNextPrimaryAttack()))
+		if (interfaces->globals->curTime > * lastDelay &&
+			Shoot(cmd, weapon->GetNextPrimaryAttack()))
 		{
-			lastDelay = -1.f;
+			lastDelay = std::nullopt;
 			lastTrace = std::nullopt;
 		}
 
@@ -164,12 +160,10 @@ void Features::TriggerBot::Think(SourceSDK::UserCmd* cmd) noexcept
 				break;
 		}
 
-		if (Shoot(cmd, weapon->GetNextPrimaryAttack()))
-		{
-			if (*triggerbotDelay != 0.f)
-				lastDelay = interfaces->globals->curTime + *triggerbotDelay;
-
-			lastTrace = std::nullopt;
-		}
+		if (*triggerbotDelay != 0.f)
+			lastDelay = interfaces->globals->curTime + *triggerbotDelay;
+		else
+			if (Shoot(cmd, weapon->GetNextPrimaryAttack()))
+				lastTrace = std::nullopt;
 	}
 }
