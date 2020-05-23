@@ -13,6 +13,7 @@
 #include "../features/spectatorlist.hpp"
 #include "../features/textradar.hpp"
 #include "../features/crosshair.hpp"
+#include "../features/backtrack.hpp"
 
 void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 {
@@ -20,6 +21,7 @@ void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 	Features::Crosshair::Draw(draw, isMenuOpen);
 	Features::TextRadar::Draw(draw);
 	Features::SpectatorList::Draw(draw);
+	Features::Backtrack::DrawBacktrack(draw);
 
 	// draw black transparent background
 	// is menu is opened

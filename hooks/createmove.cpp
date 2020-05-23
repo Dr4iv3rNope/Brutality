@@ -3,7 +3,9 @@
 #include "../features/bhop.hpp"
 #include "../features/fastwalk.hpp"
 #include "../features/triggerbot.hpp"
+#include "../features/backtrack.hpp"
 #include "../gmod/features/airstuck.hpp"
+#include "../gmod/features/fakeduck.hpp"
 
 #include "../sourcesdk/hlinput.hpp"
 #include "../sourcesdk/usercmd.hpp"
@@ -41,8 +43,10 @@ bool __fastcall Hooks::CreateMove(SourceSDK::ClientModeShared* clientMode, void*
 	Features::BunnyHop::Think(cmd);
 	Features::FastWalk::Think(cmd);
 	Features::TriggerBot::Think(cmd);
+	Features::Backtrack::Think(cmd);
 	#if BUILD_GAME_IS_GMOD
 	GarrysMod::Features::AirStuck::Think(clmove_framePointer, *sendPacket);
+	GarrysMod::Features::FakeDuck::Think(cmd, *sendPacket);
 	#endif
 
 	return false;

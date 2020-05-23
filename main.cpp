@@ -432,9 +432,54 @@ Config::LFloat triggerbotDelay(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Delay in sec
 
 Config::Bool airstuckEnable(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Enable"));
 Config::Key airstuckKey(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Key"));
-Config::LUInt32 airstuckMaxTicks(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Max Ticks"), 400, 50, 1000);
+Config::LUInt32 airstuckMaxTicks(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Max Ticks"), 400, 50, 1000, Config::VariableFlags_AtNewLine);
+
+
+// fake duck
+
+Config::Bool fakeduckEnable(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Enable"));
+Config::Key fakeduckKey(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Key"), ImGui::Custom::Keys::CTRL);
 
 #endif
+
+// backtrack
+
+Config::Bool backtrackEnable(UTIL_SXOR("Backtrack"), UTIL_SXOR("Enable"));
+Config::Bool backtrackValidateOnUpdate(UTIL_SXOR("Backtrack"), UTIL_SXOR("Validate On Update (Can create problems)"));
+Config::Bool backtrackCalcBones(UTIL_SXOR("Backtrack"), UTIL_SXOR("Calculate backtrack by bones (slower)"));
+Config::LFloat backtrackMaxTime(UTIL_SXOR("Backtrack"), UTIL_SXOR("Max Time"), 0.f, 0.f, 0.2f);
+Config::LFloat backtrackMaxSimTime(UTIL_SXOR("Backtrack"), UTIL_SXOR("Max Simulation Time"), 1.f, 0.f, 10.0f);
+Config::Bool backtrackTrackNormals(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Normal Players"), Config::VariableFlags_AtNewLine);
+Config::Bool backtrackTrackDangerous(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Dangerous Players"));
+Config::Bool backtrackTrackFriends(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Friend Players"));
+Config::Bool backtrackTrackRages(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Rage Players"));
+Config::Bool backtrackDrawDelay(UTIL_SXOR("Backtrack"), UTIL_SXOR("Draw Delay In Lines"), Config::VariableFlags_AtNewLine);
+Config::Bool backtrackDrawHeadDots(UTIL_SXOR("Backtrack"), UTIL_SXOR("Draw Head Dots"));
+
+Config::Color backtrackChamsVisColor(
+	UTIL_SXOR("Backtrack"),
+	UTIL_SXOR("Visible Chams"),
+	{ 0, 100, 0, 255 },
+	Config::VariableFlags_AtNewLine
+);
+Config::Enum backtrackChamsVisType(
+	UTIL_SXOR("Backtrack"),
+	UTIL_SXOR("Visible Chams Color"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
+
+Config::Color backtrackChamsOccColor(
+	UTIL_SXOR("Backtrack"),
+	UTIL_SXOR("Occluded Chams"),
+	{ 0, 100, 0, 255 }
+);
+Config::Enum backtrackChamsOccType(
+	UTIL_SXOR("Backtrack"),
+	UTIL_SXOR("Occluded Chams Color"),
+	chamsTypes,
+	Config::VariableFlags_AtSameLine | Config::VariableFlags_AlignToRight
+);
 
 #pragma endregion
 
