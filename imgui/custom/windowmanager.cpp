@@ -163,7 +163,10 @@ void ImGui::Custom::WindowManager::Render() noexcept
 		ImGui::Custom::Variable::Boolean(useTabs);
 		ImGui::Separator();
 
-		if (ImGui::BeginChild(UTIL_CXOR("WNDMGR##ITEMS"), ImVec2(250.f, ImGui::GetTextLineHeightWithSpacing() * 6.f)))
+		if (ImGui::BeginChild(
+			UTIL_CXOR("WNDMGR##ITEMS"),
+			ImVec2(250.f, ImGui::GetTextLineHeightWithSpacing() * float(_windows.size() / 2)))
+			)
 		{
 			for (auto& data : _windows)
 			{
