@@ -260,9 +260,23 @@
     <ClCompile Include="steamapi\steaminterfaces.cpp">
       <Filter>Steam API</Filter>
     </ClCompile>
-    <ClCompile Include="sourcesdk\math.cpp" />
     <ClCompile Include="gmod\features\airstuck.cpp">
       <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="gmod\features\fakeduck.cpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\usercmd.cpp">
+      <Filter>Source SDK\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="features\backtrack.cpp">
+      <Filter>Shared Features\Backtrack</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\globals.cpp">
+      <Filter>Source SDK\Interfaces\CBaseGlobalVars</Filter>
+    </ClCompile>
+    <ClCompile Include="sourcesdk\math.cpp">
+      <Filter>Source SDK\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -544,6 +558,9 @@
     </Filter>
     <Filter Include="ImGui\Custom GUI%27s\Window Manager">
       <UniqueIdentifier>{9f367599-ee7b-4de7-b5b6-5aa760d12222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared Features\Backtrack">
+      <UniqueIdentifier>{0c5a688a-b823-4cf4-8894-91f916b58934}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -994,6 +1011,12 @@
     </ClInclude>
     <ClInclude Include="gmod\features\airstuck.hpp">
       <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="gmod\features\fakeduck.hpp">
+      <Filter>Games\Garry%27s Mod\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="features\backtrack.hpp">
+      <Filter>Shared Features\Backtrack</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

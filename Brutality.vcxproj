@@ -165,6 +165,7 @@
     <ClCompile Include="config\config.cpp" />
     <ClCompile Include="config\variable.cpp" />
     <ClCompile Include="features\achmgr.cpp" />
+    <ClCompile Include="features\backtrack.cpp" />
     <ClCompile Include="features\bhop.cpp" />
     <ClCompile Include="features\chams.cpp" />
     <ClCompile Include="features\chatspam.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="features\triggerbot.cpp" />
     <ClCompile Include="gmod\features\airstuck.cpp" />
     <ClCompile Include="gmod\features\antiscreengrab.cpp" />
+    <ClCompile Include="gmod\features\fakeduck.cpp" />
     <ClCompile Include="gmod\features\lualoader.cpp" />
     <ClCompile Include="gmod\gmod.cpp" />
     <ClCompile Include="gmod\luasdk\luainterface.cpp" />
@@ -209,6 +211,7 @@
     <ClCompile Include="sourcesdk\achievementmgr.cpp" />
     <ClCompile Include="sourcesdk\clientclassdumper.cpp" />
     <ClCompile Include="sourcesdk\entity.cpp" />
+    <ClCompile Include="sourcesdk\globals.cpp" />
     <ClCompile Include="sourcesdk\hlinput.cpp" />
     <ClCompile Include="sourcesdk\inputsystem.cpp" />
     <ClCompile Include="sourcesdk\keyvalues.cpp" />
@@ -234,6 +237,7 @@
     <ClCompile Include="sourcesdk\netvars.cpp" />
     <ClCompile Include="sourcesdk\render.cpp" />
     <ClCompile Include="sourcesdk\surface.cpp" />
+    <ClCompile Include="sourcesdk\usercmd.cpp" />
     <ClCompile Include="sourcesdk\vector.cpp" />
     <ClCompile Include="sourcesdk\viewrender.cpp" />
     <ClCompile Include="sourcesdk\vrenderview.cpp" />
@@ -258,6 +262,7 @@
     <ClInclude Include="config\config.hpp" />
     <ClInclude Include="config\variable.hpp" />
     <ClInclude Include="features\achmgr.hpp" />
+    <ClInclude Include="features\backtrack.hpp" />
     <ClInclude Include="features\bhop.hpp" />
     <ClInclude Include="features\chams.hpp" />
     <ClInclude Include="features\chatspam.hpp" />
@@ -273,6 +278,7 @@
     <ClInclude Include="features\triggerbot.hpp" />
     <ClInclude Include="gmod\features\airstuck.hpp" />
     <ClInclude Include="gmod\features\antiscreengrab.hpp" />
+    <ClInclude Include="gmod\features\fakeduck.hpp" />
     <ClInclude Include="gmod\features\lualoader.hpp" />
     <ClInclude Include="gmod\gmod.hpp" />
     <ClInclude Include="gmod\luasdk\luainterface.hpp" />
