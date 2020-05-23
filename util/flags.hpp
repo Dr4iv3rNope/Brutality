@@ -41,16 +41,13 @@ namespace Util
 	};
 }
 
-/*
-#define UTIL_FLAGS(flagName) \
-	using flagName = int; \
-	enum flagName##_
-*/
+#define UTIL_FLAGS_EX(enumName, flagsName) \
+	enum enumName; \
+	using flagsName = Util::Flags<enumName>; \
+	enum enumName
 
 #define UTIL_FLAGS(flagName) \
-	enum flagName##_; \
-	using flagName = Util::Flags<flagName##_>; \
-	enum flagName##_
+	UTIL_FLAGS_EX(flagName##_, flagName)
 
 #define UTIL_MAKE_FLAG(flagName, name, value) \
 	flagName##_##name = value
