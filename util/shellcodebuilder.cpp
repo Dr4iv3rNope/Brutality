@@ -27,15 +27,8 @@ void Util::Shellcode::Opcode::CopyTo(Bytes& buffer, std::size_t offset) const
 
 Util::Shellcode::Builder::~Builder()
 {
-	std::transform(
-		_instructions.begin(),
-		_instructions.end(),
-		_instructions.begin(),
-		[] (Instruction* inst)
-	{
-		delete inst;
-		return nullptr;
-	});
+	for (auto& instruction : _instructions)
+		delete instruction;
 }
 
 Util::Shellcode::Bytes Util::Shellcode::Builder::Build(std::uintptr_t shell_code_addr) const
