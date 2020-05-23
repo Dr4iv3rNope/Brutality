@@ -201,8 +201,8 @@ static void SetupBlackStyle(ImGuiStyle& style = ImGui::GetStyle()) noexcept
 	style.WindowMenuButtonPosition = ImGuiDir_None;
 	style.ChildRounding = 3.f;
 	style.ChildBorderSize = 1.f;
-	style.PopupRounding = 1.f;
-	style.PopupBorderSize = 3.f;
+	style.PopupRounding = 3.f;
+	style.PopupBorderSize = 1.f;
 	style.FramePadding = ImVec2(4.f, 2.f);
 	style.FrameRounding = 3.f;
 	style.FrameBorderSize = 1.f;
@@ -211,8 +211,8 @@ static void SetupBlackStyle(ImGuiStyle& style = ImGui::GetStyle()) noexcept
 	//style.TouchExtraPadding;
 	//style.IndentSpacing;
 	//style.ColumnsMinSpacing;
-	style.ScrollbarSize = 10.f;
-	style.ScrollbarRounding = 0.f;
+	style.ScrollbarSize = 16.f;
+	style.ScrollbarRounding = 3.f;
 	//style.GrabMinSize;
 	style.GrabRounding = 3.f;
 	style.TabRounding = 3.f;
@@ -394,7 +394,7 @@ void UI::Shutdown() noexcept
 	UTIL_LABEL_OK();
 }
 
-//#define __ENABLE_STYLE_EDITOR
+#define __ENABLE_STYLE_EDITOR
 #ifdef __ENABLE_STYLE_EDITOR
 // pasted from imgui_demo.cpp
 inline void StyleEditor()
