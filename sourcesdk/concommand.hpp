@@ -1,19 +1,12 @@
 #pragma once
 #include "../build.hpp"
 
+#include "concmdflags.hpp"
+
 #include <cstddef>
 
 namespace SourceSDK
 {
-	// aka ConCommandBase
-	//
-	// public/tier1/convar.h:99
-	class IConCommand
-	{
-	public:
-		virtual ~IConCommand() {}
-	};
-
 	// aka CCommand
 	//
 	// public/tier1/convar.h:181
@@ -30,39 +23,53 @@ namespace SourceSDK
 		const char* args[COMMAND_MAX_ARG_COUNT];
 	};
 
-	// public/tier1/convar.h:261
-	class ConCommand final : public IConCommand
+	// aka ConCommandBase
+	//
+	// public/tier1/convar.h:99
+	class IConCommand
 	{
 	public:
-		#if BUILD_GAME_IS_GMOD
 		static constexpr std::size_t SIZE = 72;
-		#endif
 
 		using CallbackFn = void(*)(const ConCmdArgs&);
 		using AutoCompleteFn = int(*)(const char*, void*);
+
+		virtual ~IConCommand() {}
+
+		virtual bool IsCommand() const noexcept = 0;
+		virtual bool IsFlagSet(ConCmdFlags_ flag) const noexcept = 0;
+		virtual void AddFlags(ConCmdFlags flags) noexcept = 0;
+		virtual const char* GetName() const noexcept = 0;
+		virtual const char* GetHelpString() const noexcept = 0;
+		virtual bool IsRegistered() const noexcept = 0;
+		virtual int GetDllIdentificator() const noexcept = 0;
+
+	protected:
+		virtual void Create() noexcept = 0;
+		virtual void Init() noexcept = 0;
 	};
 
-	ConCommand* CreateConCommand(const char* name, ConCommand::CallbackFn callback,
-		const char* help_string = "", int flags = 0, ConCommand::AutoCompleteFn ac_callback = nullptr);
+	IConCommand* CreateConCommand(const char* name, IConCommand::CallbackFn callback,
+		const char* help_string = "", int flags = 0, IConCommand::AutoCompleteFn ac_callback = nullptr);
 
-	class LinkedConCommand final
+	class LinkedIConCommand final
 	{
 	private:
-		ConCommand* _concommand;
+		IConCommand* _concommand;
 
 	public:
-		inline LinkedConCommand(const char* name, ConCommand::CallbackFn callback,
-			const char* help_string = "", int flags = 0, ConCommand::AutoCompleteFn ac_callback = nullptr)
+		inline LinkedIConCommand(const char* name, IConCommand::CallbackFn callback,
+			const char* help_string = "", int flags = 0, IConCommand::AutoCompleteFn ac_callback = nullptr)
 		{
 			this->_concommand = CreateConCommand(name, callback, help_string, flags, ac_callback);
 		}
 
-		inline ~LinkedConCommand()
+		inline ~LinkedIConCommand()
 		{
 			delete _concommand;
 		}
 
-		inline ConCommand* operator->() noexcept
+		inline IConCommand* operator->() noexcept
 		{
 			return this->_concommand;
 		}

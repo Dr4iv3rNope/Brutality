@@ -3,11 +3,11 @@
 
 namespace SourceSDK
 {
-	class ConVar;
+	class IConVar;
 
 	class CVar final
 	{
 	public:
-		ConVar* FindVar(const char*);
+		IConVar* FindVar(const char*);
 	};
 }

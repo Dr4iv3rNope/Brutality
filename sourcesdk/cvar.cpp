@@ -6,7 +6,7 @@
 
 #include <cstdarg>
 
-SourceSDK::ConVar* SourceSDK::CVar::FindVar(const char* name)
+SourceSDK::IConVar* SourceSDK::CVar::FindVar(const char* name)
 {
 	/* "name"
 
@@ -28,5 +28,5 @@ SourceSDK::ConVar* SourceSDK::CVar::FindVar(const char* name)
 	};
 	#endif
 
-	return Util::Vmt::CallMethod<ConVar*, const char*>(this, offset, name);
+	return Util::Vmt::CallMethod<IConVar*, const char*>(this, offset, name);
 }

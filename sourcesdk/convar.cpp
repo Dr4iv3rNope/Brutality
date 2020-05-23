@@ -8,20 +8,20 @@
 
 #include "../util/debug/labels.hpp"
 
-SourceSDK::ConVar* SourceSDK::CreateConVar(const char* name, const char* default_value, int flags, const char* help_string,
+SourceSDK::IConVar* SourceSDK::CreateConVar(const char* name, const char* default_value, int flags, const char* help_string,
 	bool min, float min_value,
 	bool max, float max_value,
-	ConVar::ChangeCallbackFn callback)
+	IConVar::ChangeCallbackFn callback)
 {
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(
 		UTIL_XOR(L"Creating convar ") << Util::ToWideChar(name)
 	));
 
-	ConVar* convar = (ConVar*)new char[ConVar::SIZE]{};
+	IConVar* convar = (IConVar*)new char[IConVar::SIZE]{};
 
-	using ConstructorFn = ConVar*(*__thiscall)(ConVar*, const char*, const char*, int, const char*,
+	using ConstructorFn = IConVar*(*__thiscall)(IConVar*, const char*, const char*, int, const char*,
 		bool, float, bool, float,
-		ConVar::ChangeCallbackFn);
+		IConVar::ChangeCallbackFn);
 
 	#if BUILD_GAME_IS_GMOD
 	/*
@@ -55,17 +55,4 @@ SourceSDK::ConVar* SourceSDK::CreateConVar(const char* name, const char* default
 
 	UTIL_LABEL_OK();
 	return convar;
-}
-
-void SourceSDK::ConVar::SetStringValue(const char* value)
-{
-	#if BUILD_GAME_IS_GMOD
-	static const auto offset
-	{
-		//VMT_XFIND_METHOD("8B 04 B0 53 FF D0 46 83 C4")
-		VMT_XFIND_METHOD("0F 54 E3 0F 28 C3 0F 57 C4")
-	};
-	#endif
-
-	Util::Vmt::CallMethod<void, const char*, float>(this, offset, value, 0.f);
 }

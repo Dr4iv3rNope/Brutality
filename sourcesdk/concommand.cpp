@@ -6,18 +6,18 @@
 
 #include "../util/debug/labels.hpp"
 
-SourceSDK::ConCommand* SourceSDK::CreateConCommand(const char* name, ConCommand::CallbackFn callback,
-	const char* help_string, int flags, ConCommand::AutoCompleteFn ac_callback)
+SourceSDK::IConCommand* SourceSDK::CreateConCommand(const char* name, IConCommand::CallbackFn callback,
+	const char* help_string, int flags, IConCommand::AutoCompleteFn ac_callback)
 {
 	UTIL_LABEL_ENTRY(UTIL_WFORMAT(
 		UTIL_XOR(L"Create ConCommand ") << Util::ToWideChar(name)
 	));
 
-	using ConstructorFn = ConCommand*(*__thiscall)(ConCommand*,
-		const char*, ConCommand::CallbackFn, const char*, int, ConCommand::AutoCompleteFn);
+	using ConstructorFn = IConCommand*(*__thiscall)(IConCommand*,
+		const char*, IConCommand::CallbackFn, const char*, int, IConCommand::AutoCompleteFn);
 
 	//ConCommand* command = (ConCommand*)new char[ConCommand::SIZE]{};
-	ConCommand* command { nullptr };
+	IConCommand* command { nullptr };
 
 	#if BUILD_GAME_IS_GMOD
 	/*
