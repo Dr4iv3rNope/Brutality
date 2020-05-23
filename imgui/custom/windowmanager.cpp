@@ -13,7 +13,7 @@
 
 extern Config::Bool useTabs;
 
-void ImGui::Custom::WindowManager::UnregisterWindow(std::list<WindowData>::iterator iter) noexcept
+void ImGui::Custom::WindowManager::UnregisterWindow(std::deque<WindowData>::iterator iter) noexcept
 {
 	UTIL_ASSERT(iter != _windows.end(), "Window is registered, but we didn't found it??!!");
 
@@ -136,6 +136,9 @@ bool ImGui::Custom::WindowManager::RegisterWindow(Window window, std::size_t* wi
 	if (window_id) *window_id = data.id;
 
 	_windows.push_back(data);
+
+	// sort windows
+	std::sort(_windows.begin(), _windows.end(), WindowData::Compare);
 
 	UTIL_LOG(UTIL_WFORMAT(
 		UTIL_XOR(L"Window has been registered with id ") <<

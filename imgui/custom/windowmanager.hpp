@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
-#include <list>
+#include <deque>
 
 #include "../imgui.h"
 
@@ -63,12 +63,18 @@ namespace ImGui
 			{
 				Window* window; // allocated
 				std::size_t id;
+
+				// used for sort
+				static bool Compare(const WindowData& a, const WindowData& b)
+				{
+					return a.window->GetTitle().compare(b.window->GetTitle()) < 0;
+				};
 			};
 			
 			std::size_t _lastId { 0 };
-			std::list<WindowData> _windows;
+			std::deque<WindowData> _windows;
 
-			void UnregisterWindow(std::list<WindowData>::iterator iter) noexcept;
+			void UnregisterWindow(std::deque<WindowData>::iterator iter) noexcept;
 
 		public:
 			WindowManager() noexcept;
