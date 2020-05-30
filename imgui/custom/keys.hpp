@@ -2,185 +2,129 @@
 #include <cstdint>
 #include <string>
 
+#include "../../sourcesdk/buttoncode.hpp"
+
 namespace ImGui
 {
 	namespace Custom
 	{
-		using Key = std::uint16_t;
 		using VirtualKey = std::uint8_t;
 
-		namespace Keys
+		enum class Key
 		{
-			// functional key (F*)
-			// 0-23
+			_Invalid = -1,
 
-			constexpr Key F1 = 0;
-			constexpr Key F2 = 1;
-			constexpr Key F3 = 2;
-			constexpr Key F4 = 3;
-			constexpr Key F5 = 4;
-			constexpr Key F6 = 5;
-			constexpr Key F7 = 6;
-			constexpr Key F8 = 7;
-			constexpr Key F9 = 8;
-			constexpr Key F10 = 9;
-			constexpr Key F11 = 10;
-			constexpr Key F12 = 11;
-			constexpr Key F13 = 12;
-			constexpr Key F14 = 13;
-			constexpr Key F15 = 14;
-			constexpr Key F16 = 15;
-			constexpr Key F17 = 16;
-			constexpr Key F18 = 17;
-			constexpr Key F19 = 18;
-			constexpr Key F20 = 19;
-			constexpr Key F21 = 20;
-			constexpr Key F22 = 21;
-			constexpr Key F23 = 22;
-			constexpr Key F24 = 23;
+			// functional keys (F*)
 
-			constexpr bool IsFunctionalKey(Key key) noexcept
-			{
-				return key <= 23;
-			}
+			F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+			F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
 
-			// Number keys (24-33)
+			// Number keys
 
-			constexpr Key _1 = 24;
-			constexpr Key _2 = 25;
-			constexpr Key _3 = 26;
-			constexpr Key _4 = 27;
-			constexpr Key _5 = 28;
-			constexpr Key _6 = 29;
-			constexpr Key _7 = 30;
-			constexpr Key _8 = 31;
-			constexpr Key _9 = 32;
-			constexpr Key _0 = 33;
+			N1, N2, N3, N4, N5, N6, N7, N8, N9, N0,
 
-			constexpr bool IsNumberKey(Key key) noexcept
-			{
-				return key >= 24 && key <= 33;
-			}
+			// letters
 
-			// Letters (34-59)
+			A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 
-			constexpr Key Q = 34;
-			constexpr Key W = 35;
-			constexpr Key E = 36;
-			constexpr Key R = 37;
-			constexpr Key T = 38;
-			constexpr Key Y = 39;
-			constexpr Key U = 40;
-			constexpr Key I = 41;
-			constexpr Key O = 42;
-			constexpr Key P = 43;
-			constexpr Key A = 44;
-			constexpr Key S = 45;
-			constexpr Key D = 46;
-			constexpr Key F = 47;
-			constexpr Key G = 48;
-			constexpr Key H = 49;
-			constexpr Key J = 50;
-			constexpr Key K = 51;
-			constexpr Key L = 52;
-			constexpr Key Z = 53;
-			constexpr Key X = 54;
-			constexpr Key C = 55;
-			constexpr Key V = 56;
-			constexpr Key B = 57;
-			constexpr Key N = 58;
-			constexpr Key M = 59;
+			// Symbols
 
-			constexpr bool IsLetterKey(Key key) noexcept
-			{
-				return key >= 34 && key <= 59;
-			}
+			Grave,					// ~
+			LeftSquareBracket,		// [
+			RIGHT_SQUARE_BRACKET,	// ]
+			Semicolon,				// ;
+			Apostrophe,				// '
+			Backslash,
+			Comma,					// ,
+			Dot,					// .
+			Slash,					// /
+			Minus,					// -
+			Equal,					// =
 
-			// Symbols (60-70)
+			// control keys
 
-			constexpr Key GRAVE = 60;
-			constexpr Key LEFT_SQUARE_BRACKET = 61;
-			constexpr Key RIGHT_SQUARE_BRACKET = 62;
-			constexpr Key SEMICOLON = 63;
-			constexpr Key APOSTROPHE = 64;
-			constexpr Key BACKSLASH = 65;
-			constexpr Key COMMA = 66;
-			constexpr Key DOT = 67;
-			constexpr Key SLASH = 68;
-			constexpr Key MINUS = 69;
-			constexpr Key EQUAL = 70;
+			Tab,
+			Capslock,
+			Shift,
+			Ctrl,
+			Alt,
+			Space,
+			Enter,
+			Backspace,
+			Insert,
+			Home,
+			PageUp,
+			Delete,
+			End,
+			PageDown,
+			ScrollLock,
+			UpArrow,
+			DownArrow,
+			LeftArrow,
+			RightArrow,
 
-			constexpr bool IsSymbolKey(Key key) noexcept
-			{
-				return key >= 60 && key <= 70;
-			}
+			// numpad keys (90-104)
 
-			// Control keys (71-89)
-
-			constexpr Key TAB = 71;
-			constexpr Key CAPSLOCK = 72;
-			constexpr Key SHIFT = 73;
-			constexpr Key CTRL = 74;
-			constexpr Key ALT = 75;
-			constexpr Key SPACE = 76;
-			constexpr Key ENTER = 77;
-			constexpr Key BACKSPACE = 78;
-			constexpr Key INSERT = 79;
-			constexpr Key HOME = 80;
-			constexpr Key PAGEUP = 81;
-			constexpr Key DEL = 82; // delete
-			constexpr Key END = 83;
-			constexpr Key PAGEDOWN = 84;
-			constexpr Key SCROLLLOCK = 85;
-			constexpr Key UPARROW = 86;
-			constexpr Key DOWNARROW = 87;
-			constexpr Key LEFTARROW = 88;
-			constexpr Key RIGHTARROW = 89;
-
-			constexpr bool IsControlKey(Key key) noexcept
-			{
-				return key >= 71 && key <= 89;
-			}
-
-			// Numpad (90-104)
-
-			constexpr Key NUMPAD_SLASH = 90;
-			constexpr Key NUMPAD_ASTERISK = 91;
-			constexpr Key NUMPAD_MINUS = 92;
-			constexpr Key NUMPAD_PLUS = 93;
-			constexpr Key NUMPAD_DOT = 94;
-			constexpr Key NUMPAD_1 = 95;
-			constexpr Key NUMPAD_2 = 96;
-			constexpr Key NUMPAD_3 = 87;
-			constexpr Key NUMPAD_4 = 98;
-			constexpr Key NUMPAD_5 = 99;
-			constexpr Key NUMPAD_6 = 100;
-			constexpr Key NUMPAD_7 = 101;
-			constexpr Key NUMPAD_8 = 102;
-			constexpr Key NUMPAD_9 = 103;
-			constexpr Key NUMPAD_0 = 104;
-
-			constexpr bool IsNumpadKey(Key key) noexcept
-			{
-				return key >= 90 && key <= 104;
-			}
+			NumpadSlash,
+			NumpadAsterisk, // *
+			NumpadMinus,
+			NumpadPlus,
+			NumpadDot,
+			Numpad1,
+			Numpad2,
+			Numpad3,
+			Numpad4,
+			Numpad5,
+			Numpad6,
+			Numpad7,
+			Numpad8,
+			Numpad9,
+			Numpad0,
 
 			// Mouse (105-109)
 
-			constexpr Key MOUSE_LEFT = 105;
-			constexpr Key MOUSE_RIGHT = 106;
-			constexpr Key MOUSE_MIDDLE = 107;
-			constexpr Key MOUSE_4 = 108;
-			constexpr Key MOUSE_5 = 109;
+			MouseLeft,
+			MouseRight,
+			MouseMiddle,
+			Mouse4,
+			Mouse5,
 
-			constexpr bool IsMouseKey(Key key) noexcept
-			{
-				return key >= 105 && key <= 109;
-			}
+			_KeyCount
+		};
 
+		constexpr bool IsFunctionalKey(Key key) noexcept
+		{
+			return key >= Key::F1 && key <= Key::F24;
+		}
 
-			constexpr Key INVALID = -1;
-			constexpr Key KEY_COUNT { 110 };
+		constexpr bool IsNumberKey(Key key) noexcept
+		{
+			return key >= Key::N1 && key <= Key::N0;
+		}
+
+		constexpr bool IsLetterKey(Key key) noexcept
+		{
+			return key >= Key::A && key <= Key::Z;
+		}
+
+		constexpr bool IsSymbolKey(Key key) noexcept
+		{
+			return key >= Key::Grave && key <= Key::Equal;
+		}
+
+		constexpr bool IsControlKey(Key key) noexcept
+		{
+			return key >= Key::Tab && key <= Key::RightArrow;
+		}
+
+		constexpr bool IsNumpadKey(Key key) noexcept
+		{
+			return key >= Key::NumpadSlash && key <= Key::Numpad0;
+		}
+
+		constexpr bool IsMouseKey(Key key) noexcept
+		{
+			return key >= Key::MouseLeft && key <= Key::Mouse5;
 		}
 
 		// @out can be null if you want to check if key is valid
@@ -188,6 +132,9 @@ namespace ImGui
 
 		// @out can be null if you want to check if key is valid
 		extern bool KeyToVirtualKey(Key key, VirtualKey* out) noexcept;
+
+		// @out can be null if you want to check if key is valid
+		extern bool KeyToButtonCode(Key key, SourceSDK::ButtonCode* out) noexcept;
 
 		inline bool IsKeyValid(Key key) noexcept { return KeyToVirtualKey(key, nullptr); }
 
