@@ -156,7 +156,7 @@ static Config::LimitedString<char> lv_string("Debug", "Your Name", 64, Config::V
 static Config::String<char> uv_string("Debug", "XYZ", Config::VariableFlags_DontSave, "123");
 static Config::Enum uv_enum("Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" }, Config::VariableFlags_DontSave);
 static Config::Color uv_color("Debug", "Pick some color", { 1, 3, 3, 7 }, Config::VariableFlags_DontSave);
-static Config::Key uv_key("Debug", "Some Key Binding", Config::VariableFlags_DontSave);
+static Config::Key uv_key("Debug", "Some Key Binding", ImGui::Custom::Key::_Invalid, Config::VariableFlags_DontSave);
 static Config::Flags uv_flags("Debug", "Flags", { "flag 1", "flag 2", "pride flag", "flag 3" }, Config::VariableFlags_DontSave);
 #endif
 
@@ -424,7 +424,7 @@ Config::Bool triggerbotTargetNormals(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target
 Config::Bool triggerbotTargetDangerous(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Dangerous Players"));
 Config::Bool triggerbotTargetFriends(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Friends Players"));
 Config::Bool triggerbotTargetRages(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Rages Players"));
-Config::Key triggerbotKey(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("hold key"), ImGui::Custom::Keys::INVALID, Config::VariableFlags_AtNewLine);
+Config::Key triggerbotKey(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("hold key"), ImGui::Custom::Key::_Invalid, Config::VariableFlags_AtNewLine);
 Config::LFloat triggerbotDelay(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 1.f, Config::VariableFlags_AtNewLine);
 
 #if BUILD_GAME_IS_GMOD
@@ -438,7 +438,7 @@ Config::LUInt32 airstuckMaxTicks(UTIL_SXOR("Air Stuck"), UTIL_SXOR("Max Ticks"),
 // fake duck
 
 Config::Bool fakeduckEnable(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Enable"));
-Config::Key fakeduckKey(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Key"), ImGui::Custom::Keys::CTRL);
+Config::Key fakeduckKey(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Key"), ImGui::Custom::Key::Ctrl);
 
 #endif
 

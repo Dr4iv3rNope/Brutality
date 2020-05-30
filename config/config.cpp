@@ -16,7 +16,9 @@
 #include "../util/debug/logs.hpp"
 #include "../util/debug/errors.hpp"
 
-#include "../nlohmann/json.hpp"
+#include "../jsoncpp/value.h"
+#include "../jsoncpp/writer.h"
+#include "../jsoncpp/reader.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_stdlib.h"
@@ -25,7 +27,7 @@
 
 void Config::Save(const std::wstring& filename)
 {
-	nlohmann::json json_root;
+	Json::Value json_root;
 
 	Config::ExportVariables(json_root);
 
@@ -34,7 +36,7 @@ void Config::Save(const std::wstring& filename)
 
 		if (file)
 		{
-			file << json_root.dump();
+			file << json_root;
 			file.close();
 		}
 		else
@@ -44,18 +46,14 @@ void Config::Save(const std::wstring& filename)
 
 void Config::Load(const std::wstring& filename)
 {
-	nlohmann::json json_root;
+	Json::Value json_root;
 
 	{
 		std::ifstream file(Config::GetSettingsPath() + filename);
 
 		if (file)
 		{
-			json_root = nlohmann::json::parse(std::string
-				{
-					std::istream_iterator<char>(file), std::istream_iterator<char>()
-				});
-
+			file >> json_root;
 			file.close();
 		}
 		else

@@ -9,6 +9,9 @@
 #include "../sourcesdk/clientstate.hpp"
 #include "../sourcesdk/engineclient.hpp"
 
+#include "../jsoncpp/reader.h"
+#include "../jsoncpp/writer.h"
+
 #include "../config/variable.hpp"
 
 #include "../imgui/imgui.h"
@@ -143,12 +146,10 @@ static bool LoadAnimations() noexcept
 	{
 		bool got_warnings { false };
 
-		auto root = nlohmann::json::parse(std::string(
-			std::istreambuf_iterator<char>(file),
-			std::istreambuf_iterator<char>()
-		));
+		Json::Value root;
+		file >> root;
 
-		if (root.is_array())
+		if (root.isArray())
 		{
 			animationList.clear();
 
@@ -156,27 +157,33 @@ static bool LoadAnimations() noexcept
 
 			for (auto& animation : root)
 			{
-				if (!animation.contains(UTIL_SXOR("name")) ||
-					!animation[UTIL_SXOR("name")].is_string())
+				if (!animation.isObject())
 				{
-					UTIL_XLOG(L"Failed to get \"name\" of the animation");
+					UTIL_XLOG(L"Animation is not a object!");
 					got_warnings = true;
 
 					continue;
 				}
 
-				std::string name = animation[UTIL_SXOR("name")];
+				if (!animation[UTIL_SXOR("name")].isString())
+				{
+					UTIL_XLOG(L"\"name\" of the animation must be a string");
+					got_warnings = true;
 
-				if (animation.contains(UTIL_SXOR("sequences")) &&
-					animation[UTIL_SXOR("sequences")].is_array())
+					continue;
+				}
+
+				std::string name = animation[UTIL_SXOR("name")].asString();
+
+				if (animation[UTIL_SXOR("sequences")].isArray())
 				{
 					std::deque<std::string> parsedSequences;
 
 					for (auto& sequences : animation[UTIL_SXOR("sequences")])
 					{
 
-						if (sequences.is_string())
-							parsedSequences.push_back(sequences);
+						if (sequences.isString())
+							parsedSequences.push_back(sequences.asString());
 						else
 						{
 							UTIL_XLOG(L"In sequence found non-string value");
@@ -235,22 +242,22 @@ static bool SaveAnimations() noexcept
 
 	if (file)
 	{
-		auto root = nlohmann::json::array({});
+		auto root = Json::Value(Json::arrayValue);
 
 		for (const auto& animation : animationList)
 		{
-			auto json_anim = nlohmann::json::object({});
+			auto json_anim = Json::Value(Json::objectValue);
 
 			json_anim[UTIL_SXOR("name")] = animation.name;
-			auto& json_sequences = json_anim[UTIL_SXOR("sequences")] = nlohmann::json::array({});
+			json_anim[UTIL_SXOR("sequences")] = Json::Value(Json::arrayValue);
 
 			for (const auto& sequence : animation.sequences)
-				json_sequences.push_back(sequence);
+				json_anim[UTIL_SXOR("sequences")].append(sequence);
 
-			root.push_back(json_anim);
+			root.append(json_anim);
 		}
 
-		file << root.dump();
+		file << root;
 		file.close();
 		
 		UTIL_XLOG(L"Successfully saved animations");

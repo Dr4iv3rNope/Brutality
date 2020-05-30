@@ -278,6 +278,18 @@
     <ClCompile Include="sourcesdk\math.cpp">
       <Filter>Source SDK\Math</Filter>
     </ClCompile>
+    <ClCompile Include="sourcesdk\prediction.cpp">
+      <Filter>Source SDK\Interfaces\CPrediction</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_reader.cpp">
+      <Filter>jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_value.cpp">
+      <Filter>jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_writer.cpp">
+      <Filter>jsoncpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Utilities">
@@ -396,9 +408,6 @@
     </Filter>
     <Filter Include="Source SDK\Interfaces\CGameEventManager">
       <UniqueIdentifier>{6ecb8ab4-77ea-4127-9d02-5cebf78d241f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="nlohmann">
-      <UniqueIdentifier>{42511d96-acb9-47c6-9ecc-a435854adb92}</UniqueIdentifier>
     </Filter>
     <Filter Include="Hooks\Reset">
       <UniqueIdentifier>{75b37391-bd77-4d92-82d8-772fa8be5324}</UniqueIdentifier>
@@ -561,6 +570,12 @@
     </Filter>
     <Filter Include="Shared Features\Backtrack">
       <UniqueIdentifier>{0c5a688a-b823-4cf4-8894-91f916b58934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source SDK\Interfaces\CPrediction">
+      <UniqueIdentifier>{185b359a-4e79-4ae3-a6a0-5b8ddfa684f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jsoncpp">
+      <UniqueIdentifier>{ebbe87e0-c7c7-4a2a-acf8-bf0325cdebfc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -750,9 +765,6 @@
     </ClInclude>
     <ClInclude Include="sourcesdk\gameevents.hpp">
       <Filter>Source SDK\Interfaces\CGameEventManager</Filter>
-    </ClInclude>
-    <ClInclude Include="nlohmann\json.hpp">
-      <Filter>nlohmann</Filter>
     </ClInclude>
     <ClInclude Include="util\stringhash.hpp">
       <Filter>Utilities</Filter>
@@ -1018,10 +1030,49 @@
     <ClInclude Include="features\backtrack.hpp">
       <Filter>Shared Features\Backtrack</Filter>
     </ClInclude>
+    <ClInclude Include="sourcesdk\prediction.hpp">
+      <Filter>Source SDK\Interfaces\CPrediction</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\allocator.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\assertions.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\config.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\forwards.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json_features.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json_tool.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\reader.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\value.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\version.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\writer.h">
+      <Filter>jsoncpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sourcesdk\renderfx.hpp">
       <Filter>Source SDK\Structures\Enums</Filter>
+    </None>
+    <None Include="jsoncpp\json_valueiterator.inl">
+      <Filter>jsoncpp</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

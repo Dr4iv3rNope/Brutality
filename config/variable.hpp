@@ -8,13 +8,15 @@
 #include <array>
 #include <type_traits>
 
-#include "../nlohmann/json.hpp"
+#include "../jsoncpp/value.h"
 
 #include "../imgui/custom/keys.hpp"
 
 #include "../util/xorstr.hpp"
 #include "../util/flags.hpp"
 #include "../util/debug/assert.hpp"
+
+#pragma warning(disable : 4244)
 
 namespace Config
 {
@@ -39,10 +41,10 @@ namespace Config
 	extern bool IsVariableRegistered(const std::string& group, const std::string& key) noexcept;
 
 	// imports (loads) values to variables
-	extern void ImportVariables(const nlohmann::json& root);
-	
+	extern void ImportVariables(const Json::Value& root);
+
 	// exports (saves) values to root
-	extern void ExportVariables(nlohmann::json& root);
+	extern void ExportVariables(Json::Value& root);
 	
 	// return all saved variables
 	extern SortedVariables& GetSortedVariables() noexcept;
@@ -94,13 +96,11 @@ namespace Config
 		inline auto GetKey() const noexcept { return _key; }
 		inline auto GetFlags() const noexcept { return _flags; }
 
-		virtual bool Export(nlohmann::json& value) const = 0;
-		virtual bool Import(const nlohmann::json& value) = 0;
+		virtual bool Export(Json::Value& value) const = 0;
+		virtual bool Import(const Json::Value& value) = 0;
 
 		virtual VariableType GetType() const = 0;
 		virtual bool IsLimitedVariable() const = 0;
-
-		virtual void OnUnregister() {}
 	};
 
 	// return true if variable with same group and key already presented
@@ -183,48 +183,81 @@ namespace Config
 
 		virtual void SetValue(T value) override { this->_value = value; }
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
 			if constexpr (std::is_same<T, bool>())
 			{
-				if (!value.is_boolean())
-					return false;
+				if (value.isBool())
+				{
+					this->_value = value.asBool();
+					return true;
+				}
 			}
 			else if constexpr (std::is_floating_point<T>())
 			{
-				if (!value.is_number_float())
-					return false;
+				if (value.isDouble())
+				{
+					if constexpr (sizeof(T) == sizeof(double))
+					{
+						this->_value = value.asDouble();
+						return true;
+					}
+					else
+					{
+						this->_value = value.asFloat();
+						return true;
+					}
+				}
 			}
 			else if constexpr (std::is_unsigned<T>())
 			{
-				if (!value.is_number_unsigned())
-					return false;
+				if constexpr (sizeof(T) == sizeof(unsigned long))
+				{
+					if (value.isUInt64())
+					{
+						this->_value = value.asUInt64();
+						return true;
+					}
+				}
+				else
+				{
+					if (value.isUInt())
+					{
+						this->_value = value.asUInt();
+						return true;
+					}
+				}
 			}
 			else
 			{
 				if constexpr (std::is_signed<T>())
 				{
-					if (!value.is_number())
-						return false;
+					if constexpr (sizeof(T) == sizeof(unsigned long))
+					{
+						if (value.isInt64())
+						{
+							this->_value = value.asInt64();
+							return true;
+						}
+					}
+					else
+					{
+						if (value.isInt())
+						{
+							this->_value = value.asInt();
+							return true;
+						}
+					}
 				}
 			}
-			
-			// anyway, we should use try catch
-			try
-			{
-				this->_value = value;
-				return true;
-			}
-			catch (...)
-			{
-				return false;
-			}
+
+			return false;
 		}
 
 		virtual bool IsLimitedVariable() const override { return false; }
@@ -295,43 +328,73 @@ namespace Config
 			this->_value = value;
 		}
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if constexpr (std::is_floating_point<T>())
+			if constexpr (std::is_same<T, bool>())
 			{
-				if (!value.is_number_float())
-					return false;
+				if (value.isBool())
+				{
+					this->_value = value.asBool();
+					return true;
+				}
+			}
+			else if constexpr (std::is_floating_point<T>())
+			{
+				if (value.isDouble())
+				{
+					this->_value = value.asDouble();
+					return true;
+				}
 			}
 			else if constexpr (std::is_unsigned<T>())
 			{
-				if (!value.is_number_unsigned())
-					return false;
+				if constexpr (sizeof(T) == sizeof(unsigned long))
+				{
+					if (value.isUInt64())
+					{
+						this->_value = value.asUInt64();
+						return true;
+					}
+				}
+				else
+				{
+					if (value.isUInt())
+					{
+						this->_value = value.asUInt();
+						return true;
+					}
+				}
 			}
 			else
 			{
 				if constexpr (std::is_signed<T>())
 				{
-					if (!value.is_number())
-						return false;
+					if constexpr (sizeof(T) == sizeof(unsigned long))
+					{
+						if (value.isInt64())
+						{
+							this->_value = value.asInt64();
+							return true;
+						}
+					}
+					else
+					{
+						if (value.isInt())
+						{
+							this->_value = value.asInt();
+							return true;
+						}
+					}
 				}
 			}
 
-			// anyway, we should use try catch
-			try
-			{
-				this->_value = value;
-				return true;
-			}
-			catch (...)
-			{
-				return false;
-			}
+			return false;
 		}
 
 		virtual bool IsLimitedVariable() const override { return true; }
@@ -383,18 +446,18 @@ namespace Config
 		virtual VariableType GetType() const override { return VariableType::String; }
 		inline std::size_t GetMaxLength() const noexcept { return this->_max_length; }
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if (!value.is_string())
+			if (!value.isString())
 				return false;
 
-			this->_value = value;
+			this->SetValue(value.asString());
 			return true;
 		}
 
@@ -420,18 +483,18 @@ namespace Config
 
 		virtual VariableType GetType() const override { return VariableType::String; }
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if (!value.is_string())
+			if (!value.isString())
 				return false;
 
-			this->_value = value;
+			this->_value = value.asString();
 			return true;
 		}
 
@@ -470,19 +533,30 @@ namespace Config
 		Enum(const Enum&) = delete;
 		Enum(const Enum&&) = delete;
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value = _currentItem;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if (!value.is_number_integer())
-				return false;
+			if constexpr (sizeof(std::size_t) == sizeof(int))
+			{
+				if (!value.isUInt())
+					return false;
 
-			_currentItem = value;
-			return true;
+				_currentItem = value.asUInt();
+				return true;
+			}
+			else
+			{
+				if (!value.isUInt64())
+					return false;
+
+				_currentItem = value.asUInt64();
+				return true;
+			}
 		}
 
 		virtual VariableType GetType() const override { return VariableType::Enum; }
@@ -516,33 +590,30 @@ namespace Config
 
 		virtual VariableType GetType() const override { return VariableType::Color; }
 
-		virtual bool Export(nlohmann::json& value) const override
+		virtual bool Export(Json::Value& value) const override
 		{
 			value[0] = this->_value[0];
 			value[1] = this->_value[1];
 			value[2] = this->_value[2];
 			value[3] = this->_value[3];
+
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if (!value.is_array())
+			if (!value.isArray())
 				return false;
 
-			try
-			{
-				this->_value[0] = value[0];
-				this->_value[1] = value[1];
-				this->_value[2] = value[2];
-				this->_value[3] = value[3];
-
-				return true;
-			}
-			catch (...)
-			{
+			if (value.size() < 4)
 				return false;
-			}
+
+			this->_value[0] = std::uint8_t(value[0].asUInt());
+			this->_value[1] = std::uint8_t(value[1].asUInt());
+			this->_value[2] = std::uint8_t(value[2].asUInt());
+			this->_value[3] = std::uint8_t(value[3].asUInt());
+
+			return true;
 		}
 
 		virtual bool IsLimitedVariable() const override { return false; }
@@ -593,7 +664,7 @@ namespace Config
 
 	public:
 		inline Key(const std::string& group, const std::string& key,
-				   ImGui::Custom::Key key_value = ImGui::Custom::Keys::INVALID,
+				   ImGui::Custom::Key key_value = ImGui::Custom::Key::_Invalid,
 				   VariableFlags flags = 0)
 			: IVariable(group, key, flags), _key_value { key_value }
 		{}
@@ -604,23 +675,57 @@ namespace Config
 		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
 		inline auto GetKeyValue() const noexcept { return _key_value; }
 
-		inline bool HasKeyValue() const noexcept { return _key_value != ImGui::Custom::Keys::INVALID; }
-		inline void ResetKeyValue() noexcept { _key_value = ImGui::Custom::Keys::INVALID; }
+		inline bool HasKeyValue() const noexcept { return _key_value != ImGui::Custom::Key::_Invalid; }
+		inline void ResetKeyValue() noexcept { _key_value = ImGui::Custom::Key::_Invalid; }
 
-
-		virtual bool Export(nlohmann::json& value) const override
+		// if key haven't "key value" then it will return 0
+		inline short GetAsyncKeyState() const noexcept
 		{
-			value = _key_value;
+			return HasKeyValue() ? ImGui::Custom::GetAsyncKeyState(_key_value) : 0;
+		}
+
+		// if key haven't "key value" then it will return false
+		inline bool IsPressed(bool repeat = true) const noexcept
+		{
+			return HasKeyValue() && ImGui::Custom::IsKeyPressed(_key_value, repeat);
+		}
+
+		// if key haven't "key value" then it will return false
+		inline bool IsKeyReleased() const noexcept
+		{
+			return HasKeyValue() && ImGui::Custom::IsKeyReleased(_key_value);
+		}
+
+		// if key haven't "key value" then it will return false
+		inline bool IsKeyDown() const noexcept
+		{
+			return HasKeyValue() && ImGui::Custom::IsKeyDown(_key_value);
+		}
+
+
+		inline bool ToVirtualKey(ImGui::Custom::VirtualKey& key) const noexcept
+		{
+			return ImGui::Custom::KeyToVirtualKey(_key_value, &key);
+		}
+
+		inline bool ToButtonCode(SourceSDK::ButtonCode& key) const noexcept
+		{
+			return ImGui::Custom::KeyToButtonCode(_key_value, &key);
+		}
+
+		virtual bool Export(Json::Value& value) const override
+		{
+			value = Json::Value(int(_key_value));
 
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value) override
+		virtual bool Import(const Json::Value& value) override
 		{
-			if (!value.is_number_unsigned())
+			if (!value.isNumeric())
 				return false;
 
-			_key_value = value;
+			_key_value = ImGui::Custom::Key(value.asInt());
 			return true;
 		}
 
@@ -684,19 +789,18 @@ namespace Config
 			return sizeof(std::uint32_t) * 8;
 		}
 
-
-		virtual bool Export(nlohmann::json& value) const
+		virtual bool Export(Json::Value& value) const
 		{
 			value = _flags;
 			return true;
 		}
 
-		virtual bool Import(const nlohmann::json& value)
+		virtual bool Import(const Json::Value& value)
 		{
-			if (!value.is_number())
+			if (!value.isUInt())
 				return false;
 
-			_flags = value;
+			_flags = value.asUInt();
 			return true;
 		}
 

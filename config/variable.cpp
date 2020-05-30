@@ -175,37 +175,35 @@ bool Config::IsVariableRegistered(const std::string& group, const std::string& k
 	return false;
 }
 
-void Config::ImportVariables(const nlohmann::json& root)
+void Config::ImportVariables(const Json::Value& root)
 {
 	for (auto& [group, variables] : GetSortedVariables())
-		if (auto group_hash = UTIL_RUNTIME_STR_HASH(group); root.contains(group_hash))
-			if (const auto& json_group = root[group_hash]; json_group.is_object())
-				for (auto& variable : variables)
-					if (auto key_hash = UTIL_RUNTIME_STR_HASH(variable->GetKey()); json_group.contains(key_hash))
-						if (const auto& json_value = json_group[key_hash]; !json_value.is_null())
-							if (!variable->Import(json_value))
-								UTIL_LOG(UTIL_WFORMAT(
-									UTIL_XOR(L"Failed to import variable ") <<
-									Util::ToWideChar(variable->GetGroup().data()) << ' ' <<
-									Util::ToWideChar(variable->GetKey().data())
-								));
+		if (auto json_group = root[group]; root.isObject())
+			for (auto& variable : variables)
+				if (const auto& json_value = json_group[variable->GetKey()]; !json_value.isNull())
+					if (!variable->Import(json_value))
+						UTIL_LOG(UTIL_WFORMAT(
+							UTIL_XOR(L"Failed to import variable ") <<
+							Util::ToWideChar(variable->GetGroup().data()) << ' ' <<
+							Util::ToWideChar(variable->GetKey().data())
+						));
 }
 
-void Config::ExportVariables(nlohmann::json& root)
+void Config::ExportVariables(Json::Value& root)
 {
 	for (const auto& [group, variables] : GetSortedVariables())
 	{
-		auto& json_group = root[UTIL_RUNTIME_STR_HASH(group)];
+		auto& json_group = root[group];
 
 		for (const auto& variable : variables)
 		{
 			if (variable->GetFlags().HasFlag(Config::VariableFlags_DontSave))
 				continue;
 
-			nlohmann::json temp_json_value;
+			Json::Value temp_json_value;
 
 			if (variable->Export(temp_json_value))
-				json_group[UTIL_RUNTIME_STR_HASH(variable->GetKey())] = temp_json_value;
+				json_group[variable->GetKey()] = temp_json_value;
 			else
 				UTIL_LOG(UTIL_WFORMAT(
 					UTIL_XOR(L"Failed to export variable ") <<

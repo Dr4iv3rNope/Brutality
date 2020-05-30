@@ -207,6 +207,9 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_stdlib.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="jsoncpp\json_reader.cpp" />
+    <ClCompile Include="jsoncpp\json_value.cpp" />
+    <ClCompile Include="jsoncpp\json_writer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sourcesdk\achievementmgr.cpp" />
     <ClCompile Include="sourcesdk\clientclassdumper.cpp" />
@@ -224,6 +227,7 @@
     <ClCompile Include="sourcesdk\netsetconvar.cpp" />
     <ClCompile Include="sourcesdk\networkable.cpp" />
     <ClCompile Include="sourcesdk\player.cpp" />
+    <ClCompile Include="sourcesdk\prediction.cpp" />
     <ClCompile Include="sourcesdk\renderable.cpp" />
     <ClCompile Include="sourcesdk\clientclass.cpp" />
     <ClCompile Include="sourcesdk\clientmode.cpp" />
@@ -310,8 +314,18 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="jsoncpp\allocator.h" />
+    <ClInclude Include="jsoncpp\assertions.h" />
+    <ClInclude Include="jsoncpp\config.h" />
+    <ClInclude Include="jsoncpp\forwards.h" />
+    <ClInclude Include="jsoncpp\json.h" />
+    <ClInclude Include="jsoncpp\json_features.h" />
+    <ClInclude Include="jsoncpp\json_tool.h" />
+    <ClInclude Include="jsoncpp\reader.h" />
+    <ClInclude Include="jsoncpp\value.h" />
+    <ClInclude Include="jsoncpp\version.h" />
+    <ClInclude Include="jsoncpp\writer.h" />
     <ClInclude Include="main.hpp" />
-    <ClInclude Include="nlohmann\json.hpp" />
     <ClInclude Include="shutdown.hpp" />
     <ClInclude Include="sourcesdk\achievementmgr.hpp" />
     <ClInclude Include="sourcesdk\bspflags.hpp" />
@@ -335,6 +349,7 @@
     <ClInclude Include="sourcesdk\networkable.hpp" />
     <ClInclude Include="sourcesdk\overridetype.hpp" />
     <ClInclude Include="sourcesdk\player.hpp" />
+    <ClInclude Include="sourcesdk\prediction.hpp" />
     <ClInclude Include="sourcesdk\renderable.hpp" />
     <ClInclude Include="sourcesdk\appsystem.hpp" />
     <ClInclude Include="sourcesdk\bonemasks.hpp" />
@@ -413,6 +428,7 @@
     <ClInclude Include="valvesdk\interfaces.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="jsoncpp\json_valueiterator.inl" />
     <None Include="sourcesdk\renderfx.hpp" />
   </ItemGroup>
   <ItemGroup>
