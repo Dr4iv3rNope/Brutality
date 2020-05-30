@@ -115,7 +115,7 @@ static void DrawEntityListMenu(ImGui::Custom::Window&) noexcept
 
 		ImGui::SameLine();
 
-		ImGui::PushID(1);
+		ImGui::PushID(2);
 		ImGui::PushItemWidth(-1.f);
 		ImGui::Combo(
 			"",
