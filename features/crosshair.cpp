@@ -9,6 +9,8 @@
 
 #include "../config/variable.hpp"
 
+#include "../ui/ui.hpp"
+
 using namespace SourceSDK;
 
 
@@ -102,7 +104,7 @@ void Features::Crosshair::DrawPreview(ImDrawList* list) noexcept
 			center.x + *crosshairGap + *crosshairSize + text_size.x,
 			center.y + *crosshairGap + *crosshairSize + 8.f
 		),
-		IM_COL32(220, 134, 40, 100)
+		UI::GetPreviewColor(2)
 	);
 
 	list->AddText(

@@ -11,7 +11,17 @@
 #include "../../util/debug/errors.hpp"
 #include "../../util/debug/logs.hpp"
 
-extern Config::Bool useTabs;
+enum UIColorStyle
+{
+	UIColorStyle_Default,
+	UIColorStyle_CustomAll,
+	UIColorStyle_CustomBorders
+};
+
+extern Config::Bool uiUseTabs;
+extern Config::Enum uiColorStyle;
+extern Config::Color uiColor;
+extern Config::Color uiTextColor;
 
 void ImGui::Custom::WindowManager::UnregisterWindow(std::deque<WindowData>::iterator iter) noexcept
 {
@@ -163,7 +173,19 @@ void ImGui::Custom::WindowManager::Render() noexcept
 {
 	if (ImGui::Begin(UTIL_CXOR("Window Manager"), nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::Custom::Variable::Boolean(useTabs);
+		ImGui::Custom::Variable::Boolean(uiUseTabs);
+		ImGui::NewLine();
+		ImGui::SetNextItemWidth(120.f);
+		ImGui::Custom::Variable::Enum(uiColorStyle);
+		
+		if (uiColorStyle.GetCurrentItem() != UIColorStyle_Default)
+		{
+			ImGui::Custom::Variable::Color(uiColor);
+
+			if (uiColorStyle.GetCurrentItem() == UIColorStyle_CustomAll)
+				ImGui::Custom::Variable::Color(uiTextColor);
+		}
+
 		ImGui::Separator();
 
 		if (ImGui::BeginChild(
@@ -209,7 +231,7 @@ void ImGui::Custom::WindowManager::RenderWindows() noexcept
 		ImGuiTabBarFlags_NoTooltip
 	};
 
-	const bool use_tabs = *useTabs;
+	const bool use_tabs = *uiUseTabs;
 
 	if (use_tabs
 		? ImGui::Begin(UTIL_CXOR("Brutality")) && ImGui::BeginTabBar(UTIL_CXOR("TABS##BRUTALITY"), FLAGS)

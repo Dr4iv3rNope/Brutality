@@ -29,12 +29,12 @@ void OnOverlayRender(ImDrawList* draw, bool isMenuOpen)
 		draw->AddRectFilledMultiColor(
 			ImVec2(0.f, 0.f),
 			ImGui::GetIO().DisplaySize,
-			IM_COL32(0, 0, 0, 200), IM_COL32(0, 0, 0, 200),
+			UI::GetPreviewColor(2), UI::GetPreviewColor(2),
 			IM_COL32(0, 0, 0, 55), IM_COL32(0, 0, 0, 55)
 		);
 
 	// draw the watermark
-	ImGui::GetForegroundDrawList()->AddText(ImVec2(4.f, 4.f), IM_COL32(255, 140, 0, 155), UTIL_CXOR(BRUTALITY_WATERMARK));
+	ImGui::GetForegroundDrawList()->AddText(ImVec2(4.f, 4.f), UI::GetPreviewColor(), UTIL_CXOR(BRUTALITY_WATERMARK));
 
 	//
 	// in this condition we should draw previews

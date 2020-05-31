@@ -14,10 +14,7 @@
 
 extern Config::Bool bhopEnable;
 extern Config::Bool bhopAutoStrafe;
-
-//extern Config::LFloat bhopMinDelay;
-//extern Config::LFloat bhopMaxDelay;
-
+extern Config::LUInt32 bhopSkipTicks;
 
 static inline void AutoStrafe(SourceSDK::UserCmd* cmd) noexcept
 {
@@ -29,49 +26,43 @@ static inline void AutoStrafe(SourceSDK::UserCmd* cmd) noexcept
 
 void Features::BunnyHop::Think(SourceSDK::UserCmd* cmd) noexcept
 {
+	static std::uint32_t skippedTicks = 0;
+
 	if (!bhopEnable)
 		return;
 
 	if (!interfaces->inputsystem->IsButtonDown(SourceSDK::ButtonCode::KeySpace))
+	{
+		skippedTicks = 0;
 		return;
+	}
 
 	auto localPlayer = SourceSDK::BasePlayer::GetLocalPlayer();
 
-	if (!localPlayer || localPlayer->IsFly())
+	if (!localPlayer)
 		return;
 
-	/*static std::optional<float> nextJump;
+	if (localPlayer->IsDead())
+		return;
 
-	if (*bhopMinDelay < *bhopMaxDelay)
+	if (localPlayer->IsFly())
+		return;
+
+	if (*bhopSkipTicks == 0 || skippedTicks >= *bhopSkipTicks)
 	{
-		if (!nextJump.has_value())
+		if (localPlayer->IsOnGround())
 		{
-			const auto rand_delay = float(rand()) % int(*bhopMaxDelay / 100.f);
-			const auto delay_result (*bhopMinDelay / 1000.f) + 
-
-			float delay_result = (*bhopMinDelay / 1000.f) + (float(rand() % (int(*bhopMaxDelay / 1000.f) * 10)) / 10.f);
-
-			nextJump = SourceSDK::globals->curTime + delay_result;
-			return;
+			cmd->SetButton(SourceSDK::Input_Jump);
+			skippedTicks = 0;
 		}
 		else
 		{
-			if (SourceSDK::globals->curTime <= *nextJump)
-				return;
-			else
-				nextJump.reset();
+			cmd->RemoveButton(SourceSDK::Input_Jump);
+
+			if (*bhopAutoStrafe)
+				AutoStrafe(cmd);
 		}
 	}
 	else
-		return;*/
-
-	if (localPlayer->IsOnGround())
-		cmd->SetButton(SourceSDK::Input_Jump);
-	else
-	{
-		cmd->RemoveButton(SourceSDK::Input_Jump);
-
-		if (*bhopAutoStrafe)
-			AutoStrafe(cmd);
-	}
+		skippedTicks++;
 }

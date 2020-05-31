@@ -5,6 +5,8 @@
 
 #include "../util/strings.hpp"
 
+#include "../ui/ui.hpp"
+
 #include "../sourcesdk/globals.hpp"
 #include "../sourcesdk/player.hpp"
 #include "../sourcesdk/clientstate.hpp"
@@ -143,8 +145,8 @@ void Features::SpectatorList::DrawPreview(ImDrawList* list)
 			float(*spectatorListX) + 150.f,
 			float(*spectatorListY) + (ImGui::GetCurrentContext()->Font->FontSize * *spectatorListMaxPlayers)
 		),
-		IM_COL32(220, 134, 40, 100), IM_COL32_BLACK_TRANS,
-		IM_COL32_BLACK_TRANS, IM_COL32(220, 134, 40, 100)
+		UI::GetPreviewColor(2), IM_COL32_BLACK_TRANS,
+		IM_COL32_BLACK_TRANS, UI::GetPreviewColor(2)
 	);
 
 	list->AddText(
