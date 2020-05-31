@@ -17,7 +17,9 @@
 #include "../util/debug/logs.hpp"
 #include "../util/debug/errors.hpp"
 
-#include "../nlohmann/json.hpp"
+#include "../jsoncpp/value.h"
+#include "../jsoncpp/writer.h"
+#include "../jsoncpp/reader.h"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_stdlib.h"
@@ -311,57 +313,44 @@ void Features::PlayerList::LoadCache()
 	{
 		try
 		{
-			auto root = nlohmann::json::parse(std::string(
-				std::istream_iterator<char>(file),
-				std::istream_iterator<char>()
-			));
+			Json::Value root;
+			file >> root;
 
-			if (root.contains(UTIL_SXOR("version")))
-			{
-				auto& version = root[UTIL_SXOR("version")];
+			auto& version = root[UTIL_SXOR("version")];
 
-				if (!version.is_number_unsigned())
-					cacheCurrentError = Err_LoadCorrupted;
-				else
-					if (std::uint32_t int_version = version; int_version > PLAYER_LIST_VERSION)
-						cacheCurrentError = Err_LoadNotCompatible;
-			}
+			if (!version.isUInt())
+				cacheCurrentError = Err_LoadCorrupted;
 			else
-				cacheCurrentError = Err_LoadNotCompatible;
-
-			if (root.contains(UTIL_SXOR("player_list")))
-			{
-				auto& json_plylist = root[UTIL_SXOR("player_list")];
-
-				if (json_plylist.is_array())
-				{
-					for (const auto& info : json_plylist)
-					{
-						#define __PLIST_CHECK_JSON(json_var, var, checkFn) \
-							if (info.contains(#json_var)) { \
-							auto& json_##json_var = info[UTIL_SXOR(#json_var)]; \
-							if (!checkFn) { UTIL_XLOG(L"Failed to parse "#json_var); } else \
-							{ cached_info.var = json_##json_var; } }
-
-						//
-						// creating and filling PlayerListCachedInfo
-						//
-
-						PlayerListCachedInfo cached_info;
-
-						__PLIST_CHECK_JSON(steamid, steamid, json_steamid.is_string());
-						__PLIST_CHECK_JSON(last_server_ip, lastServerIp, json_last_server_ip.is_string());
-						__PLIST_CHECK_JSON(last_name, lastName, json_last_name.is_string());
-						__PLIST_CHECK_JSON(type, type, json_type.is_number_integer());
-						__PLIST_CHECK_JSON(description, description, json_description.is_string());
-
-						cachedPlayerList.push_back(cached_info);
-					}
-
-					cacheCurrentError = Err_None;
-				}
-				else
+				if (std::uint32_t int_version = version.asUInt(); int_version > PLAYER_LIST_VERSION)
 					cacheCurrentError = Err_LoadNotCompatible;
+
+			auto& json_plylist = root[UTIL_SXOR("player_list")];
+
+			if (json_plylist.isArray())
+			{
+				for (const auto& info : json_plylist)
+				{
+					#define __PLIST_CHECK_JSON(json_var, var, checkFn, parseFn) { \
+						auto& json_##json_var = info[UTIL_SXOR(#json_var)]; \
+						if (!(checkFn)) { UTIL_XLOG(L"Failed to parse "#json_var); } else \
+						{ cached_info.var = (decltype(cached_info.var))json_##json_var parseFn; } }
+
+					//
+					// creating and filling PlayerListCachedInfo
+					//
+
+					PlayerListCachedInfo cached_info;
+
+					__PLIST_CHECK_JSON(steamid, steamid, json_steamid.isString(), .asString());
+					__PLIST_CHECK_JSON(last_server_ip, lastServerIp, json_last_server_ip.isString(), .asString());
+					__PLIST_CHECK_JSON(last_name, lastName, json_last_name.isString(), .asString());
+					__PLIST_CHECK_JSON(type, type, json_type.isInt(), .asInt());
+					__PLIST_CHECK_JSON(description, description, json_description.isString(), .asString());
+
+					cachedPlayerList.push_back(cached_info);
+				}
+
+				cacheCurrentError = Err_None;
 			}
 			else
 				cacheCurrentError = Err_LoadNotCompatible;
@@ -387,12 +376,12 @@ void Features::PlayerList::SaveCache()
 
 	if (file)
 	{
-		auto root = nlohmann::json::object({});
+		auto root = Json::Value(Json::objectValue);
 
 		root[UTIL_SXOR("version")] = PLAYER_LIST_VERSION;
 
 		auto& json_plylist = root[UTIL_SXOR("player_list")];
-		json_plylist = nlohmann::json::array({});
+		json_plylist = Json::Value(Json::arrayValue);
 
 		for (const auto& cachedInfo : cachedPlayerList)
 		{
@@ -400,7 +389,7 @@ void Features::PlayerList::SaveCache()
 			// saving PlayerListCachedInfo to json
 			//
 
-			auto json_cachedInfo = nlohmann::json::object({});
+			auto json_cachedInfo = Json::Value(Json::objectValue);
 
 			json_cachedInfo[UTIL_SXOR("steamid")] = cachedInfo.steamid;
 			json_cachedInfo[UTIL_SXOR("last_server_ip")] = cachedInfo.lastServerIp;
@@ -408,10 +397,10 @@ void Features::PlayerList::SaveCache()
 			json_cachedInfo[UTIL_SXOR("type")] = int(cachedInfo.type);
 			json_cachedInfo[UTIL_SXOR("description")] = cachedInfo.description;
 
-			json_plylist.push_back(json_cachedInfo);
+			json_plylist.append(json_cachedInfo);
 		}
 
-		file << root.dump();
+		file << root;
 		file.close();
 
 		cacheCurrentError = Err_None;
