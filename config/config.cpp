@@ -144,6 +144,13 @@ static void DrawConfigContent(ImGui::Custom::Window&) noexcept
 			currentError = Err_FailedLoad;
 		}
 	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(UTIL_CXOR("Reset")))
+	{
+		Config::ResetAllVariables();
+	}
 }
 
 void Config::RegisterWindow() noexcept
