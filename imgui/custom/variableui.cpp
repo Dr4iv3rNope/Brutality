@@ -197,7 +197,7 @@ bool ImGui::Custom::Variable::Enum(Config::Enum& value) noexcept
 {
 	static auto callback = [] (void* data, int idx, const char** out) -> bool
 	{
-		auto items = (Config::Enum::Items*)data;
+		auto items = (Config::Enum::Type*)data;
 
 		*out = items->at(idx).c_str();
 		return true;
@@ -211,8 +211,8 @@ bool ImGui::Custom::Variable::Enum(Config::Enum& value) noexcept
 			: value.GetKey().c_str(),
 			&temp,
 			callback,
-			(void*)&value.GetItems(),
-			value.GetItems().size()
+			(void*)&value.GetValue(),
+			value.GetValue().size()
 		))
 	{
 		value.SetCurrentItem(temp);
@@ -234,7 +234,7 @@ bool ImGui::Custom::Variable::Color(Config::Color& value) noexcept
 		ImGui::Custom::ColorPicker(
 			value.GetKey().c_str(),
 			temp,
-			ImGui::ColorConvertU32ToFloat4(*(std::uint32_t*) & value.GetDefaultColor())
+			ImGui::ColorConvertU32ToFloat4(*(std::uint32_t*) & value.GetDefaultValue())
 		))
 	{
 		value.SetValue(ImGui::ColorConvertFloat4ToU32(temp));
@@ -252,10 +252,10 @@ bool ImGui::Custom::Variable::Color(Config::Color& value) noexcept
 bool ImGui::Custom::Variable::Key(Config::Key& value) noexcept
 {
 	ImGui::PushID(value.GetKey().c_str());
-	if (auto temp = value.GetKeyValue();
+	if (auto temp = value.GetValue();
 		ImGui::Custom::InputKey(value.GetKey().c_str(), temp))
 	{
-		value.SetKeyValue(temp);
+		value.SetValue(temp);
 
 		ImGui::PopID();
 		return true;

@@ -213,3 +213,10 @@ void Config::ExportVariables(Json::Value& root)
 		}
 	}
 }
+
+void Config::ResetAllVariables() noexcept
+{
+	for (const auto& [group, variables] : GetSortedVariables())
+		for (const auto variable : variables)
+			variable->Reset();
+}

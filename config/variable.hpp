@@ -6,6 +6,7 @@
 #include <optional>
 #include <numeric>
 #include <array>
+#include <functional>
 #include <type_traits>
 
 #include "../jsoncpp/value.h"
@@ -45,6 +46,9 @@ namespace Config
 
 	// exports (saves) values to root
 	extern void ExportVariables(Json::Value& root);
+
+	// resets all values
+	extern void ResetAllVariables() noexcept;
 	
 	// return all saved variables
 	extern SortedVariables& GetSortedVariables() noexcept;
@@ -98,6 +102,7 @@ namespace Config
 
 		virtual bool Export(Json::Value& value) const = 0;
 		virtual bool Import(const Json::Value& value) = 0;
+		virtual void Reset() noexcept = 0;
 
 		virtual VariableType GetType() const = 0;
 		virtual bool IsLimitedVariable() const = 0;
@@ -109,6 +114,20 @@ namespace Config
 		return IsVariableRegistered(variable.GetGroup(), variable.GetKey());
 	}
 
+	enum class VariableAction
+	{
+		Import,			// called when we successfully imported value
+		Export,			// called when we successfully exported value
+		ValueChanged,	// called when value is changed
+		Reset			// called when value is reset
+	};
+
+	template <typename T>
+	class IBaseVariable;
+
+	// for devs: call when value is changed ALREADY
+	template <typename T>
+	using VariableCallback = std::function<void(const IBaseVariable<T>*, VariableAction)>;
 
 	// base variable that can be used in most cases
 	//
@@ -119,16 +138,31 @@ namespace Config
 	class IBaseVariable : public IVariable
 	{
 		static_assert(std::is_copy_constructible<T>(), "T must be copiable");
+		static_assert(!std::is_pointer<T>(), "T cannot be pointer");
 
 	protected:
 		T _value;
+		const T _default_value;
+		VariableCallback<T> _callback;
 
-		inline IBaseVariable(const std::string& group, const std::string& key, VariableFlags flags = 0, T default_value = T {})
-			: IVariable(group, key, flags), _value { default_value } {}
+		inline void Callback(VariableAction action) const noexcept
+		{
+			if (_callback)
+				_callback(this, action);
+		}
+
+		inline IBaseVariable(const std::string& group, const std::string& key,
+							 T default_value = T {},
+							 VariableFlags flags = 0,
+							 VariableCallback<T> callback = nullptr)
+			: IVariable(group, key, flags), _value { default_value }, _callback { callback }, _default_value { _value }
+		{}
 
 	public:
 		IBaseVariable(const IBaseVariable&) = delete;
 		IBaseVariable(const IBaseVariable&&) = delete;
+
+		virtual void SetCallback(VariableCallback<T> callback) noexcept { _callback = callback; }
 		
 		using Type = T;
 				
@@ -155,8 +189,15 @@ namespace Config
 			}
 		}
 
+		inline const T& GetDefaultValue() const noexcept { return _default_value; }
 		inline const T& GetValue() const noexcept { return this->_value; }
 		virtual void SetValue(T value) = 0;
+
+		virtual void Reset() noexcept override
+		{
+			_value = _default_value;
+			Callback(Config::VariableAction::Reset);
+		}
 
 		inline auto operator=(T value) { SetValue(value); }
 		inline bool operator==(T value) const noexcept { return GetValue(value) == value; }
@@ -169,34 +210,39 @@ namespace Config
 	// variable class that can hold basic types
 	// (like int, float, etc.)
 	//
-	// not recommended if you want create own
-	// variable class
+	// not recommended if you want use custom class
 	template <typename T>
 	class Variable : public IBaseVariable<T>
-	{
-		static_assert(!std::is_pointer<T>(), "T cannot be pointer");
-		
+	{	
 	public:
 		inline Variable(const std::string& group, const std::string& key,
-						VariableFlags flags = 0, T default_value = T {})
-			: IBaseVariable<T>(group, key, flags, default_value) {}
+						T default_value = T {}, VariableFlags flags = 0, VariableCallback<T> callback = nullptr)
+			: IBaseVariable<T>(group, key, default_value, flags, callback) {}
 
-		virtual void SetValue(T value) override { this->_value = value; }
+		virtual void SetValue(T value) override
+		{
+			this->_value = value;
+			this->Callback(VariableAction::ValueChanged);
+		}
 
 		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
+			this->Callback(VariableAction::Export);
+
 			return true;
 		}
 
 		virtual bool Import(const Json::Value& value) override
 		{
+			bool success = false;
+
 			if constexpr (std::is_same<T, bool>())
 			{
 				if (value.isBool())
 				{
 					this->_value = value.asBool();
-					return true;
+					success = true;
 				}
 			}
 			else if constexpr (std::is_floating_point<T>())
@@ -206,12 +252,12 @@ namespace Config
 					if constexpr (sizeof(T) == sizeof(double))
 					{
 						this->_value = value.asDouble();
-						return true;
+						success = true;
 					}
 					else
 					{
 						this->_value = value.asFloat();
-						return true;
+						success = true;
 					}
 				}
 			}
@@ -222,7 +268,7 @@ namespace Config
 					if (value.isUInt64())
 					{
 						this->_value = value.asUInt64();
-						return true;
+						success = true;
 					}
 				}
 				else
@@ -230,7 +276,7 @@ namespace Config
 					if (value.isUInt())
 					{
 						this->_value = value.asUInt();
-						return true;
+						success = true;
 					}
 				}
 			}
@@ -243,7 +289,7 @@ namespace Config
 						if (value.isInt64())
 						{
 							this->_value = value.asInt64();
-							return true;
+							success = true;
 						}
 					}
 					else
@@ -251,13 +297,16 @@ namespace Config
 						if (value.isInt())
 						{
 							this->_value = value.asInt();
-							return true;
+							success = true;
 						}
 					}
 				}
 			}
 
-			return false;
+			if (success)
+				this->Callback(VariableAction::Import);
+
+			return success;
 		}
 
 		virtual bool IsLimitedVariable() const override { return false; }
@@ -267,54 +316,44 @@ namespace Config
 	//
 	// not working with bool (for obvious reasons)
 	template <typename T>
-	class LimitedVariable : public IBaseVariable<T>
+	class LimitedVariable : public Variable<T>
 	{
-		static_assert(!std::is_pointer<T>(), "T cannot be pointer");
 		static_assert(!std::is_same<T, bool>(), "cannot be bool");
 
 	public:
 		using Limits = std::pair<T, T>;
 
 	protected:
-		std::optional<Limits> _limits;
+		Limits _limits;
 
 	public:
 		inline LimitedVariable(const std::string& group, const std::string& key,
 							   T default_value, T min, T max,
-							   VariableFlags flags = 0)
-			: IBaseVariable<T>(group, key, flags, default_value),
+							   VariableFlags flags = 0, VariableCallback<T> callback = nullptr)
+			: Variable<T>(group, key, default_value, flags, callback),
 			_limits { std::make_pair(min, max) }
 		{}
 		
 		inline T GetMin() const noexcept
 		{
-			return this->_limits.has_value()
-				? this->_limits.value().first
-				: std::numeric_limits<T>().min();
+			return this->_limits.first;
 		}
 		
 		inline T GetMax() const noexcept
 		{
-			return this->_limits.has_value()
-				? this->_limits.value().second
-				: std::numeric_limits<T>().max();
+			return this->_limits.second;
 		}
 
 		inline bool Clamp(T& value) const noexcept
 		{
-			if (!this->_limits.has_value())
-				return false;
-
-			auto& limits = this->_limits.value();
-
-			if (limits.first > value)
+			if (GetMin() > value)
 			{
-				value = limits.first;
+				value = GetMin();
 				return true;
 			}
-			else if (limits.second < value)
+			else if (GetMax() < value)
 			{
-				value = limits.second;
+				value = GetMax();
 				return true;
 			}
 			else
@@ -324,77 +363,23 @@ namespace Config
 		virtual void SetValue(T value) override
 		{
 			this->Clamp(value);
-
-			this->_value = value;
+			Variable<T>::SetValue(value);
 		}
 
 		virtual bool Export(Json::Value& value) const override
 		{
-			value = this->_value;
-			return true;
+			return Variable<T>::Export(value);
 		}
 
 		virtual bool Import(const Json::Value& value) override
 		{
-			if constexpr (std::is_same<T, bool>())
+			if (Variable<T>::Import(value))
 			{
-				if (value.isBool())
-				{
-					this->_value = value.asBool();
-					return true;
-				}
-			}
-			else if constexpr (std::is_floating_point<T>())
-			{
-				if (value.isDouble())
-				{
-					this->_value = value.asDouble();
-					return true;
-				}
-			}
-			else if constexpr (std::is_unsigned<T>())
-			{
-				if constexpr (sizeof(T) == sizeof(unsigned long))
-				{
-					if (value.isUInt64())
-					{
-						this->_value = value.asUInt64();
-						return true;
-					}
-				}
-				else
-				{
-					if (value.isUInt())
-					{
-						this->_value = value.asUInt();
-						return true;
-					}
-				}
+				this->Clamp(this->_value);
+				return true;
 			}
 			else
-			{
-				if constexpr (std::is_signed<T>())
-				{
-					if constexpr (sizeof(T) == sizeof(unsigned long))
-					{
-						if (value.isInt64())
-						{
-							this->_value = value.asInt64();
-							return true;
-						}
-					}
-					else
-					{
-						if (value.isInt())
-						{
-							this->_value = value.asInt();
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
+				return false;
 		}
 
 		virtual bool IsLimitedVariable() const override { return true; }
@@ -415,11 +400,23 @@ namespace Config
 	// below (class String)
 	//
 
-	using Int32 = Variable<int>;
-	using LInt32 = LimitedVariable<int>;
+	using Int8 = Variable<std::int8_t>;
+	using Int16 = Variable<std::int16_t>;
+	using Int32 = Variable<std::int32_t>;
+	using Int64 = Variable<std::int64_t>;
+	using LInt8 = LimitedVariable<std::int8_t>;
+	using LInt16 = LimitedVariable<std::int16_t>;
+	using LInt32 = LimitedVariable<std::int32_t>;
+	using LInt64 = LimitedVariable<std::int64_t>;
 
+	using UInt8 = Variable<std::uint8_t>;
+	using UInt16 = Variable<std::uint16_t>;
 	using UInt32 = Variable<std::uint32_t>;
+	using UInt64 = Variable<std::uint64_t>;
+	using LUInt8 = LimitedVariable<std::uint8_t>;
+	using LUInt16 = LimitedVariable<std::uint16_t>;
 	using LUInt32 = LimitedVariable<std::uint32_t>;
+	using LUInt64 = LimitedVariable<std::uint64_t>;
 
 	using Float = Variable<float>;
 	using LFloat = LimitedVariable<float>;
@@ -427,65 +424,21 @@ namespace Config
 	using Bool = Variable<bool>;
 
 	template <typename T>
-	class LimitedString : public IBaseVariable<std::basic_string<T>>
-	{
-	private:
-		std::size_t _max_length;
-
-	public:
-		inline LimitedString(const std::string& group, const std::string& key,
-							 std::size_t max_length,
-							 VariableFlags flags = 0,
-							 std::basic_string<T> default_value = std::basic_string<T>())
-			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value),
-			_max_length { max_length }
-		{
-			this->_value.resize(_max_length);
-		}
-
-		virtual VariableType GetType() const override { return VariableType::String; }
-		inline std::size_t GetMaxLength() const noexcept { return this->_max_length; }
-
-		virtual bool Export(Json::Value& value) const override
-		{
-			value = this->_value;
-			return true;
-		}
-
-		virtual bool Import(const Json::Value& value) override
-		{
-			if (!value.isString())
-				return false;
-
-			this->SetValue(value.asString());
-			return true;
-		}
-
-		virtual void SetValue(std::basic_string<T> value) noexcept override
-		{
-			this->_value = value;
-			this->_value.resize(this->_max_length);
-		}
-
-		virtual bool IsLimitedVariable() const override { return true; }
-
-		inline char* GetBuffer() noexcept { return (char*)this->GetValue().data(); }
-	};
-
-	template <typename T>
 	class String : public IBaseVariable<std::basic_string<T>>
 	{
 	public:
 		inline String(const std::string& group, const std::string& key,
+					  std::basic_string<T> default_value = std::basic_string<T>(),
 					  VariableFlags flags = 0,
-					  std::basic_string<T> default_value = std::basic_string<T>())
-			: IBaseVariable<std::basic_string<T>>(group, key, flags, default_value) {}
+					  VariableCallback<std::basic_string<T>> callback = nullptr)
+			: IBaseVariable<std::basic_string<T>>(group, key, default_value, flags, callback) {}
 
 		virtual VariableType GetType() const override { return VariableType::String; }
 
 		virtual bool Export(Json::Value& value) const override
 		{
 			value = this->_value;
+			this->Callback(VariableAction::Export);
 			return true;
 		}
 
@@ -495,12 +448,14 @@ namespace Config
 				return false;
 
 			this->_value = value.asString();
+			this->Callback(VariableAction::Import);
 			return true;
 		}
 
 		virtual void SetValue(std::basic_string<T> value) noexcept override
 		{
 			this->_value = value;
+			this->Callback(VariableAction::ValueChanged);
 		}
 
 		virtual bool IsLimitedVariable() const override { return false; }
@@ -509,33 +464,60 @@ namespace Config
 		inline void Resize(std::size_t size) noexcept { return (char*)this->GetValue().resize(size); }
 	};
 
-	class Enum : public IVariable
+	template <typename T>
+	class LimitedString : public String<T>
 	{
+	private:
+		std::size_t _max_length;
+
 	public:
-		using Items = std::deque<std::string>;
+		inline LimitedString(const std::string& group, const std::string& key,
+							 std::size_t max_length,
+							 std::basic_string<T> default_value = std::basic_string<T>(),
+							 VariableFlags flags = 0,
+							 VariableCallback<std::basic_string<T>> callback = nullptr)
+			: String<T>(group, key, default_value.substr(0, _max_length), flags, callback),
+			_max_length { max_length }
+		{}
 
+		virtual VariableType GetType() const override { return VariableType::String; }
+		inline std::size_t GetMaxLength() const noexcept { return this->_max_length; }
+
+		virtual void SetValue(std::basic_string<T> value) noexcept override
+		{
+			String<T>::SetValue(value.substr(0, _max_length));
+		}
+
+		virtual bool IsLimitedVariable() const override { return true; }
+
+		// we cant handle if value has been changed
+		// so it's your turn
+		inline char* GetBuffer() noexcept { return (char*)this->GetValue().data(); }
+	};
+
+	class Enum : public IBaseVariable<std::deque<std::string>>
+	{
 	protected:
-		Items _items;
-
-		std::size_t _typehash = typeid(Enum).hash_code();
-		std::size_t _currentItem { 0 };
+		std::size_t _currentItem;
 
 	public:
 		inline Enum(const std::string& group, const std::string& key,
-					std::initializer_list<Items::value_type> items,
-					VariableFlags flags = 0)
-			: IVariable(group, key, flags), _items(items)
+					std::initializer_list<std::string> items,
+					VariableFlags flags = 0,
+					VariableCallback<std::deque<std::string>> callback = nullptr)
+			: IBaseVariable<std::deque<std::string>>(group, key, items, flags, callback),
+			_currentItem { 0 }
 		{
 			// empty item list disallow
 			UTIL_DEBUG_ASSERT(items.size() > 0);
 		}
 
-		Enum(const Enum&) = delete;
-		Enum(const Enum&&) = delete;
+		virtual void SetValue(std::deque<std::string>) noexcept override {}
 
 		virtual bool Export(Json::Value& value) const override
 		{
 			value = _currentItem;
+			this->Callback(VariableAction::Export);
 			return true;
 		}
 
@@ -547,6 +529,7 @@ namespace Config
 					return false;
 
 				_currentItem = value.asUInt();
+				this->Callback(VariableAction::Import);
 				return true;
 			}
 			else
@@ -555,6 +538,7 @@ namespace Config
 					return false;
 
 				_currentItem = value.asUInt64();
+				this->Callback(VariableAction::Import);
 				return true;
 			}
 		}
@@ -566,27 +550,25 @@ namespace Config
 		inline auto GetCurrentItem() const noexcept { return _currentItem; }
 		inline explicit operator std::size_t() const noexcept { return GetCurrentItem(); }
 
-		inline void SetCurrentItem(std::size_t idx) noexcept { _currentItem = idx; }
+		inline void SetCurrentItem(std::size_t idx) noexcept
+		{
+			_currentItem = idx;
+			this->Callback(VariableAction::ValueChanged);
+		}
 		inline void operator=(std::size_t idx) noexcept { SetCurrentItem(idx); }
 
-		inline const Items::value_type& GetStringItem() const noexcept{ return _items[_currentItem]; }
-
-		inline const auto& GetItems() const noexcept { return this->_items; }
+		inline const std::string& GetStringItem() const noexcept{ return this->_value[_currentItem]; }
 	};
 
 	class Color : public IBaseVariable<std::array<std::uint8_t, 4>>
 	{
-	protected:
-		std::array<std::uint8_t, 4> _defaultColor;
-
 	public:
 		inline Color(const std::string& group, const std::string& key,
 					 std::array<std::uint8_t, 4> colors,
-					 VariableFlags flags = 0)
-			: IBaseVariable<std::array<std::uint8_t, 4>>(group, key, flags, colors)
-		{
-			_defaultColor = colors;
-		}
+					 VariableFlags flags = 0,
+					 VariableCallback<std::array<std::uint8_t, 4>> callback = nullptr)
+			: IBaseVariable<std::array<std::uint8_t, 4>>(group, key, colors, flags, callback)
+		{}
 
 		virtual VariableType GetType() const override { return VariableType::Color; }
 
@@ -596,6 +578,7 @@ namespace Config
 			value[1] = this->_value[1];
 			value[2] = this->_value[2];
 			value[3] = this->_value[3];
+			this->Callback(VariableAction::Export);
 
 			return true;
 		}
@@ -612,13 +595,18 @@ namespace Config
 			this->_value[1] = std::uint8_t(value[1].asUInt());
 			this->_value[2] = std::uint8_t(value[2].asUInt());
 			this->_value[3] = std::uint8_t(value[3].asUInt());
+			this->Callback(VariableAction::Import);
 
 			return true;
 		}
 
 		virtual bool IsLimitedVariable() const override { return false; }
 
-		virtual void SetValue(std::array<std::uint8_t, 4> value) noexcept override { this->_value = value; }
+		virtual void SetValue(std::array<std::uint8_t, 4> value) noexcept override
+		{
+			this->_value = value;
+			this->Callback(VariableAction::Import);
+		}
 		
 		inline void SetValue(std::uint8_t r, std::uint8_t g, std::uint8_t b, std::uint8_t a = 255) noexcept
 		{
@@ -632,12 +620,12 @@ namespace Config
 		
 		inline void SetValue(float r, float g, float b, float a = 1.f) noexcept
 		{
-			this->SetValue({
+			this->SetValue(
 				std::uint8_t(r * 255.f),
 				std::uint8_t(g * 255.f),
 				std::uint8_t(b * 255.f),
 				std::uint8_t(a * 255.f)
-			});
+			);
 		}
 
 		inline auto Red() const noexcept { return this->_value[0]; }
@@ -651,71 +639,67 @@ namespace Config
 		inline float AlphaF() const noexcept { return float(this->Alpha()) / 255.f; }
 
 		inline auto Hex() const noexcept { return *(uint32_t*)this->_value.data(); }
-
-		inline const auto& GetDefaultColor() const noexcept { return _defaultColor; }
-		inline void SetDefaultColor() noexcept { _value = _defaultColor; }
 	};
 
 	// used for key bindings
-	class Key : public IVariable
+	class Key : public IBaseVariable<ImGui::Custom::Key>
 	{
-	private:
-		ImGui::Custom::Key _key_value;
-
 	public:
 		inline Key(const std::string& group, const std::string& key,
 				   ImGui::Custom::Key key_value = ImGui::Custom::Key::_Invalid,
-				   VariableFlags flags = 0)
-			: IVariable(group, key, flags), _key_value { key_value }
+				   VariableFlags flags = 0,
+				   VariableCallback<ImGui::Custom::Key> callback = nullptr)
+			: IBaseVariable<ImGui::Custom::Key>(group, key, key_value, flags, callback)
 		{}
 
-		Key(const Key&) = delete;
-		Key(const Key&&) = delete;
+		virtual void SetValue(ImGui::Custom::Key value) noexcept override
+		{
+			this->_value = value;
+			this->Callback(VariableAction::ValueChanged);
+		}
 
-		inline void SetKeyValue(ImGui::Custom::Key key_value) noexcept { _key_value = key_value; }
-		inline auto GetKeyValue() const noexcept { return _key_value; }
-
-		inline bool HasKeyValue() const noexcept { return _key_value != ImGui::Custom::Key::_Invalid; }
-		inline void ResetKeyValue() noexcept { _key_value = ImGui::Custom::Key::_Invalid; }
+		inline bool HasValue() const noexcept { return this->_value != ImGui::Custom::Key::_Invalid; }
+		inline void ResetValue() noexcept { this->SetValue(ImGui::Custom::Key::_Invalid); }
 
 		// if key haven't "key value" then it will return 0
 		inline short GetAsyncKeyState() const noexcept
 		{
-			return HasKeyValue() ? ImGui::Custom::GetAsyncKeyState(_key_value) : 0;
+			return HasValue() ? ImGui::Custom::GetAsyncKeyState(this->_value) : 0;
 		}
 
 		// if key haven't "key value" then it will return false
 		inline bool IsPressed(bool repeat = true) const noexcept
 		{
-			return HasKeyValue() && ImGui::Custom::IsKeyPressed(_key_value, repeat);
+			return HasValue() && ImGui::Custom::IsKeyPressed(this->_value, repeat);
 		}
 
 		// if key haven't "key value" then it will return false
 		inline bool IsKeyReleased() const noexcept
 		{
-			return HasKeyValue() && ImGui::Custom::IsKeyReleased(_key_value);
+			return HasValue() && ImGui::Custom::IsKeyReleased(this->_value);
 		}
 
 		// if key haven't "key value" then it will return false
 		inline bool IsKeyDown() const noexcept
 		{
-			return HasKeyValue() && ImGui::Custom::IsKeyDown(_key_value);
+			return HasValue() && ImGui::Custom::IsKeyDown(this->_value);
 		}
 
 
 		inline bool ToVirtualKey(ImGui::Custom::VirtualKey& key) const noexcept
 		{
-			return ImGui::Custom::KeyToVirtualKey(_key_value, &key);
+			return ImGui::Custom::KeyToVirtualKey(this->_value, &key);
 		}
 
 		inline bool ToButtonCode(SourceSDK::ButtonCode& key) const noexcept
 		{
-			return ImGui::Custom::KeyToButtonCode(_key_value, &key);
+			return ImGui::Custom::KeyToButtonCode(this->_value, &key);
 		}
 
 		virtual bool Export(Json::Value& value) const override
 		{
-			value = Json::Value(int(_key_value));
+			value = Json::Value(int(this->_value));
+			this->Callback(VariableAction::Export);
 
 			return true;
 		}
@@ -725,7 +709,8 @@ namespace Config
 			if (!value.isNumeric())
 				return false;
 
-			_key_value = ImGui::Custom::Key(value.asInt());
+			this->_value = ImGui::Custom::Key(value.asInt());
+			this->Callback(VariableAction::Import);
 			return true;
 		}
 
@@ -733,35 +718,28 @@ namespace Config
 		virtual bool IsLimitedVariable() const override { return false; }
 	};
 
-	class Flags : public IVariable
+	class Flags : public UInt32
 	{
 	private:
-		std::uint32_t _flags;
 		std::deque<std::string> _bits_info;
 
 	public:
 		inline Flags(const std::string& group, const std::string& key,
 					 std::initializer_list<std::string> bits_info,
-					 VariableFlags flags = 0)
-			: IVariable(group, key, flags), _bits_info(bits_info)
+					 VariableFlags flags = 0,
+					 VariableCallback<std::uint32_t> callback = nullptr)
+			: UInt32(group, key, 0, flags, callback), _bits_info(bits_info)
 		{
 			// empty item list disallow
 			UTIL_DEBUG_ASSERT(bits_info.size() > 0);
 			UTIL_DEBUG_ASSERT(bits_info.size() <= GetMaxBit());
 		}
 
-		Flags(const Flags&) = delete;
-		Flags(const Flags&&) = delete;
-
+		template <typename V = int, typename F = int>
+		inline Util::Flags<V, F> GetFlags() const noexcept { return Util::Flags<V, F>(this->_value); }
 
 		template <typename V = int, typename F = int>
-		inline Util::Flags<V, F> GetFlags() const noexcept { return Util::Flags<V, F>(_flags); }
-
-		template <typename V = int, typename F = int>
-		inline void SetFlags(Util::Flags<V, F> flags) noexcept { _flags = flags.flags; }
-
-		inline std::uint32_t GetFlags() noexcept { return _flags; }
-		inline void SetFlags(std::uint32_t flags) noexcept { _flags = flags; }
+		inline void SetFlags(Util::Flags<V, F> flags) noexcept { this->SetValue(flags.flags); }
 
 		inline bool HasBitInfo(std::size_t bit) const noexcept
 		{
@@ -789,23 +767,6 @@ namespace Config
 			return sizeof(std::uint32_t) * 8;
 		}
 
-		virtual bool Export(Json::Value& value) const
-		{
-			value = _flags;
-			return true;
-		}
-
-		virtual bool Import(const Json::Value& value)
-		{
-			if (!value.isUInt())
-				return false;
-
-			_flags = value.asUInt();
-			return true;
-		}
-
 		virtual VariableType GetType() const { return VariableType::Flags; }
-
-		virtual bool IsLimitedVariable() const { return false; }
 	};
 }

@@ -143,7 +143,7 @@ Config::Bool preventRunString(UTIL_SXOR("Protection"), UTIL_SXOR("Prevent Run St
 #ifdef _DEBUG
 // debug variables
 
-static Config::Bool v_bool("Debug", "Boolean", Config::VariableFlags_DontSave);
+static Config::Bool v_bool("Debug", "Boolean", true, Config::VariableFlags_DontSave);
 static Config::Int32 v_int32("Debug", "Integer 32", Config::VariableFlags_DontSave);
 static Config::UInt32 v_uint32("Debug", "Unsigned Integer 32", Config::VariableFlags_DontSave);
 static Config::Float v_float("Debug", "Float", Config::VariableFlags_DontSave);
@@ -151,9 +151,9 @@ static Config::Float v_float("Debug", "Float", Config::VariableFlags_DontSave);
 static Config::LInt32 lv_int32("Debug", "Limited Integer 32", 0, -228, 1337, Config::VariableFlags_DontSave);
 static Config::LUInt32 lv_uint32("Debug", "Limited Unsigned Integer 32", 666, 666, 1234, Config::VariableFlags_DontSave);
 static Config::LFloat lv_float("Debug", "Limited Float", 0, -3.14f, 2.28f, Config::VariableFlags_DontSave);
-static Config::LimitedString<char> lv_string("Debug", "Your Name", 64, Config::VariableFlags_DontSave, "AYE");
+static Config::LimitedString<char> lv_string("Debug", "Your Name", 64, "AYE", Config::VariableFlags_DontSave);
 
-static Config::String<char> uv_string("Debug", "XYZ", Config::VariableFlags_DontSave, "123");
+static Config::String<char> uv_string("Debug", "XYZ", "123", Config::VariableFlags_DontSave);
 static Config::Enum uv_enum("Debug", "Who are you", { "Idiot", "I Have Stupid", "Yes sir" }, Config::VariableFlags_DontSave);
 static Config::Color uv_color("Debug", "Pick some color", { 1, 3, 3, 7 }, Config::VariableFlags_DontSave);
 static Config::Key uv_key("Debug", "Some Key Binding", ImGui::Custom::Key::_Invalid, Config::VariableFlags_DontSave);
@@ -168,12 +168,12 @@ Config::Color playerColorRages(UTIL_SXOR("Player Colors"), UTIL_SXOR("Rages Colo
 
 // esp
 
-Config::Bool espEnabled(UTIL_SXOR("ESP"), UTIL_SXOR("Enable"), false);
+Config::Bool espEnabled(UTIL_SXOR("ESP"), UTIL_SXOR("Enable"));
 Config::LFloat espMaxDistance(UTIL_SXOR("ESP"), UTIL_SXOR("Max Distance"), 0.f, 0.f, 50000.f);
 
-Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame"), Config::VariableFlags_AtNewLine);
+Config::Bool espUpdatePerFrame(UTIL_SXOR("ESP"), UTIL_SXOR("Update Per Frame (can reduce fps)"), false, Config::VariableFlags_AtNewLine);
 
-Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), Config::VariableFlags_AtNewLine);
+Config::Bool espDrawEntities(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Entities"), false, Config::VariableFlags_AtNewLine);
 Config::Bool espDrawNormal(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Normal"));
 Config::Bool espDrawDangerous(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dangerous"));
 Config::Bool espDrawFriends(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Friends"));
@@ -181,20 +181,20 @@ Config::Bool espDrawRages(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Rages"));
 Config::Bool espDrawDeadPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dead Players"));
 Config::Bool espDrawDormantPlayers(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Dormant Players"));
 
-Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), Config::VariableFlags_AtNewLine);
+Config::Bool espHealth(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Health"), false, Config::VariableFlags_AtNewLine);
 Config::Color espHealthColor(UTIL_SXOR("ESP"), UTIL_SXOR("Health Text Color"), { 55, 255, 55, 255 });
 
-Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), Config::VariableFlags_AtNewLine);
+Config::Bool espName(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Name"), false, Config::VariableFlags_AtNewLine);
 Config::Color espNameColor(UTIL_SXOR("ESP"), UTIL_SXOR("Name Text Color"), { 55, 255, 255, 255 });
 
-Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), Config::VariableFlags_AtNewLine);
+Config::Bool espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Skeleton"), false, Config::VariableFlags_AtNewLine);
 #ifdef _DEBUG
 Config::Bool dbg_espSkeleton(UTIL_SXOR("ESP"), UTIL_SXOR("Debug Skeleton"));
 #endif
 Config::LFloat espSkeletonThickness(UTIL_SXOR("ESP"), UTIL_SXOR("Skeleton Thickness"), 1.f, 0.1f, 12.f);
 
-Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), Config::VariableFlags_AtNewLine);
-Config::Color espActiveWeaponColor(UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 55, 55, 55, 255 });
+Config::Bool espActiveWeapon(UTIL_SXOR("ESP"), UTIL_SXOR("Draw Active Weapon"), false, Config::VariableFlags_AtNewLine);
+Config::Color espActiveWeaponColor(UTIL_SXOR("ESP"), UTIL_SXOR("Active Weapon Text Color"), { 255, 150, 55, 255 });
 
 
 // text radar
@@ -248,11 +248,7 @@ Config::Color crosshairColor(UTIL_SXOR("Crosshair"), UTIL_SXOR("Color"), { 255, 
 
 Config::Bool bhopEnable(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Enable"));
 Config::Bool bhopAutoStrafe(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Mouse Auto-Strafe"));
-
-/*
-Config::LFloat bhopMinDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Min Jump Delay"), 0.f, 0.f, 1000.f);
-Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"), 0.f, 0.f, 1000.f);
-*/
+Config::LUInt32 bhopSkipTicks(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Skip ticks"), 0, 0, 100);
 
 
 // chat spam
@@ -260,12 +256,14 @@ Config::LFloat bhopMaxDelay(UTIL_SXOR("Bunny Hop"), UTIL_SXOR("Max Jump Delay"),
 Config::Bool chatSpamEnable(
 	UTIL_SXOR("Chat Spammer"),
 	UTIL_SXOR("Enable"),
+	false,
 	Config::VariableFlags_NotVisible
 );
 
 Config::Bool chatSpamTeam(
 	UTIL_SXOR("Chat Spammer"),
 	UTIL_SXOR("Team chat mode"),
+	false,
 	Config::VariableFlags_NotVisible
 );
 
@@ -279,8 +277,8 @@ Config::LFloat chatSpamDelay(
 Config::String<char> chatSpamMessage(
 	UTIL_SXOR("Chat Spammer"),
 	UTIL_SXOR("Message"),
-	Config::VariableFlags_NotVisible,
-	UTIL_SXOR("\\n\\nBrutality B-)\\n\\n")
+	UTIL_SXOR("\\n\\nBrutality B-)\\n\\n"),
+	Config::VariableFlags_NotVisible
 );
 
 Config::Enum chatSpamMode(
@@ -296,13 +294,25 @@ Config::Enum chatSpamMode(
 
 // user interface settings
 
-Config::Bool useTabs(UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), Config::VariableFlags_NotVisible, true);
+Config::Bool uiUseTabs(UTIL_SXOR("Interface"), UTIL_SXOR("Use Tabs instead of windows"), true, Config::VariableFlags_NotVisible);
+Config::Enum uiColorStyle(
+	UTIL_SXOR("Interface"),
+	UTIL_SXOR("UI Color Style"),
+	{
+		UTIL_SXOR("Default"),
+		UTIL_SXOR("Custom All"),
+		UTIL_SXOR("Custom Borders")
+	},
+	Config::VariableFlags_NotVisible
+);
+Config::Color uiColor(UTIL_SXOR("Interface"), UTIL_SXOR("UI Color"), { 215, 130, 50, 100 }, Config::VariableFlags_NotVisible);
+Config::Color uiTextColor(UTIL_SXOR("Interface"), UTIL_SXOR("UI Text Color"), { 255, 255, 255, 255 }, Config::VariableFlags_NotVisible);
 
 
 // name changer
 
-Config::String<char> nameChangerName(UTIL_SXOR("Name Changer"), UTIL_SXOR("Name"), Config::VariableFlags_NotVisible);
-Config::Bool nameChangerAutoSend(UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send"), Config::VariableFlags_NotVisible);
+Config::String<char> nameChangerName(UTIL_SXOR("Name Changer"), UTIL_SXOR("Name"), std::string(), Config::VariableFlags_NotVisible);
+Config::Bool nameChangerAutoSend(UTIL_SXOR("Name Changer"), UTIL_SXOR("Auto Send"), false, Config::VariableFlags_NotVisible);
 
 
 // chams
@@ -420,10 +430,10 @@ Config::Enum chamsRagesOccType(
 // trigger bot
 
 Config::Bool triggerbotEnable(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Enable"));
-Config::Bool triggerbotTargetNormals(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Normal Players"), Config::VariableFlags_AtNewLine);
-Config::Bool triggerbotTargetDangerous(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Dangerous Players"));
-Config::Bool triggerbotTargetFriends(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Friends Players"));
-Config::Bool triggerbotTargetRages(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Rages Players"));
+Config::Bool triggerbotTargetNormals(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Normal Players"), false, Config::VariableFlags_AtNewLine);
+Config::Bool triggerbotTargetDangerous(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Dangerous Players"), false);
+Config::Bool triggerbotTargetFriends(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Friends Players"), false);
+Config::Bool triggerbotTargetRages(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Target At Rages Players"), false);
 Config::Key triggerbotKey(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("hold key"), ImGui::Custom::Key::_Invalid, Config::VariableFlags_AtNewLine);
 Config::LFloat triggerbotDelay(UTIL_SXOR("Trigger Bot"), UTIL_SXOR("Delay in seconds"), 0.f, 0.f, 1.f, Config::VariableFlags_AtNewLine);
 
@@ -445,15 +455,17 @@ Config::Key fakeduckKey(UTIL_SXOR("Fake Duck"), UTIL_SXOR("Key"), ImGui::Custom:
 // backtrack
 
 Config::Bool backtrackEnable(UTIL_SXOR("Backtrack"), UTIL_SXOR("Enable"));
-Config::Bool backtrackValidateOnUpdate(UTIL_SXOR("Backtrack"), UTIL_SXOR("Validate On Update (Can create problems)"));
+Config::Bool backtrackValidateOnUpdate(UTIL_SXOR("Backtrack"), UTIL_SXOR("Validate On Update (can create problems)"));
 Config::Bool backtrackCalcBones(UTIL_SXOR("Backtrack"), UTIL_SXOR("Calculate backtrack by bones (slower)"));
 Config::LFloat backtrackMaxTime(UTIL_SXOR("Backtrack"), UTIL_SXOR("Max Time"), 0.f, 0.f, 0.2f);
 Config::LFloat backtrackMaxSimTime(UTIL_SXOR("Backtrack"), UTIL_SXOR("Max Simulation Time"), 1.f, 0.f, 10.0f);
-Config::Bool backtrackTrackNormals(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Normal Players"), Config::VariableFlags_AtNewLine);
+Config::LFloat backtrackMaxFov(UTIL_SXOR("Backtrack"), UTIL_SXOR("Max Fov (can increase fps)"), 0.f, 0.f, 180.f, Config::VariableFlags_AtNewLine);
+Config::Bool backtrackValidateFovOnUpdate(UTIL_CXOR("Backtrack"), UTIL_SXOR("Validate Fov On Update"));
+Config::Bool backtrackTrackNormals(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Normal Players"), false, Config::VariableFlags_AtNewLine);
 Config::Bool backtrackTrackDangerous(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Dangerous Players"));
 Config::Bool backtrackTrackFriends(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Friend Players"));
 Config::Bool backtrackTrackRages(UTIL_SXOR("Backtrack"), UTIL_SXOR("Track Rage Players"));
-Config::Bool backtrackDrawDelay(UTIL_SXOR("Backtrack"), UTIL_SXOR("Draw Delay In Lines"), Config::VariableFlags_AtNewLine);
+Config::Bool backtrackDrawDelay(UTIL_SXOR("Backtrack"), UTIL_SXOR("Draw Delay In Lines"), false, Config::VariableFlags_AtNewLine);
 Config::Bool backtrackDrawHeadDots(UTIL_SXOR("Backtrack"), UTIL_SXOR("Draw Head Dots"));
 
 Config::Color backtrackChamsVisColor(
