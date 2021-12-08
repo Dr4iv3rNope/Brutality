@@ -28,27 +28,27 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -227,7 +227,6 @@
     <ClCompile Include="sourcesdk\netsetconvar.cpp" />
     <ClCompile Include="sourcesdk\networkable.cpp" />
     <ClCompile Include="sourcesdk\player.cpp" />
-    <ClCompile Include="sourcesdk\prediction.cpp" />
     <ClCompile Include="sourcesdk\renderable.cpp" />
     <ClCompile Include="sourcesdk\clientclass.cpp" />
     <ClCompile Include="sourcesdk\clientmode.cpp" />
@@ -349,7 +348,6 @@
     <ClInclude Include="sourcesdk\networkable.hpp" />
     <ClInclude Include="sourcesdk\overridetype.hpp" />
     <ClInclude Include="sourcesdk\player.hpp" />
-    <ClInclude Include="sourcesdk\prediction.hpp" />
     <ClInclude Include="sourcesdk\renderable.hpp" />
     <ClInclude Include="sourcesdk\appsystem.hpp" />
     <ClInclude Include="sourcesdk\bonemasks.hpp" />
@@ -428,6 +426,8 @@
     <ClInclude Include="valvesdk\interfaces.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
     <None Include="jsoncpp\json_valueiterator.inl" />
     <None Include="sourcesdk\renderfx.hpp" />
   </ItemGroup>

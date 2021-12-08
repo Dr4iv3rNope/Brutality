@@ -278,9 +278,6 @@
     <ClCompile Include="sourcesdk\math.cpp">
       <Filter>Source SDK\Math</Filter>
     </ClCompile>
-    <ClCompile Include="sourcesdk\prediction.cpp">
-      <Filter>Source SDK\Interfaces\CPrediction</Filter>
-    </ClCompile>
     <ClCompile Include="jsoncpp\json_reader.cpp">
       <Filter>jsoncpp</Filter>
     </ClCompile>
@@ -570,9 +567,6 @@
     </Filter>
     <Filter Include="Shared Features\Backtrack">
       <UniqueIdentifier>{0c5a688a-b823-4cf4-8894-91f916b58934}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source SDK\Interfaces\CPrediction">
-      <UniqueIdentifier>{185b359a-4e79-4ae3-a6a0-5b8ddfa684f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="jsoncpp">
       <UniqueIdentifier>{ebbe87e0-c7c7-4a2a-acf8-bf0325cdebfc}</UniqueIdentifier>
@@ -1030,9 +1024,6 @@
     <ClInclude Include="features\backtrack.hpp">
       <Filter>Shared Features\Backtrack</Filter>
     </ClInclude>
-    <ClInclude Include="sourcesdk\prediction.hpp">
-      <Filter>Source SDK\Interfaces\CPrediction</Filter>
-    </ClInclude>
     <ClInclude Include="jsoncpp\allocator.h">
       <Filter>jsoncpp</Filter>
     </ClInclude>
@@ -1074,6 +1065,8 @@
     <None Include="jsoncpp\json_valueiterator.inl">
       <Filter>jsoncpp</Filter>
     </None>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />
