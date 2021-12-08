@@ -30,8 +30,8 @@ static std::optional<float> lastDelay;
 
 static inline bool IsTriggerBotKeyPressed() noexcept
 {
-	return !triggerbotKey.HasKeyValue() ||
-		ImGui::Custom::GetAsyncKeyState(triggerbotKey.GetKeyValue());
+	return !triggerbotKey.HasValue() ||
+		ImGui::Custom::GetAsyncKeyState(triggerbotKey.GetValue());
 }
 
 static void InternalTraceLine(SourceSDK::BasePlayer* local_player) noexcept

@@ -16,8 +16,8 @@ void GarrysMod::Features::AirStuck::Think(std::uintptr_t clmove_frame, bool& sen
 	static std::uint32_t ticksStucked = 0;
 
 	if (airstuckEnable &&
-		airstuckKey.HasKeyValue() &&
-		ImGui::Custom::GetAsyncKeyState(airstuckKey.GetKeyValue()) &&
+		airstuckKey.HasValue() &&
+		ImGui::Custom::GetAsyncKeyState(airstuckKey.GetValue()) &&
 		ticksStucked <= *airstuckMaxTicks)
 	{
 		sendPacket = true;
