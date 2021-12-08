@@ -2,6 +2,8 @@
 #include "math.hpp"
 
 #include <array>
+#include <cmath>
+#include <algorithm>
 #include <type_traits>
 
 #include "../util/debug/assert.hpp"
